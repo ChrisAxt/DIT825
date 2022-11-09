@@ -2,7 +2,7 @@
 Chris
 
 Alex
-
+Vernita
 
 
 ## Getting started
