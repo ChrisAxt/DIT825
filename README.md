@@ -1,5 +1,6 @@
 # Group-07
 
+Testing Jira integration
 
 ## Getting started
 
