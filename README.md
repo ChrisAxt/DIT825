@@ -1,11 +1,4 @@
 # Group-07
-Chris
-
-Alex
-
-Vernita
-
-Younis
 
 
 ## Getting started
