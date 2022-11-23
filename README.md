@@ -1,5 +1,35 @@
 # Group-07
 
+# Project description
+
+The main goal of the system is to provide a simple and efficient way to determine whether
+
+text from news articles contains some form of bias. 
+
+The system uses machine learning to evaluate each sentence of a text and return a score as well as detailed evaluation for each sentence. More details are provided in the **Machine Learning Concept** section.
+
+## Major Dependencies
+
+| Libraries | Version | 
+| --- | --- | 
+| [Django](https://www.djangoproject.com/download/) | `4.1.3` |
+| [Scikit-learn](https://scikit-learn.org/stable/) | `1.1.3` | 
+| [Pandas](https://pandas.pydata.org) | `1.5.1` | 
+| [Tensorflow](https://www.tensorflow.org/?hl=en) | 
+
+-m pip install --upgrade https://storage.googleapis.com/tensorflow/mac/cpu/tensorflow-1.12.0-py3-none-any.whl
+## Machine Learning Concept
+
+- ML pipeline description
+- original Data set
+- Workflow diagram + description
+
+# Contribution rules
+
+- PR templates
+- Commit templates
+- Bug template
+
 Another jira integration test
 ## Getting started
 
