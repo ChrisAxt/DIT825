@@ -1,5 +1,5 @@
 #Base image
-FROM python:3
+FROM python:3.9
 
 # Environment variable for the virtual environment path 
 ENV VIRTUAL_ENV=/opt/venv
