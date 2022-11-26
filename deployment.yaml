@@ -22,4 +22,19 @@ spec:
               memory: "128Mi"
               cpu: "500m"
           ports:
-            - containerPort: 80
+            - containerPort: 8080
+
+---
+# Make the deployment accessible from within the cluster
+apiVersion: v1
+kind: Service
+metadata:
+  name: news_bias_evaluator_app
+spec:
+  selector:
+    app: news_bias_evaluator_app
+
+  ports:
+    - port: 8080
+      targetPort: 8080
+  type: NodePort
