@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: news_bias_evaluator_app
+spec:
+  # let's us define which pods (based on pod labels) should be affected by this deployment.
+  # type command: " kubectl explain deployment.spec.selector | more " for more info
+  selector:
+    matchLabels:
+      app: news_bias_evaluator_app
+  template:
+    metadata:
+      labels:
+        app: news_bias_evaluator_app
+    spec:
+      containers:
+        - name: news_bias_evaluator_app
+          #TODO: configure section below
+          image: <Image>
+          resources:
+            limits:
+              memory: "128Mi"
+              cpu: "500m"
+          ports:
+            - containerPort: 8080
+
+---
+# Make the deployment accessible from within the cluster
+apiVersion: v1
+kind: Service
+metadata:
+  name: news_bias_evaluator_app
+spec:
+  selector:
+    app: news_bias_evaluator_app
+
+  ports:
+    - port: 8080
+      targetPort: 8080
+  type: NodePort

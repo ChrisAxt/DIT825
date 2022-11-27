@@ -1,0 +1,22 @@
+# The purpose of this resource is to allow for
+# the routing of external HTTP traffic to internal
+# services. This config will also allow for the use
+# of GKE's default load balancer
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: myingress
+  labels:
+    name: myingress
+spec:
+  rules:
+    - host: <Host>
+      http:
+        paths:
+          - pathType: Prefix
+            path: "/"
+            backend:
+              service:
+                name: <Service>
+                port:
+                  number: <Port>
