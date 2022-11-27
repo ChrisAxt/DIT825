@@ -1,0 +1,10 @@
+version: '3'
+
+services:
+    web:
+        image: "${CI_REGISTRY_IMAGE}:${CI_COMMIT_REF_SLUG}"
+        build: .
+        command: python manage.py runserver 0.0.0.0:8000
+        ports: 
+            - 8000:8000
+
