@@ -1,7 +1,4 @@
 # inspired from https://docs.gitlab.com/ee/user/packages/container_registry/
-
-image: docker
-
 # define the stages for this 
 stages:
   - build
@@ -28,12 +25,18 @@ before_script:
   - cd $WORKDIR
 
 build:
+  # define which runner to use
+  tags: 
+  - docker
   stage: build
   script:
   #build the docker image using docker compose
   - docker-compose build 
 
 release:
+  # define which runner to use
+  tags: 
+  - docker 
   stage: release 
   script: 
   # build the docker image using docker compose
