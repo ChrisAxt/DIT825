@@ -1,0 +1,48 @@
+# inspired from https://docs.gitlab.com/ee/user/packages/container_registry/
+
+image: docker:20.10.21
+services:
+  - docker:20.10.21-dind 
+
+# define the stages for this 
+stages:
+  - build
+  - release
+
+variables:
+  WORKDIR: "news_bias_evaluator"
+  IMAGE_TAG: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG
+  CONTAINER_RELEASE_IMAGE: $CI_REGISTRY_IMAGE:latest
+  CONTAINER_TEST_IMAGE: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG
+   
+before_script:
+# update an upgrade
+  - apk update
+  - apk upgrade
+# install docker compose
+  - apk add docker-compose
+# Print info to check that everything is installed as it should
+  - docker --version
+  - docker-compose --version
+# login to the docker deamon
+  - echo $CI_REGISTRY_PASSWORD | docker login -u $CI_REGISTRY_USER --password-stdin $CI_REGISTRY
+# go into working directory 
+  - cd $WORKDIR
+
+build:
+  stage: build
+  script:
+  #build the docker image using docker compose
+  - docker-compose build 
+
+release:
+  stage: release 
+  script: 
+  # build the docker image using docker compose
+    - docker-compose build 
+  # add the tag "latest" to the image for release
+    - docker tag $CONTAINER_TEST_IMAGE $CONTAINER_RELEASE_IMAGE
+  # push to registry 
+    - docker push $CONTAINER_RELEASE_IMAGE
+  only:
+    - main
