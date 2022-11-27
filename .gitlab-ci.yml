@@ -30,7 +30,7 @@ before_script:
 build:
   # define which runner to use
   tags: 
-  - docker
+  - docker-build
   stage: build
   script:
   #build the docker image using docker compose
@@ -39,7 +39,7 @@ build:
 release:
   # define which runner to use
   tags: 
-  - docker 
+  - docker-build 
   stage: release 
   script: 
   # build the docker image using docker compose
