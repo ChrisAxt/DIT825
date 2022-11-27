@@ -1,0 +1,59 @@
+# This example is for testing Django with MySQL.
+#
+# The test CI/CD variables MYSQL_DB, MYSQL_USER and MYSQL_PASS can be set in the project settings at:
+#     Settings --> CI/CD --> Variables
+#
+# The Django settings in settings.py, used in tests, might look similar to:
+#
+#  DATABASES = {
+#      'default': {
+#         'ENGINE': 'django.db.backends.mysql',
+#         'NAME': os.environ.get('MYSQL_DATABASE'),
+#        	'USER':  os.environ.get('MYSQL_USER'),
+#        	'PASSWORD': os.environ.get('MYSQL_PASSWORD'),
+#       	'HOST': 'mysql',
+#     	  'PORT': '3306',
+#         'CONN_MAX_AGE':60,
+#      },
+#  }
+#
+# It is possible to use '--settings' to specify a custom settings file on the command line below or use an environment
+# variable to trigger an include on the bottom of your settings.py:
+#   if os.environ.get('DJANGO_CONFIG')=='test':
+#       from .settings_test import *
+#
+# It is also possible to hardcode the database name and credentials in the settings.py file and in the .gitlab-ci.yml file.
+#
+# The mysql service needs some variables too. See https://hub.docker.com/_/mysql for possible mysql env variables
+# Note that when using a service in GitLab CI/CD that needs environment variables to run, only variables defined in
+# .gitlab-ci.yml are passed to the service and variables defined in the GitLab UI are not.
+# https://gitlab.com/gitlab-org/gitlab/-/issues/30178
+
+variables:
+  -IMAGE_TAG: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG
+
+default:
+  image: docker:20.10.21-dind
+   
+  before_script:
+  # update an upgrade
+    - apk update
+    - apk upgrade
+  # install docker compose
+    - apk add docker-compose
+  # Prints info to check that everything is installed
+    - docker --version
+    - docker-compose --version
+  # login to the docker deamon
+    - echo $CI_REGISTRY_PASSWORD | docker login -u $CI_REGISTRY_USER --password-stdin $CI_REGISTRY
+
+
+Build_and_push:
+  stage: build_and_push
+  script:
+  # build the docker image using docker compose
+    - docker-compose build 
+  # push the image to the registry
+    - docker push $IMAGE_TAG
+    
+
