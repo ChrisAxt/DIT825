@@ -1,8 +1,6 @@
 # inspired from https://docs.gitlab.com/ee/user/packages/container_registry/
 
-image: docker:20.10.21
-services:
-  - docker:20.10.21-dind 
+image: docker
 
 # define the stages for this 
 stages:
