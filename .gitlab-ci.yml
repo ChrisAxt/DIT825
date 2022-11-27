@@ -1,5 +1,5 @@
 # inspired from https://docs.gitlab.com/ee/user/packages/container_registry/
-# define the stages for this 
+# define the stages for this CI as well as the images to pull and services to use
 image: docker:20.10.21
 services:
  - docker:20.10.16-dind
@@ -7,12 +7,14 @@ stages:
   - build
   - release
 
+# declare the variables used within the CI and eventually docker files
 variables:
   WORKDIR: "news_bias_evaluator"
   IMAGE_TAG: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG
   CONTAINER_RELEASE_IMAGE: $CI_REGISTRY_IMAGE:latest
   CONTAINER_TEST_IMAGE: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG
-   
+  
+# setup the environment before running the different scripts
 before_script:
 # update an upgrade
   - apk update
@@ -27,6 +29,7 @@ before_script:
 # go into working directory 
   - cd $WORKDIR
 
+# run the build step
 build:
   # define which runner to use
   tags: 
@@ -36,6 +39,7 @@ build:
   #build the docker image using docker compose
   - docker-compose build 
 
+#run the release step
 release:
   # define which runner to use
   tags: 
@@ -48,5 +52,6 @@ release:
     - docker tag $CONTAINER_TEST_IMAGE $CONTAINER_RELEASE_IMAGE
   # push to registry 
     - docker push $CONTAINER_RELEASE_IMAGE
+  # runs only if changes are happening on main branch
   only:
     - main
