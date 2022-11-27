@@ -26,6 +26,9 @@ COPY ./requirements.txt /app/requirements.txt
 # Install packages listed in the requirements file
 RUN pip install -r requirements.txt
 
-# Copy orking directory
+# Run pytools file
+RUN python -u /app/pytools.py
+
+# Copy working directory
 COPY . /app
 
