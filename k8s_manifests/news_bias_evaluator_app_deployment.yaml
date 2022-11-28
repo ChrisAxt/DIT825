@@ -17,6 +17,7 @@ spec:
       containers:
         - name: news_bias_evaluator_app
           image: registry.git.chalmers.se/courses/dit825/2022/group07/group-07:latest 
+          # Limits the resources dedicated to each pod.
           resources:
             limits:
               memory: "128Mi"
