@@ -2,10 +2,11 @@
 # define the stages for this CI as well as the images to pull and services to use
 image: docker:20.10.21
 services:
- - docker:20.10.16-dind
+  - docker:20.10.16-dind
 stages:
   - build
   - release
+  - gke-deploy
 
 # declare the variables used within the CI and eventually docker files
 variables:
@@ -13,45 +14,55 @@ variables:
   IMAGE_TAG: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG
   CONTAINER_RELEASE_IMAGE: $CI_REGISTRY_IMAGE:latest
   CONTAINER_TEST_IMAGE: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG
-  
+  KUBE_CONTEXT: "courses/dit825/2022/group07/group-07:dit825-cluster-agent"
+
 # setup the environment before running the different scripts
 before_script:
-# update an upgrade
+  # update an upgrade
   - apk update
   - apk upgrade
-# install docker compose
+  # install docker compose
   - apk add docker-compose
-# Print info to check that everything is installed as it should
+  # Print info to check that everything is installed as it should
   - docker --version
   - docker-compose --version
-# login to the docker deamon
+  # login to the docker deamon
   - echo $CI_REGISTRY_PASSWORD | docker login -u $CI_REGISTRY_USER --password-stdin $CI_REGISTRY
-# go into working directory 
+  # go into working directory
   - cd $WORKDIR
 
 # run the build step
 build:
   # define which runner to use
-  tags: 
-  - docker-build
+  tags:
+    - docker-build
   stage: build
   script:
-  #build the docker image using docker compose
-  - docker-compose build 
+    #build the docker image using docker compose
+    - docker-compose build
 
 #run the release step
 release:
   # define which runner to use
-  tags: 
-  - docker-build 
-  stage: release 
-  script: 
-  # build the docker image using docker compose
-    - docker-compose build 
-  # add the tag "latest" to the image for release
+  tags:
+    - docker-build
+  stage: release
+  script:
+    # build the docker image using docker compose
+    - docker-compose build
+    # add the tag "latest" to the image for release
     - docker tag $CONTAINER_TEST_IMAGE $CONTAINER_RELEASE_IMAGE
-  # push to registry 
+    # push to registry
     - docker push $CONTAINER_RELEASE_IMAGE
   # runs only if changes are happening on main branch
   only:
     - main
+
+deploy:
+  stage: gke-deploy
+  image: bitnami/kubectl:latest
+  script:
+    - kubectl config get-contexts
+    - kubectl config use-context "$KUBE_CONTEXT"
+    - kubectl apply -f /k8s_manifests/news_bias_evaluator_app_deployment.yaml
+    - kubectl apply -f /k8s_manifests/basic-ingress.yaml
