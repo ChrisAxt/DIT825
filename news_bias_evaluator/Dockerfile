@@ -26,6 +26,9 @@ COPY ./requirements.txt /app/requirements.txt
 # Install packages listed in the requirements file
 RUN pip install -r requirements.txt
 
+# Run unittests
+RUN python /app/testing/unit_tests.py
+
 # Copy orking directory
 COPY . /app
 
