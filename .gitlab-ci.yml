@@ -60,7 +60,9 @@ release:
 
 deploy:
   stage: gke-deploy
-  image: bitnami/kubectl:latest
+  image:
+    name: bitnami/kubectl:latest
+    entrypoint: [""]
   # define which runner to use
   tags:
     - docker-build
