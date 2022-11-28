@@ -6,17 +6,20 @@ import pandas as pd
 # TODO(VG): Use the sqlite database for testing, instead of the csv file
 
 class TestInitialData(unittest.TestCase):
+    # navigate to the directory where the data is stored and convert to dataframe
     p = "./notebooks/toy_model/media_bias.csv"
     parent_dir = os.path.split(os.getcwd())[0]
-    assert path.exists(p), "media_bias.csv file does not exist"
-    data = pd.read_csv(p)
+    assert path.exists(parent_dir + p), "media_bias.csv file does not exist"
+    data = pd.read_csv(parent_dir + p)
 
+    # test that the header columns are all present
     def test_data_headers(self):
         dataHeaders = ["","sentence","news_link","outlet","topic","type","group_id","num_sent","Label_bias","Label_opinion","article","biased_words4"]
         headers = list(self.data.columns.values)
         for i in range(1,12):
             self.assertEqual(headers[i], dataHeaders[i])
 
+    # test that the data is the correct length
     def test_data_rows(self):
         self.assertEqual(len(self.data), 1700)
     
