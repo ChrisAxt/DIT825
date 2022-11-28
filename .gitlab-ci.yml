@@ -61,6 +61,9 @@ release:
 deploy:
   stage: gke-deploy
   image: bitnami/kubectl:latest
+  # define which runner to use
+  tags:
+    - docker-build
   script:
     - kubectl config get-contexts
     - kubectl config use-context "$KUBE_CONTEXT"
