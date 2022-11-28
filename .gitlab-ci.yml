@@ -5,7 +5,7 @@ services:
  - docker:20.10.16-dind
 stages:
   - build
-  - deploy
+  - release
 
 # declare the variables used within the CI and eventually docker files
 variables:
@@ -40,11 +40,11 @@ build:
   - docker-compose build 
 
 #run the release step
-deploy:
+release:
   # define which runner to use
   tags: 
   - docker-build 
-  stage: deploy 
+  stage: release 
   rules:
     # add a rule to only run if there is a tag created 
     # and if the tag follows the given regex (example format v10.12.06) and the branch is the main
