@@ -2,9 +2,8 @@ version: '3'
 
 services:
     web:
-        image: "${CI_REGISTRY_IMAGE}:${CI_COMMIT_REF_SLUG}"
+        image: "${IMAGE_TAG}" # Uses the variable defined in Docker_CI.yml as image name
         build: .
         command: python manage.py runserver 0.0.0.0:8000
         ports: 
             - 8000:8000
-
