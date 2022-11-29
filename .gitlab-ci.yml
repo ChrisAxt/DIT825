@@ -48,7 +48,7 @@ release:
   rules:
     # add a rule to only run if there is a tag created 
     # and if the tag follows the given regex (example format v10.12.06) and the branch is the main
-    - if: $CI_COMMIT_TAG =~ /^v\d+\.\d+\.\d+/ && $CI_COMMIT_BRANCH == "main"
+    - if: $CI_COMMIT_TAG =~ /^v\d+\.\d+\.\d+/ && $CI_COMMIT_BRANCH == "release_on_tag"
   script: 
   # build the docker image using docker compose
     - docker-compose build 
@@ -56,7 +56,7 @@ release:
     - docker tag $IMAGE_TAG $LATEST_RELEASE_IMAGE_TAG
   # push to registry 
     - docker push $LATEST_RELEASE_IMAGE_TAG 
-  # Use the commit tag to save separate version (both latest and version tag can be used when pulling the image)
-    - docker tag $LATEST_RELEASE_IMAGE_TAG $VERSION_RELEASE_IMAGE_TAG
+  # Use the commit tag to save separate tag version (both latest and version tag can be used when pulling the image)
+    - docker tag $IMAGE_TAG $VERSION_RELEASE_IMAGE_TAG
   # push to registry
     - docker push $VERSION_RELEASE_IMAGE_TAG 
