@@ -17,19 +17,20 @@ variables:
   KUBE_CONTEXT: "courses/dit825/2022/group07/group-07:dit825-cluster-agent"
 
 # setup the environment before running the different scripts
-before_script:
-  # update an upgrade
-  - apk update
-  - apk upgrade
-  # install docker compose
-  - apk add docker-compose
-  # Print info to check that everything is installed as it should
-  - docker --version
-  - docker-compose --version
-  # login to the docker deamon
-  - echo $CI_REGISTRY_PASSWORD | docker login -u $CI_REGISTRY_USER --password-stdin $CI_REGISTRY
-  # go into working directory
-  - cd $WORKDIR
+default: #default lets us exclude the before script from the gke-deployment stage
+  before_script:
+    # update an upgrade
+    - apk update
+    - apk upgrade
+    # install docker compose
+    - apk add docker-compose
+    # Print info to check that everything is installed as it should
+    - docker --version
+    - docker-compose --version
+    # login to the docker deamon
+    - echo $CI_REGISTRY_PASSWORD | docker login -u $CI_REGISTRY_USER --password-stdin $CI_REGISTRY
+    # go into working directory
+    - cd $WORKDIR
 
 # run the build step
 build:
@@ -59,6 +60,8 @@ release:
     - main
 
 deploy:
+  inherit:
+    default: false # gke-deployment job wont inherit any default: keys (in this case, the before_script)
   stage: gke-deploy
   image:
     name: bitnami/kubectl:latest
