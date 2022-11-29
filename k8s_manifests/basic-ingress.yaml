@@ -5,12 +5,12 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: ingress 
+  name: ingress
   labels:
-    name: ingress 
+    name: ingress
 spec:
   defaultBackend:
     service:
-      name: news_bias_evaluator_app 
+      name: news-bias-evaluator-app
       port:
         number: 8080

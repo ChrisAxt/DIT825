@@ -1,22 +1,22 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: news_bias_evaluator_app
+  name: news-bias-evaluator-app
 spec:
   # let's us define which pods (based on pod labels) should be affected by this deployment.
   # type command: " kubectl explain deployment.spec.selector | more " for more info
   selector:
     matchLabels:
-      app: news_bias_evaluator_app
+      app: news-bias-evaluator-app
   replicas: 2
   template:
     metadata:
       labels:
-        app: news_bias_evaluator_app
+        app: news-bias-evaluator-app
     spec:
       containers:
-        - name: news_bias_evaluator_app
-          image: registry.git.chalmers.se/courses/dit825/2022/group07/group-07:latest 
+        - name: news-bias-evaluator-app
+          image: registry.git.chalmers.se/courses/dit825/2022/group07/group-07:latest
           # Limits the resources dedicated to each pod.
           resources:
             limits:
@@ -30,10 +30,10 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: news_bias_evaluator_app
+  name: news-bias-evaluator-app
 spec:
   selector:
-    app: news_bias_evaluator_app
+    app: news-bias-evaluator-app
 
   ports:
     - port: 8080
