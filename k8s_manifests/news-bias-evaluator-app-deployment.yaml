@@ -14,6 +14,12 @@ spec:
       labels:
         app: news-bias-evaluator-app
     spec:
+      # registry credentials were deployed manually to the cluster.
+      # Keys contain base 64 encoding for security reasoons.
+      # The following two lines tell the deployment file to use these credentials
+      # to pull the docker image from the private registry
+      imagePullSecrets:
+        - name: registry-credentials
       containers:
         - name: news-bias-evaluator-app
           image: registry.git.chalmers.se/courses/dit825/2022/group07/group-07:latest
