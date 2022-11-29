@@ -23,11 +23,6 @@ spec:
       containers:
         - name: news-bias-evaluator-app
           image: registry.git.chalmers.se/courses/dit825/2022/group07/group-07:latest
-          # Limits the resources dedicated to each pod.
-          resources:
-            limits:
-              memory: "128Mi"
-              cpu: "500m"
           ports:
             - containerPort: 8080
 
