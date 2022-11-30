@@ -27,9 +27,8 @@ spec:
             - runserver
             - 0.0.0.0:8080
           name: news-bias-evaluator-app
-          #image: registry.git.chalmers.se/courses/dit825/2022/group07/group-07:latest
+          image: registry.git.chalmers.se/courses/dit825/2022/group07/group-07:latest
           # Limits the resourced dedicated to each pod.
-          image: marble879/dockerhub:second-image
           resources:
             limits:
               memory: "128Mi"
