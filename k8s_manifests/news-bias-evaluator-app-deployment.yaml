@@ -21,8 +21,18 @@ spec:
       imagePullSecrets:
         - name: registry-credentials
       containers:
-        - name: news-bias-evaluator-app
+        - args:
+            - python
+            - manage.py
+            - runserver
+            - localhost:8000
+          name: news-bias-evaluator-app
           image: registry.git.chalmers.se/courses/dit825/2022/group07/group-07:latest
+          # Limits the resourced dedicated to each pod.
+          resources:
+            limits:
+              memory: "128Mi"
+              cpu: "100m"
           ports:
             - containerPort: 8080
 
@@ -32,11 +42,12 @@ apiVersion: v1
 kind: Service
 metadata:
   name: news-bias-evaluator-app
+  labels:
+    app: news-bias-evaluator-app
 spec:
+  type: LoadBalancer
+  ports:
+    - port: 80
+      targetPort: 8080
   selector:
     app: news-bias-evaluator-app
-
-  ports:
-    - port: 8080
-      targetPort: 8080
-  type: NodePort
