@@ -46,6 +46,7 @@ metadata:
     app: news-bias-evaluator-app
 spec:
   type: LoadBalancer
+  loadBalancerIP: 34.88.187.253
   ports:
     - port: 3000
       targetPort: 8080
