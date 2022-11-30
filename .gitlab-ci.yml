@@ -73,4 +73,3 @@ deploy:
     - kubectl config get-contexts
     - kubectl config use-context "$KUBE_CONTEXT"
     - kubectl apply -f $CI_PROJECT_DIR/k8s_manifests/news-bias-evaluator-app-deployment.yaml
-    - kubectl apply -f $CI_PROJECT_DIR/k8s_manifests/basic-ingress.yaml
