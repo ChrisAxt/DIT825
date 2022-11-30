@@ -21,6 +21,12 @@ spec:
       imagePullSecrets:
         - name: registry-credentials
       containers:
+        # Important note! args lets us define commands to run within
+        # the docker container. If we do not start the django app,
+        # the container will exit as there is nothing running.
+        # docker compose build will build separate images for each
+        # service defined inside docker-compose.yml. Commands that we
+        # specify within the docker-compose.yml WILL NOT be run within pods.
         - args:
             - python
             - manage.py
