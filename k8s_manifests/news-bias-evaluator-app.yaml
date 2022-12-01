@@ -1,21 +1,30 @@
+# Select the k8s api group to create resources
 apiVersion: apps/v1
+# define deployment as the kind of resource we want to create.
+# a deployment wraps our containers into a pod(s).
 kind: Deployment
+# set meta-data for the deployment.
 metadata:
+  # set name to uniquely identify object in within its namespace (default name space in this case)
   name: news-bias-evaluator-app
+# Specification of the desired behavour of the deployment
 spec:
   # let's us define which pods (based on pod labels) should be affected by this deployment.
-  # type command: " kubectl explain deployment.spec.selector | more " for more info
+  # in other words, it defines which pods the deployment should be applied to.
   selector:
     matchLabels:
       app: news-bias-evaluator-app
+  # set the number of replicas of the same pod that
+  # should exist.
   replicas: 2
+  # set meta-data for the replica-set
   template:
     metadata:
       labels:
         app: news-bias-evaluator-app
     spec:
       # registry credentials were deployed manually to the cluster.
-      # Keys contain base 64 encoding for security reasoons.
+      # Keys contain base 64 encoding for security reasons.
       # The following two lines tell the deployment file to use these credentials
       # to pull the docker image from the private registry
       imagePullSecrets:
@@ -26,20 +35,25 @@ spec:
         # the container will exit as there is nothing running.
         # docker compose build will build separate images for each
         # service defined inside docker-compose.yml. Commands that we
-        # specify within the docker-compose.yml WILL NOT be run within pods.
+        # specify within the docker-compose.yml ARE NOT be run within pods.
         - args:
             - python
             - manage.py
             - runserver
             - 0.0.0.0:8000
+          # specify the name of the container
+          # note: contaienrs within the same pod must have unique names
           name: news-bias-evaluator-app
+          # define the image to pull
           image: registry.git.chalmers.se/courses/dit825/2022/group07/group-07:latest
-          # Limits the resourced dedicated to each pod.
+          # Limits the resourced dedicated to the container.
           resources:
             limits:
               memory: "128Mi"
               cpu: "100m"
+          # list the ports to expose from the container
           ports:
+            # set the port to expose on the pod's ip address
             - containerPort: 8000
 
 ---
