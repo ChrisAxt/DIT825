@@ -31,7 +31,7 @@ spec:
             - python
             - manage.py
             - runserver
-            - 0.0.0.0:8080
+            - 0.0.0.0:8000
           name: news-bias-evaluator-app
           image: registry.git.chalmers.se/courses/dit825/2022/group07/group-07:latest
           # Limits the resourced dedicated to each pod.
@@ -40,7 +40,7 @@ spec:
               memory: "128Mi"
               cpu: "100m"
           ports:
-            - containerPort: 8080
+            - containerPort: 8000
 
 ---
 # Make the deployment accessible from within the cluster
@@ -55,6 +55,6 @@ spec:
   loadBalancerIP: 34.88.187.253
   ports:
     - port: 3000
-      targetPort: 8080
+      targetPort: 8000
   selector:
     app: news-bias-evaluator-app
