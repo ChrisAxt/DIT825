@@ -2,11 +2,9 @@
 
 ## Description
 
-The main goal of the system is to provide a simple and efficient way to determine whether
+The main goal of the system is to provide a simple and efficient way to determine whether text from news articles potentially contain some form of bias.
 
-text from news articles contains some form of bias. 
-
-The system uses machine learning to evaluate each sentence of a text and return a score as well as detailed evaluation for each sentence. More details are provided in the **Machine Learning Concept** section.
+The system uses machine learning to evaluate each sentence of a text and return a score as well as an evaluation for each sentence. More details are provided in the **Machine Learning Concept** section.
 
 ---
 
@@ -41,10 +39,9 @@ characteristics and the background of its 1345 annotators. Due to these conditio
 believe that the labelling process leads to the creation of a reliable source that can be used
 to make accurate predictions.
 
-### ML pipeline description
+### Retraining the model
 
-Due to the
-size of the dataset (1700), we aim to use semi-supervised learning to increase our dataset.
+Due to the size of the dataset (1700), we aim to use semi-supervised learning to increase our dataset.
 We will gather more articles and once we have enough collected data, we will use the
 current model to label the sentences within these articles. The sentences with a high
 accuracy will then be added to the training dataset. The sentences  with  a low accuracy will
@@ -55,7 +52,16 @@ need to extract all the features from the new data, which would lead to arduousn
 monitoring stage. The features we select for our initial model will be influenced by this
 phase of the system.
 
-- Workflow diagram + description
+## Pipeline
+
+Workflow diagram
+![Workflow pipeline](/assets/DevOps_pipeline.png)
+
+ML model diagram
+![ML pipeline](/assets/ML_Model_pipeline.png)
+
+Deployment diagram
+![Deployment pipeline](/assets/Deployment.png)
 
 # Contribution rules
 
@@ -96,5 +102,39 @@ The project is following the same licence as the original dataset
 [CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/)
 
 ## Project status
-Inception phase
-Actively worked on
+
+### Inception and Planning Phase:
+**Sprint0**: All members involved in planning and design of the system. Completed the following tasks: 
+
+- [x] Project setup
+- [x] Project planning
+- [x] Project design
+
+**Sprint1**: All members involved in planning and design of the system. Completed the following tasks:
+
+- [x] Project documentation
+- [x] Assignment 1
+
+**Sprint2**: Implementation phase - All members involved in implementation of the system. Sprint2 includes the following tasks:
+
+- [x] Integrate Jira with gitlab - *Christopher*
+- [x] Create issues on Jira using project requirements - *Alexandre, Younis*
+- [x] Set up django project - *Alexandre*
+- [x] Create prototype of the system - *Christopher*
+- [x] Implement prototype of the system - *Alexandre*
+- [x] Set up docker build - *Christopher*
+- [x] Research cloud provider possibilities and architecture of the system on the cloud - *Younis*
+- [x] Create a basic ML model - *Vernita*
+- [x] Configure ML model upload to cloud provider - *Vernita*
+- [x] Set up CI app build - *Alexandre* 
+- [x] Set up database for the ML model - *Christopher*
+- [x] Configure cloud provider - *Younis*
+- [x] Configure automated deployment - *Younis*
+- [x] Create models for the database - *Christopher*
+- [x] Set up docker image registration - *Alexandre*
+- [x] Implement python tools - *Vernita*
+- [x] Implement simple unit tests - *Vernita*
+- [x] Set up CD pipeline with Kubernetes - *Younis*
+- [x] Update Readme with project detail - *Alexandre*
+- [x] Update Readme with Sprint tasks and documentation - *Vernita*
+- [ ] Add testing to dockerfile - *Vernita*
