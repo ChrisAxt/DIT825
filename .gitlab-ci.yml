@@ -63,6 +63,7 @@ release:
     - docker tag $IMAGE_TAG $VERSION_RELEASE_IMAGE_TAG
     # push to registry
     - docker push $VERSION_RELEASE_IMAGE_TAG
+
 deploy:
   inherit:
     default: false # gke-deployment job wont inherit any default: keys (in this case, the before_script)
@@ -77,3 +78,5 @@ deploy:
     - kubectl config get-contexts
     - kubectl config use-context "$KUBE_CONTEXT"
     - kubectl apply -f $CI_PROJECT_DIR/k8s_manifests/news-bias-evaluator-app-deployment.yaml
+  rules:
+    - if: $CI_COMMIT_TAG =~ /^v\d+\.\d+\.\d+/
