@@ -14,7 +14,7 @@ variables:
   IMAGE_TAG: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG # name used to build the docker image
   LATEST_RELEASE_IMAGE_TAG: $CI_REGISTRY_IMAGE:latest # name of the docker image using latest label
   VERSION_RELEASE_IMAGE_TAG: $CI_REGISTRY_IMAGE:$CI_COMMIT_TAG # name of the docker image using the commit tag label (for versioning and treacability)
-  KUBE_CONTEXT: "courses/dit825/2022/group07/group-07:dit825-cluster-agent"
+  KUBE_CONTEXT: "courses/dit825/2022/group07/group-07:dit825-cluster-agent" # location of the k8s cluster agent that will be used for deploying to gke.
 
 # setup the environment before running the different scripts
 default: #default lets us exclude the before script from the gke-deployment stage
@@ -65,18 +65,33 @@ release:
     - docker push $VERSION_RELEASE_IMAGE_TAG
 
 deploy:
+  # gke-deployment job wont inherit any default: keys (in this case, the before_script)
   inherit:
-    default: false # gke-deployment job wont inherit any default: keys (in this case, the before_script)
+    default: false
   stage: gke-deploy
+  # Define an image in which the kubectl cli can be run
   image:
     name: bitnami/kubectl:latest
+    # Override the default entry point of the bitnami/kubectl image to
+    # allow the runner to start the container in a desired way.
+    # more info: https://gitlab.com/gitlab-org/gitlab-foss/-/issues/65110
     entrypoint: [""]
   # define which runner to use
   tags:
     - docker-build
   script:
+    # get information about the current k8s contexts.
+    # NOTE: a context groups access parameters to a k8s cluster.
     - kubectl config get-contexts
+    # switch to the K8s context provided by our gitlab gke agent - this allows us to
+    # access the k8s cluster on GKE.
     - kubectl config use-context "$KUBE_CONTEXT"
+    # Apply the defined K8S manifest.
+    # NOTE: This manifest defines the deployment of the django app, and the load
+    # balancer service (which enables external access).
     - kubectl apply -f $CI_PROJECT_DIR/k8s_manifests/news-bias-evaluator-app.yaml
   rules:
+    # same reasoning as the release stage.
+    # run the gke-deploy stage only if a tag is
+    # created with the regex pattern
     - if: $CI_COMMIT_TAG =~ /^v\d+\.\d+\.\d+/
