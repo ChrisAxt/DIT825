@@ -37,7 +37,7 @@ spec:
         # the container will exit as there is nothing running.
         # docker compose build will build separate images for each
         # service defined inside docker-compose.yml. Commands that we
-        # specify within the docker-compose.yml ARE NOT be run within pods.
+        # specify within the docker-compose.yml ARE NOT run within pods.
         - args:
             - python
             - manage.py
