@@ -1,62 +1,47 @@
-# inspired from https://docs.gitlab.com/ee/user/packages/container_registry/
-# define the stages for this CI as well as the images to pull and services to use
+# You can override the included template(s) by including variable overrides
+# SAST customization: https://docs.gitlab.com/ee/user/application_security/sast/#customizing-the-sast-settings
+# Secret Detection customization: https://docs.gitlab.com/ee/user/application_security/secret_detection/#customizing-settings
+# Dependency Scanning customization: https://docs.gitlab.com/ee/user/application_security/dependency_scanning/#customizing-the-dependency-scanning-settings
+# Container Scanning customization: https://docs.gitlab.com/ee/user/application_security/container_scanning/#customizing-the-container-scanning-settings
+# Note that environment variables can be set in several places
+# See https://docs.gitlab.com/ee/ci/variables/#cicd-variable-precedence
 image: docker:20.10.21
 services:
- - docker:20.10.16-dind
+- docker:20.10.16-dind
 stages:
-  - build
-  - release
-
-# declare the variables used within the CI and eventually docker files
+- build
+- release
 variables:
-  WORKDIR: "news_bias_evaluator"
-  IMAGE_TAG: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG # name used to build the docker image
-  LATEST_RELEASE_IMAGE_TAG: $CI_REGISTRY_IMAGE:latest # name of the docker image using latest label
-  VERSION_RELEASE_IMAGE_TAG: $CI_REGISTRY_IMAGE:$CI_COMMIT_TAG # name of the docker image using the commit tag label (for versioning and treacability)
-  
-# setup the environment before running the different scripts
+  WORKDIR: news_bias_evaluator
+  IMAGE_TAG: "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG"
+  LATEST_RELEASE_IMAGE_TAG: "$CI_REGISTRY_IMAGE:latest"
+  VERSION_RELEASE_IMAGE_TAG: "$CI_REGISTRY_IMAGE:$CI_COMMIT_TAG"
 before_script:
-# update an upgrade
-  - apk update
-  - apk upgrade
-# install docker compose
-  - apk add docker-compose
-# Print info to check that everything is installed as it should
-  - docker --version
-  - docker-compose --version
-# login to the docker deamon
-  - echo $CI_REGISTRY_PASSWORD | docker login -u $CI_REGISTRY_USER --password-stdin $CI_REGISTRY
-# go into working directory 
-  - cd $WORKDIR
-
-# run the build step
+- apk update
+- apk upgrade
+- apk add docker-compose
+- docker --version
+- docker-compose --version
+- echo $CI_REGISTRY_PASSWORD | docker login -u $CI_REGISTRY_USER --password-stdin
+  $CI_REGISTRY
+- cd $WORKDIR
 build:
-  # define which runner to use
-  tags: 
+  tags:
   - docker-build
   stage: build
   script:
-  #build the docker image using docker compose
-  - docker-compose build 
-
-#run the release step
+  - docker-compose build
 release:
-  # define which runner to use
-  tags: 
-  - docker-build 
-  stage: release 
+  tags:
+  - docker-build
+  stage: release
   rules:
-    # add a rule to only run if there is a tag created 
-    # and if the tag follows the given regex (example format v10.12.06)
-    - if: $CI_COMMIT_TAG =~ /^v\d+\.\d+\.\d+/
-  script: 
-  # build the docker image using docker compose
-    - docker-compose build 
-  # add the tag "latest" to the image for release
-    - docker tag $IMAGE_TAG $LATEST_RELEASE_IMAGE_TAG
-  # push to registry 
-    - docker push $LATEST_RELEASE_IMAGE_TAG 
-  # Use the commit tag to save separate tag version (both latest and version tag can be used when pulling the image)
-    - docker tag $IMAGE_TAG $VERSION_RELEASE_IMAGE_TAG
-  # push to registry
-    - docker push $VERSION_RELEASE_IMAGE_TAG 
+  - if: "$CI_COMMIT_TAG =~ /^v\\d+\\.\\d+\\.\\d+/"
+  script:
+  - docker-compose build
+  - docker tag $IMAGE_TAG $LATEST_RELEASE_IMAGE_TAG
+  - docker push $LATEST_RELEASE_IMAGE_TAG
+  - docker tag $IMAGE_TAG $VERSION_RELEASE_IMAGE_TAG
+  - docker push $VERSION_RELEASE_IMAGE_TAG
+include:
+- template: Security/Secret-Detection.gitlab-ci.yml
