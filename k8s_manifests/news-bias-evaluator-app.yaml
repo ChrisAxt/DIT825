@@ -44,7 +44,7 @@ spec:
             - runserver
             - 0.0.0.0:8000
           # specify the name of the container
-          # note: contaienrs within the same pod must have unique names
+          # note: containers within the same pod must have unique names
           name: news-bias-evaluator-app
           # define the image to pull
           image: registry.git.chalmers.se/courses/dit825/2022/group07/group-07:latest
