@@ -2,10 +2,11 @@
 # define the stages for this CI as well as the images to pull and services to use
 image: docker:20.10.21
 services:
- - docker:20.10.16-dind
+  - docker:20.10.16-dind
 stages:
   - build
   - release
+  - gke-deploy
 
 # declare the variables used within the CI and eventually docker files
 variables:
@@ -13,50 +14,88 @@ variables:
   IMAGE_TAG: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG # name used to build the docker image
   LATEST_RELEASE_IMAGE_TAG: $CI_REGISTRY_IMAGE:latest # name of the docker image using latest label
   VERSION_RELEASE_IMAGE_TAG: $CI_REGISTRY_IMAGE:$CI_COMMIT_TAG # name of the docker image using the commit tag label (for versioning and treacability)
-  
+  KUBE_CONTEXT: "courses/dit825/2022/group07/group-07:dit825-cluster-agent" # location of the k8s cluster agent that will be used for deploying to gke.
+
 # setup the environment before running the different scripts
-before_script:
-# update an upgrade
-  - apk update
-  - apk upgrade
-# install docker compose
-  - apk add docker-compose
-# Print info to check that everything is installed as it should
-  - docker --version
-  - docker-compose --version
-# login to the docker deamon
-  - echo $CI_REGISTRY_PASSWORD | docker login -u $CI_REGISTRY_USER --password-stdin $CI_REGISTRY
-# go into working directory 
-  - cd $WORKDIR
+default: #default lets us exclude the before script from the gke-deployment stage
+  before_script:
+    # update an upgrade
+    - apk update
+    - apk upgrade
+    # install docker compose
+    - apk add docker-compose
+    # Print info to check that everything is installed as it should
+    - docker --version
+    - docker-compose --version
+    # login to the docker deamon
+    - echo $CI_REGISTRY_PASSWORD | docker login -u $CI_REGISTRY_USER --password-stdin $CI_REGISTRY
+    # go into working directory
+    - cd $WORKDIR
 
 # run the build step
 build:
   # define which runner to use
-  tags: 
-  - docker-build
+  tags:
+    - docker-build
   stage: build
   script:
-  #build the docker image using docker compose
-  - docker-compose build 
+    #build the docker image using docker compose
+    - docker-compose build
 
 #run the release step
 release:
   # define which runner to use
-  tags: 
-  - docker-build 
-  stage: release 
+  tags:
+    - docker-build
+  stage: release
   rules:
-    # add a rule to only run if there is a tag created 
+    # add a rule to only run if there is a tag created
     # and if the tag follows the given regex (example format v10.12.06)
     - if: $CI_COMMIT_TAG =~ /^v\d+\.\d+\.\d+/
-  script: 
-  # build the docker image using docker compose
-    - docker-compose build 
-  # add the tag "latest" to the image for release
+  script:
+    # build the docker image using docker compose
+    - docker-compose build
+    # add the tag "latest" to the image for release
     - docker tag $IMAGE_TAG $LATEST_RELEASE_IMAGE_TAG
-  # push to registry 
-    - docker push $LATEST_RELEASE_IMAGE_TAG 
-  # Use the commit tag to save separate tag version (both latest and version tag can be used when pulling the image)
+    # push to registry
+    - docker push $LATEST_RELEASE_IMAGE_TAG
+    # Use the commit tag to save separate tag version (both latest and version tag can be used when pulling the image)
     - docker tag $IMAGE_TAG $VERSION_RELEASE_IMAGE_TAG
-  # push to registry
-    - docker push $VERSION_RELEASE_IMAGE_TAG 
+    # push to registry
+    - docker push $VERSION_RELEASE_IMAGE_TAG
+
+deploy:
+  # gke-deployment job wont inherit any default: keys (in this case, the before_script)
+  inherit:
+    default: false
+  stage: gke-deploy
+  # Run job only when the release finishes
+  needs: [release]
+  # Define an image in which the kubectl cli can be run
+  image:
+    name: bitnami/kubectl:latest
+    # Override the default entry point of the bitnami/kubectl image to
+    # allow the runner to start the container in a desired way.
+    # more info: https://gitlab.com/gitlab-org/gitlab-foss/-/issues/65110
+    entrypoint: [""]
+  # define which runner to use
+  tags:
+    - docker-build
+  script:
+    # get information about the current k8s contexts.
+    # NOTE: a context groups access parameters to a k8s cluster.
+    - kubectl config get-contexts
+    # switch to the K8s context provided by our gitlab gke agent - this allows us to
+    # access the k8s cluster on GKE.
+    - kubectl config use-context "$KUBE_CONTEXT"
+    # Apply the defined K8S manifest.
+    # NOTE: This manifest defines the deployment of the django app, and the load
+    # balancer service (which enables external access).
+    - kubectl apply -f $CI_PROJECT_DIR/k8s_manifests/news-bias-evaluator-app.yaml
+  rules:
+    # same reasoning as the release stage.
+    # run the gke-deploy stage only if a tag is
+    # created with the regex pattern
+    # The same rule is needed as the release stage in order for the "needs: [release]" line to work.
+    # more info: https://gitlab.com/gitlab-org/gitlab/-/issues/370052
+    - if: $CI_COMMIT_TAG =~ /^v\d+\.\d+\.\d+/
