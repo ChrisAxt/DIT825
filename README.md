@@ -59,15 +59,6 @@ Let people know what your project can do specifically. Provide context and add a
 ## Badges
 On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
 
-## Architecture
-
-Cloud deployment Architecture
-![Cloud Deployment Architecture](/assets/DevOps_pipeline.png)
-
-ML model diagram
-![ML pipeline](/assets/ML_Model_pipeline.png)
-
-
 ## Visuals
 Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
 
