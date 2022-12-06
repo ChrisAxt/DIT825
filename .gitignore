@@ -1,3 +1,4 @@
 .DS_Store
 *__pycache__
 /news_bias_evaluator/env/
+.ipynb_checkpoints/
