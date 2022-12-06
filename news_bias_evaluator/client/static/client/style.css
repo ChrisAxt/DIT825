@@ -1,3 +1,4 @@
+/* Defines base variables for the whole website */
 html {
     /* font families */
     --ff-title: 'Varela Round';
@@ -6,15 +7,15 @@ html {
     /* colors */
     --backgound-accent: #2A9D8F;
     --backround-main: #264653;
-    --shadow-color: #7F7F7F;
+    --shadow-color: rgb(28, 27, 27);
     --txt-color-bias: #E76F51;
     --txt-color: #fff;
 
     /* font sizes */
-    --fs-small: 0.75rem;
-    --fs-large: 3rem;
-    --fs-medium: 1.25rem;
-    --fs-normal: 1rem;
+    --fs-small: 0.5rem;
+    --fs-large: 2rem;
+    --fs-medium: 1rem;
+    --fs-normal: 0.75rem;
 
     /* border radius for buttons and boxes */
     --border-radius: 0.5rem;
@@ -24,12 +25,11 @@ html {
     background-color: var(--backround-main);
     color: var(--txt-color);
     text-align: center;
-}
-
-body {
+    align-content: center;
     height: 100vh;
 }
 
+/* Header styling -> title and logo container */
 .header-container {
     display: flex;
     flex-direction: column;
@@ -37,7 +37,7 @@ body {
     gap: 1rem;
     box-shadow: 0 0.1rem 0.3rem var(--shadow-color);
 }
-
+ /* title styling */
 h1 {
     font-family: var(--ff-title), sans-serif;
     font-size: var(--fs-large);
@@ -45,20 +45,20 @@ h1 {
     justify-self: flex-end;
     /* margin-left: auto; */
 }
-
+/* Logo */
 .logo {
     max-width: 25%;
 }
 
+/* Container with the header buttons */
 .container-btn {
     display: flex;
     gap: 0.5rem;
 }
 
+/* header buttons */
 .github-btn,
 .info-btn {
-    
-    /* min-width: 2vw; */
     aspect-ratio: 1/1;
     background-position: center;
     background-repeat: no-repeat;
@@ -67,68 +67,45 @@ h1 {
     cursor: pointer;
     align-self: flex-end;
     margin-bottom: 1rem;
-    min-width: 30px;
-    /* align-self: center; */
-    
+    width: 5vw;
+    max-width: 30px;    
 }
 
+/* github button */
 .github-btn {
     margin-right: 3vw;
     background-image: url("images/github.svg");
 }
 
+/* information button */
 .info-btn {
     margin-left: auto;
     background-image: url("images/info.svg");
 }
 
+/* container for the form */
 .form-container {
     display: flex;
     flex-direction: column;
     align-items: center;
+    max-width: 80%;
+    margin: auto;
+    gap: 5vh;
 }
 
+/* slogan */
 .form-container > p {
     font-size: var(--fs-medium);
 }
 
+/* actual form */
 .form-input {
     display: flex;
     flex-direction: column;
-    width: 80%;
+    gap: inherit;
 }
 
-.form-input label,
-.form-input p {
-    font-size: var(--fs-small);
-}
-
-.form-input > div {
-    
-    margin-block: 1vh;
-}
-
-.form-input > p {
-    margin-left: auto;
-    margin-right: 0.5rem;
-    margin-block: 0 1vh;
-}
-.input-text {
-    border-radius: var(--border-radius);
-    border: none;
-    outline: none;
-    resize: none;
-    padding: 0.5em;
-    
-    height: 30vh;
-    font-size: var(--fs-normal);
-    opacity: 0.8;
-    transition: opacity 1s;
-}
-
-.input-text:focus {
-    opacity: 1;
-}
+/* Style for the buttons with text */
 .btn {
     background-color: var(--backgound-accent);
     border: none;
@@ -141,6 +118,7 @@ h1 {
     
 }
 
+/* Transition for all buttons */
 .github-btn,
 .info-btn,
 .btn {
@@ -153,6 +131,7 @@ h1 {
     transform: scale(1.2);
 }
 
+/* Responsiveness */
 @media screen and (min-width: 480px){
     .form-input {
         width: 65%;
@@ -161,6 +140,15 @@ h1 {
     .logo {
         width: 15%;
     }
+
+    html {
+    
+        --fs-small: 1rem;
+        --fs-large: 3rem;
+        --fs-medium: 1.5rem;
+        --fs-normal: 1.25rem;
+        
+        }
 }
 
 @media screen and (min-width: 800px){
