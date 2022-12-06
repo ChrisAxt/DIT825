@@ -21,24 +21,16 @@
     </header>
    <section class="form-container">
     <p>A simple way to look for bias in news articles</p>
-    <form class="form-input" action="" method="post">
+    <form class="form-input" action="{% url 'results' %}" method="get">
+        {% csrf_token %}
         <textarea class="input-text" name="input-text" id="input-text" maxlength="700" required placeholder="Enter you text here:"></textarea>
-        <div>
-            <input type="checkbox" name="consent-training" id="consent-training" value="training">
-            <label for="consent-training">* I consent for my inputs to be saved for model training purposes</label>
-        </div>
-        <div>
+        <!-- TODO: activate when history is implemented -->        
+        <!-- <div>
             <input type="checkbox" label="consent for history" name="consent-history" id="consent-history" value="history">
             <label for="consent-history">I consent for my inputs to be stored and displayed as an example</label>
-        </div>
-        <p class="required">* Is required</p>
-        <input class="btn" type="button" value="Submit">
+        </div> -->
+        <input class="btn" type="submit" value="Submit">
     </form>
    </section>
 </body>
 </html>
-
-
-<script>
-    
-</script>
