@@ -31,6 +31,7 @@ ALLOWED_HOSTS = ["0.0.0.0", "localhost", "34.88.187.253", "127.0.0.1"]
 # Application definition
 
 INSTALLED_APPS = [
+    "server.apps.ServerConfig",
     "client.apps.ClientConfig",
     "django.contrib.admin",
     "django.contrib.auth",
@@ -38,6 +39,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "django_extensions",
 ]
 
 MIDDLEWARE = [
