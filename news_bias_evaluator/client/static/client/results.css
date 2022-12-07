@@ -1,0 +1,65 @@
+
+/* Container that holds the 2 fileds for response */
+.response-container {
+    display: flex;
+    flex-direction: column;
+    gap: 2vh;
+    margin: 2vh 2vw 0;
+}
+
+/* The response fields */
+.response-field {
+    text-align: start;
+    padding-inline: 1rem;
+    border-radius: var(--border-radius);
+    box-shadow: 0 0 0.75rem 0.125rem rgb(28, 27, 27);
+    max-height: 40%;
+    overflow: scroll;
+    font-family: var(--ff-text);
+    font-size: var(--fs-small);
+}
+
+/* Response sentence */
+.result-sentence {
+    font-size: var(--fs-small);
+}
+
+/* Style for biased sentence */
+.biased {
+    color: var(--txt-color-bias);
+}
+
+/* Responsivness */
+@media screen and (min-width: 480px){
+
+    .response-container {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        margin-inline: auto;
+        margin-top: 3vh;
+        gap: 3vw;
+        max-height: 60vh;
+        max-width: 95%;
+    }
+
+    .response-field {
+        padding-inline: 1.5rem;
+    }
+
+    html {
+        --fs-small: 0.9rem;
+        }
+
+}
+
+@media screen and (min-width: 800px){
+
+    .response-container {
+        margin-top: 5vh;
+        max-width: 80%;
+    }
+
+    html { 
+    --fs-small: 1rem;
+    }
+}
