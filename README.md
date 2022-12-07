@@ -138,3 +138,4 @@ The project is following the same licence as the original dataset
 - [x] Update Readme with project detail - *Alexandre*
 - [x] Update Readme with Sprint tasks and documentation - *Vernita*
 - [ ] Add testing to dockerfile - *Vernita*
+- [x] Update deployment diagram
