@@ -26,9 +26,11 @@ COPY ./requirements.txt /app/requirements.txt
 # Install packages listed in the requirements file
 RUN pip install -r requirements.txt
 
+# Run tests for the app
+RUN python manage.py test app
 
-# Run unittests
-RUN python /app/testing/unit_tests.py
+# Run unittests on initial dataset
+RUN python /app/initial_dataset_testing/unit_tests.py
 
 # Run pytools file
 RUN python -u /app/pytools.py

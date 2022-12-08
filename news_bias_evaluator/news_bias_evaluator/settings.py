@@ -31,15 +31,14 @@ ALLOWED_HOSTS = ["0.0.0.0", "localhost", "34.88.187.253", "127.0.0.1"]
 # Application definition
 
 INSTALLED_APPS = [
-    "server.apps.ServerConfig",
-    "client.apps.ClientConfig",
+    "app.apps.AppConfig",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "django_extensions",
+    "django_extensions"
 ]
 
 MIDDLEWARE = [
@@ -79,7 +78,7 @@ WSGI_APPLICATION = "news_bias_evaluator.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+        "NAME": BASE_DIR / "initial_training_dataset.sqlite3",
     }
 }
 
