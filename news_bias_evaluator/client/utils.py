@@ -28,4 +28,4 @@ def sendRequest(sentenceList):
     
     response = prediction_request.execute()
 
-    return response 
+    return response['predictions'] 
