@@ -48,15 +48,53 @@ spec:
           name: news-bias-evaluator-app
           # define the image to pull
           image: registry.git.chalmers.se/courses/dit825/2022/group07/group-07:latest
-          # Limits the resourced dedicated to the container.
-          resources:
-            limits:
-              memory: "128Mi"
-              cpu: "100m"
+          env:
+            - name: DATABASE_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: cloudsql
+                  key: database
+            - name: DATABASE_USER
+              valueFrom:
+                secretKeyRef:
+                  name: cloudsql
+                  key: username
+            - name: DATABASE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: cloudsql
+                  key: password
           # list the ports to expose from the container
           ports:
             # set the port to expose on the pod's ip address
             - containerPort: 8000
+
+        - image: gcr.io/cloudsql-docker/gce-proxy:1.16
+          name: cloudsql-proxy
+          command:
+            [
+              "/cloud_sql_proxy",
+              "--dir=/cloudsql",
+              "-instances=<dit825:europe-north1:dit825-cloudsql>=tcp:5432",
+              "-credential_file=/secrets/cloudsql/credentials.json",
+            ]
+          volumeMounts:
+            - name: cloudsql-oauth-credentials
+              mountPath: /secrets/cloudsql
+              readOnly: true
+            - name: ssl-certs
+              mountPath: /etc/ssl/certs
+            - name: cloudsql
+              mountPath: /cloudsql
+      volumes:
+        - name: cloudsql-oauth-credentials
+          secret:
+            secretName: cloudsql-oauth-credentials
+        - name: ssl-certs
+          hostPath:
+            path: /etc/ssl/certs
+        - name: cloudsql
+          emptyDir: {}
 
 ---
 # define service as the kind of resource we want to create.
