@@ -38,21 +38,22 @@ spec:
         # docker compose build will build separate images for each
         # service defined inside docker-compose.yml. Commands that we
         # specify within the docker-compose.yml ARE NOT run within pods.
-        - args:
-            - python
-            - manage.py
-            - runserver
-            - 0.0.0.0:8000
+        - command:
+            [
+              "/bin/bash",
+              "-c",
+              "python manage.py makemigrations && python manage.py migrate --database=cloudSQL && python manage.py runserver 0.0.0.0:8000",
+            ]
           # specify the name of the container
           # note: containers within the same pod must have unique names
           name: news-bias-evaluator-app
           # define the image to pull
           #image: registry.git.chalmers.se/courses/dit825/2022/group07/group-07:latest
-          image: marble879/dockerhub:second-image
+          image: marble879/dockerhub:sixth-image
           # Limits the resourced dedicated to the container.
           resources:
             limits:
-              memory: "1Gi"
+              memory: "128Mi"
               cpu: "500m"
           env:
             - name: DATABASE_NAME
@@ -92,11 +93,11 @@ spec:
               mountPath: /cloudsql
           resources:
             limits:
-              memory: "1Gi"
+              memory: "128Mi"
               cpu: "500m"
             requests:
-              memory: "1Gi"
-              cpu: "2"
+              memory: "64Mi"
+              cpu: "250m"
       volumes:
         - name: cloudsql-oauth-credentials
           secret:
