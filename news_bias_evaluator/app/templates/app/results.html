@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bias Evaluator</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'app/style.css' %}">
+    <link rel="stylesheet" href="{% static 'app/results.css' %}">
+    <link rel="preconnect" href="https://fonts.googleapis.com"> 
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin> 
+    <link href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@300;400;700&family=Varela+Round&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header class="header-container">
+        <h1><img class="logo" src="{% static 'client/images/logo.svg' %}" alt="logo"> Evaluator</h1>
+        <div class="container-btn">
+            <button title="Information" class="info-btn"><div style="display: none">Icon made from <a href="http://www.onlinewebfonts.com/icon">Icon Fonts</a> is licensed by CC BY 3.0</div></button>
+            <a title="GitHub repository" href="https://github.com/gusaxtcha/DIT825"><button class="github-btn"></button></a>
+        </div>
+    </header>
+    <section class="response-container"> 
+        <div class="response-field">
+            {% for sentence in sentences %}
+            <p class="result-sentence">{{sentence}}</p>
+            {% endfor %}
+        </div>
+        <div class="response-field">
+            <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Suscipit, corrupti? Eius, tempore alias recusandae rem amet minus doloremque minima dolore sequi laborum, nulla natus sunt. Molestias vero voluptas sint necessitatibus?
+            Nisi, nesciunt rerum ipsa numquam cupiditate perferendis nobis dolorem beatae. Maiores facere, placeat cumque dolores voluptatum at quis autem animi dolorum ex aut libero pariatur quaerat voluptates nulla dolore cum!
+            Enim ea vero doloribus praesentium voluptas maiores repellat. Suscipit quis minus enim commodi mollitia in. Magni, minima? Nihil autem odio debitis? Placeat magni quisquam voluptatem autem voluptatum eos perspiciatis quibusdam!
+            Velit praesentium nesciunt facere architecto dicta sequi saepe soluta rem sint tempore, aut fugit cumque veritatis earum veniam quam eligendi aliquam omnis perspiciatis quasi itaque repudiandae corporis laudantium? Similique, vero.
+            Corrupti eos cum odio quas odit eum accusantium suscipit hic eaque dolorum! Distinctio corporis aperiam consequatur, harum repellat dolor cupiditate, recusandae accusantium sequi laboriosam sed, dignissimos vel laborum perspiciatis. Atque?
+            Similique odio tempore, eos repellendus obcaecati laborum culpa perferendis sint adipisci dolorem, voluptatum, sed expedita officiis vel in blanditiis eaque quod iusto ullam. Pariatur saepe reiciendis assumenda vitae recusandae eveniet!
+            Labore praesentium saepe quos natus deserunt, ex quaerat at laudantium molestiae tempora culpa, accusantium deleniti nam dolor quod illum maxime aspernatur perferendis voluptatem voluptatum non reiciendis tempore vero perspiciatis. Fuga?
+            Sequi in illum, culpa consequatur ex eligendi quaerat minus minima. Nemo corporis quae nulla aperiam dolor quas amet accusantium hic fuga dolorem nihil ea inventore, saepe porro! Vero, consectetur non.
+            Commodi iure repellendus dolor illum nihil assumenda mollitia quam? Doloribus assumenda laboriosam unde ullam molestias nesciunt sed dolores enim nisi commodi distinctio possimus iure, inventore modi nobis suscipit non incidunt!
+            Cumque iure unde quo laudantium, sunt fugit excepturi tenetur earum nihil, quos voluptates autem voluptate fugiat ducimus tempore ea repudiandae maiores corporis quisquam facere aperiam. Quam natus suscipit saepe eos!
+            Odit, tempore fuga nulla placeat et error ea ipsam nesciunt sunt? Alias sequi impedit cum quos consectetur nemo numquam quasi explicabo sint, in iure similique, dolorum aliquid dicta tenetur omnis!
+            Iste nostrum recusandae rerum sed cumque sapiente explicabo adipisci rem corrupti in, voluptas error labore quia minus! Hic laboriosam a veritatis quaerat obcaecati suscipit doloribus assumenda, saepe alias iusto tempore.
+            Earum obcaecati explicabo unde ratione dicta? Illo voluptas officiis voluptates nostrum, perspiciatis minus placeat animi asperiores necessitatibus ab, impedit iusto laborum aspernatur dolorem in tempora dignissimos quia expedita labore fugiat?
+            Expedita eligendi tempora maxime saepe molestiae illo molestias pariatur quia, provident dolorum consequuntur nisi similique. Ipsum dolores enim sunt veniam aliquam quae recusandae dolorem, quos pariatur illo facere. Enim, inventore.
+            Voluptatibus consequuntur praesentium illo et repudiandae laborum excepturi, tempora similique unde repellat cumque rem. Nulla, eveniet non sunt, temporibus fugit voluptates eius, omnis laudantium fuga architecto modi vero tenetur velit.
+            Suscipit veniam officia beatae esse excepturi corporis error repellendus minus. Aliquid quia ad ipsum sit quod odio. Ipsa voluptates tempora deleniti nulla, culpa qui, officiis, repellendus unde aliquam et enim.
+            Asperiores quis reprehenderit, numquam quod quia odio perspiciatis nihil est quasi corporis, veniam, eum delectus impedit accusantium dolore ducimus at sapiente. Rem quia non fugiat quibusdam sint adipisci, amet dolorem!
+            Dolor, dicta alias perferendis libero distinctio, totam enim unde laborum voluptates ut consequatur quis corporis placeat ipsum quaerat quia aliquid rerum suscipit vero, aspernatur nostrum. Nam perspiciatis sequi quibusdam laudantium!
+            At, dolores. Dolor ab magnam similique ea voluptatibus sit alias culpa dicta doloremque voluptatum quibusdam quasi cumque, tempora repudiandae blanditiis accusamus aliquam deleniti nostrum et, voluptas facere ratione eum labore?
+            Quidem, architecto numquam, esse obcaecati expedita odio enim maxime reprehenderit, laboriosam quam ut rem! Deleniti voluptas fugit, quidem accusamus veritatis est quibusdam, vel laborum reiciendis, nesciunt sapiente corrupti esse tempora!
+            Obcaecati similique voluptates delectus assumenda eos error voluptatem ad rerum quis laborum dolores numquam, sunt ratione velit ullam optio fugit quisquam architecto repellendus aspernatur esse ea? Error consequatur quisquam quas!
+            Aut esse ex libero laudantium nesciunt. Dolorum corporis atque repellendus nulla architecto voluptates numquam veniam amet dolore maiores odit fugit dignissimos tempore rerum quaerat, ipsa magnam earum, illo id commodi?
+            Maxime aut quia repellat, omnis cupiditate soluta dicta cumque inventore veritatis ipsam sit enim rerum? Inventore, ullam natus ut, ratione aut consequatur veniam labore qui vitae nesciunt doloremque dolorem quasi.
+            Laudantium laboriosam, dolores nisi incidunt amet asperiores minus debitis ipsam maiores quia nobis distinctio error ad libero aspernatur illo exercitationem explicabo eum natus tempora. Dolor a officiis excepturi consequatur ea?
+            Laudantium aperiam assumenda nostrum modi quae beatae numquam excepturi, dolorum natus non deserunt atque ab, unde corporis repudiandae repellendus id facilis! Libero iure aliquid pariatur, harum magni culpa mollitia omnis?</p>
+        </div>
+    </section>
+</body>
+</html>
