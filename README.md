@@ -64,6 +64,9 @@ Deployment diagram
 ![Deployment pipeline](/assets/Deployment.png)
 
 ## How to setup local development with the cloudSQL database:
+
+NOTE: the following steps are specific to linux. The following [page](https://cloud.google.com/python/django/kubernetes-engine#connect_sql_locally) includes mac and windows variations of the same steps.
+
 To be able to communicate to the cloudSQL database while developing locally, the following steps have to be carried out (based on: https://cloud.google.com/python/django/kubernetes-engine#connect_sql_locally) :
 1. Download and configure gcloud locally: https://cloud.google.com/sdk/docs/install-sdk
 2. Authenticate and acquire the credentials for the API: ```gcloud auth application-default login```
@@ -75,7 +78,6 @@ export DATABASE_USER=dit825-cloudsql
 export DATABASE_PASSWORD=<ON_SLACK>```
 7. Run the migrations and start the server as per usual (**Run this in the same terminal where the environment variables from the previous step were set!**): ```python manage.py makemigrations && python manage.py migrate --database=cloudSQL && python manage.py runserver 0.0.0.0:8000```
 
-NOTE: the following steps are specific to linux. The following [page](https://cloud.google.com/python/django/kubernetes-engine#connect_sql_locally) includes mac and windows variations of the same steps.
 
 ## cloudSQL navigation:
 1. Once navigated to the cloudSQL dit825 project page, select the "activate cloud shell" (terminal icon) on the top right: ![image](/uploads/0c72a7a1c6a7d365950fb953316c37a7/image.png)
