@@ -20,9 +20,9 @@ class UserInputTestCase(unittest.TestCase):
     def test_extractSentences_none(self):
         self.assertEqual(self.sentenceList[3], "This is a string without a sentence ending char" ,"Failed to extract sentence ending without a sentence ending char")
 
-    #def test_sendRequest(self):
-    #    predictionList = sendRequest(self.sentenceList)
-    #    self.assertEqual(len(self.sentenceList),  len(predictionList['predictions']), "Failed to send the request to the model")
+    def test_sendRequest(self):
+        predictionList = sendRequest(self.sentenceList)
+        self.assertEqual(len(self.sentenceList),  len(predictionList['predictions']), "Failed to send the request to the model")
 
     
 if __name__ == '__main__':
