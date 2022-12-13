@@ -65,7 +65,7 @@ Deployment diagram
 
 ## How to setup local development with the cloudSQL database:
 
-NOTE: the following steps are specific to linux. The following [page](https://cloud.google.com/python/django/kubernetes-engine#connect_sql_locally) includes mac and windows variations of the same steps.
+NOTE: the following steps are specific to linux. The following pages: [step1](https://cloud.google.com/sdk/docs/install-sdk) [steps2-7](https://cloud.google.com/python/django/kubernetes-engine#connect_sql_locally) include mac and windows variations of the same steps.
 
 To be able to communicate to the cloudSQL database while developing locally, the following steps have to be carried out (based on: https://cloud.google.com/python/django/kubernetes-engine#connect_sql_locally) :
 1. Download and configure gcloud locally: https://cloud.google.com/sdk/docs/install-sdk
