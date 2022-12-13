@@ -23,16 +23,20 @@
     <section class="response-container"> 
         <div class="response-field">
             {% for sentence, prediction in resultList.items %}
-                {% if prediction > 0.27 %}
-                    <p class="biased">{{sentence}}</p>
+                {% if prediction > 0.65 %}
+                    <p class="biased">{{forloop.counter}}.  {{sentence}}</p>
                 {% else %}
-                    <p class="result-sentence">{{sentence}}</p>
+                    <p class="result-sentence">{{forloop.counter}}.  {{sentence}}</p>
                 {% endif %}
             {% endfor %}
         </div>
         <div class="response-field">
-            {% for prediction in predictionList %}
-            <p class="result-sentence">{{prediction.0}}</p>
+            {% for sentence, prediction in resultList.items %}
+                {% if prediction > 0.65 %}
+                    <p class="biased">{{forloop.counter}}.  {{prediction}}</p>
+                {% else %}
+                    <p class="result-sentence">{{forloop.counter}}.  {{prediction}}</p>
+                {% endif %}
             {% endfor %}
         </div>
     </section>

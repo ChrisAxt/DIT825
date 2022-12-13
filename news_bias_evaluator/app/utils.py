@@ -9,11 +9,17 @@ def extractSentences(text_input):
 
     if (text_input != ""):
         for i in range(0, len(text_input)):
+            # Check for sentence ending chars
             if (text_input[i] == "." or text_input[i] == "?" or text_input[i] == "!"):
+                # add handling for duplicate of sentence ending chars
+                if (text_input[i+1] == "." or text_input[i+1] == "!" or text_input[i+1] == "?"):
+                    i = i + 1
                 sentence = text_input[firstIndex:i+1]
-                sentenceList.append(sentence.strip())
-                firstIndex = i+1
-        if len(sentenceList) == 0:
+                if (sentence != ""):
+                    sentenceList.append(sentence.strip())
+                    firstIndex = i+1
+        # add handling for the last sentence not ending with the sentence ending char
+        if (sentenceList[len(sentenceList) -1] != "." or sentenceList[len(sentenceList) -1] != "!" or sentenceList[len(sentenceList) -1] != "?"):
             sentenceList.append(text_input)
                 
     return sentenceList
