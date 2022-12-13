@@ -13,8 +13,8 @@ def extractSentences(text_input):
                 sentence = text_input[firstIndex:i+1]
                 sentenceList.append(sentence.strip())
                 firstIndex = i+1
-            else:
-                sentenceList.append(text_input)
+        if len(sentenceList) == 0:
+            sentenceList.append(text_input)
                 
     return sentenceList
         
@@ -29,5 +29,4 @@ def sendRequest(sentenceList):
         name='projects/dit825/models/dit825_model_v1', body = request_body)
     
     response = prediction_request.execute()
-    print("Predictions: ", response['predictions'])
     return response['predictions'] 
