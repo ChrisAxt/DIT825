@@ -71,7 +71,7 @@ To be able to communicate to the cloudSQL database while developing locally, the
 4. Open a second terminal, and set the following variables: ```export DATABASE_NAME=dit825
 export DATABASE_USER=dit825-cloudsql
 export DATABASE_PASSWORD=<ON_SLACK>```
-5. Run the migrations and start the server as per usual: ```python manage.py makemigrations && python manage.py migrate --database=cloudSQL && python manage.py runserver 0.0.0.0:8000```
+5. Run the migrations and start the server as per usual (**Run this in the same terminal where the environment variables from step 4 were set!**): ```python manage.py makemigrations && python manage.py migrate --database=cloudSQL && python manage.py runserver 0.0.0.0:8000```
 
 NOTE: the following steps are specific to linux. The following [page](https://cloud.google.com/python/django/kubernetes-engine#connect_sql_locally) includes mac and windows variations of the same steps.
 
