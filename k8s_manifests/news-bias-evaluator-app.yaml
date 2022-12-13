@@ -32,31 +32,96 @@ spec:
       imagePullSecrets:
         - name: registry-credentials
       containers:
-        # Important note! args lets us define commands to run within
+        # Important note! commands lets us define commands to run within
         # the docker container. If we do not start the django app,
         # the container will exit as there is nothing running.
         # docker compose build will build separate images for each
         # service defined inside docker-compose.yml. Commands that we
         # specify within the docker-compose.yml ARE NOT run within pods.
-        - args:
-            - python
-            - manage.py
-            - runserver
-            - 0.0.0.0:8000
+        - command:
+            [
+              "/bin/bash",
+              "-c",
+              "python manage.py makemigrations && python manage.py migrate && python manage.py runserver 0.0.0.0:8000",
+            ]
           # specify the name of the container
           # note: containers within the same pod must have unique names
           name: news-bias-evaluator-app
           # define the image to pull
           image: registry.git.chalmers.se/courses/dit825/2022/group07/group-07:latest
+          # Always pull the image from the registry when the
+          # manifest is applied.
+          imagePullPolicy: Always
           # Limits the resourced dedicated to the container.
           resources:
             limits:
               memory: "128Mi"
-              cpu: "100m"
+              cpu: "500m"
+          # List of environment variables to set in the container!
+          # These are the variables that will be applied to the settings.py django config such that the
+          # django app can connect to the database.
+          env:
+            - name: DATABASE_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: cloudsql
+                  key: database
+            - name: DATABASE_USER
+              valueFrom:
+                secretKeyRef:
+                  name: cloudsql
+                  key: username
+            - name: DATABASE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: cloudsql
+                  key: password
           # list the ports to expose from the container
           ports:
             # set the port to expose on the pod's ip address
             - containerPort: 8000
+        # Specify the image for the cloudsql auth proxy
+        # Lets us access the cloudSQL instance without needing
+        # to authorize networks/configuring SSL.
+        # Furthermore, cloud auth proxy lets us simply use
+        # local host inside of the django settings
+        # for the DB connection.
+        - image: gcr.io/cloudsql-docker/gce-proxy:1.16
+          # specify the name of the container
+          # note: containers within the same pod must have unique names
+          name: cloudsql-proxy
+          # Run the following commands inside of the container
+          command:
+            [
+              "/cloud_sql_proxy",
+              "--dir=/cloudsql",
+              "-instances=dit825:europe-north1:dit825-cloudsql=tcp:5432",
+              "-credential_file=/secrets/cloudsql/credentials.json",
+            ]
+          # NOTE: the definitions volumeMounts and volumes are used for the connection to the cloudSQL database
+          # Pod volumes to mount into the container's filesystem.
+          volumeMounts:
+            - name: cloudsql-oauth-credentials
+              mountPath: /secrets/cloudsql
+              readOnly: true
+            - name: cloudsql
+              mountPath: /cloudsql
+          # Limits the resourced dedicated to the container.
+          resources:
+            limits:
+              memory: "128Mi"
+              cpu: "500m"
+            requests:
+              memory: "64Mi"
+              cpu: "250m"
+      # List of volumes that can be mounted by containers
+      # belonging to the pod.
+      volumes:
+        - name: cloudsql-oauth-credentials
+          secret:
+            secretName: cloudsql-oauth-credentials
+        - name: cloudsql
+          emptyDir: {}
 
 ---
 # define service as the kind of resource we want to create.
