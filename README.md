@@ -65,13 +65,15 @@ Deployment diagram
 
 ## How to setup local development with the cloudSQL database:
 To be able to communicate to the cloudSQL database while developing locally, the following steps have to be carried out (based on: https://cloud.google.com/python/django/kubernetes-engine#connect_sql_locally) :
-1. Download the cloudSQL proxy: ```wget https://dl.google.com/cloudsql/cloud_sql_proxy.linux.amd64 -O cloud_sql_proxy```
-2. Make the cloudSQL proxy executable: ```chmod +x cloud_sql_proxy```
-3. Run the proxy in a terminal via: ```./cloud_sql_proxy -instances="dit825:europe-north1:dit825-cloudsql"=tcp:5432```
-4. Open a second terminal, and set the following variables: ```export DATABASE_NAME=dit825
+1. Download and configure gcloud locally: https://cloud.google.com/sdk/docs/install-sdk
+2. Authenticate and acquire the credentials for the API: ```gcloud auth application-default login```
+3. Download the cloudSQL proxy: ```wget https://dl.google.com/cloudsql/cloud_sql_proxy.linux.amd64 -O cloud_sql_proxy```
+4. Make the cloudSQL proxy executable: ```chmod +x cloud_sql_proxy```
+5. Run the proxy in a terminal via: ```./cloud_sql_proxy -instances="dit825:europe-north1:dit825-cloudsql"=tcp:5432```
+6. Open a second terminal, and set the following variables: ```export DATABASE_NAME=dit825
 export DATABASE_USER=dit825-cloudsql
 export DATABASE_PASSWORD=<ON_SLACK>```
-5. Run the migrations and start the server as per usual (**Run this in the same terminal where the environment variables from step 4 were set!**): ```python manage.py makemigrations && python manage.py migrate --database=cloudSQL && python manage.py runserver 0.0.0.0:8000```
+7. Run the migrations and start the server as per usual (**Run this in the same terminal where the environment variables from step 4 were set!**): ```python manage.py makemigrations && python manage.py migrate --database=cloudSQL && python manage.py runserver 0.0.0.0:8000```
 
 NOTE: the following steps are specific to linux. The following [page](https://cloud.google.com/python/django/kubernetes-engine#connect_sql_locally) includes mac and windows variations of the same steps.
 
