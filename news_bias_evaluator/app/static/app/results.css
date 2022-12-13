@@ -13,8 +13,8 @@
     padding-inline: 1rem;
     border-radius: var(--border-radius);
     box-shadow: 0 0 0.75rem 0.125rem rgb(28, 27, 27);
-    max-height: 40%;
-    overflow: scroll;
+    max-height: 60vh;
+    overflow-y: scroll;
     font-family: var(--ff-text);
     font-size: var(--fs-small);
 }
