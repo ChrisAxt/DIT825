@@ -13,9 +13,11 @@ def extractSentences(text_input):
                 sentence = text_input[firstIndex:i+1]
                 sentenceList.append(sentence.strip())
                 firstIndex = i+1
+            else:
+                sentenceList.append(text_input)
+                
     return sentenceList
         
-
 def sendRequest(sentenceList):
 
     endpoint = 'https://europe-west4-ml.googleapis.com'
