@@ -78,16 +78,16 @@ WSGI_APPLICATION = "news_bias_evaluator.wsgi.application"
 
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "initial_training_dataset.sqlite3",
-    },
-    "cloudSQL": {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': os.getenv('DATABASE_NAME'),
         'USER': os.getenv('DATABASE_USER'),
         'PASSWORD': os.getenv('DATABASE_PASSWORD'),
         'HOST': '127.0.0.1',
         'PORT': '5432',
+    },
+    "sqlite": {
+        "ENGINE": "django.db.backends.sqlite3",
+        "NAME": BASE_DIR / "initial_training_dataset.sqlite3",
     }
 }
 
