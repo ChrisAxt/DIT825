@@ -1,4 +1,6 @@
-from app.models import initialEntry
+from app.models import Article, LabeledSentence
+
+
 import csv
 
 # Script to extract a cleaned version of the dataset (unnecessary columns and rows removed)
@@ -9,27 +11,31 @@ def run():
         next(reader)  # Advance past the header
 
         # Delete all entries from the database
-        initialEntry.objects.all().delete()
+        Article.objects.all().delete()
 
         # Itterate over each row in the csv file
         for row in reader:
             print(row)
             
             # Extract the data at the relevent positions
-            entry = initialEntry(
-                sentence=row[0],
+            new_article = Article(
                 news_link=row[1],
                 outlet=row[2],
                 topic=row[3],
                 political_type=row[4],
-                group_id=row[5],
-                num_sent=row[6],
+                article=row[9],
+               )
+
+            new_sentence = LabeledSentence(
+                sentence=row[0],
+                bias_words=row[10],
                 label_bias=row[7],
                 label_opinion=row[8],
-                article=row[9],
-                bias_words=row[10],)
+                article = row[1],
+            )
 
             # Save each entry to the database
-            entry.save()
+            new_article.save()
+            new_sentence.save()
 
 
