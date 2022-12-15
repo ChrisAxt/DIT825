@@ -22,7 +22,7 @@ class UserInputTestCase(unittest.TestCase):
 
     def test_sendRequest(self):
         predictionList = sendRequest(self.sentenceList)
-        self.assertEqual(len(self.sentenceList),  len(predictionList['predictions']), "Failed to send the request to the model")
+        self.assertEqual(len(self.sentenceList),  len(predictionList), "Failed to send the request to the model")
 
     
 if __name__ == '__main__':

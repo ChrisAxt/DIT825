@@ -77,6 +77,7 @@ WSGI_APPLICATION = "news_bias_evaluator.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
+
 # Use the SQlite database when unit tests are run.
 if 'test' in sys.argv:
     DATABASES = {
@@ -90,6 +91,10 @@ if 'test' in sys.argv:
 else:
     DATABASES = {
         "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": BASE_DIR / "initial_training_dataset.sqlite3",
+        },
+        "cloudSQL": {
             'ENGINE': 'django.db.backends.postgresql',
             'NAME': os.getenv('DATABASE_NAME'),
             'USER': os.getenv('DATABASE_USER'),
@@ -97,10 +102,6 @@ else:
             'HOST': '127.0.0.1',
             'PORT': '5432',
         },
-        "sqlite": {
-            "ENGINE": "django.db.backends.sqlite3",
-            "NAME": BASE_DIR / "initial_training_dataset.sqlite3",
-        }
     }
 
 
