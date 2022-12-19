@@ -2,3 +2,4 @@
 *__pycache__
 /news_bias_evaluator/env/
 .ipynb_checkpoints/
+/news_bias_evaluator/application_default_credentials.json

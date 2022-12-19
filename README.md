@@ -63,6 +63,30 @@ ML model diagram
 Deployment diagram
 ![Deployment pipeline](/assets/Deployment.png)
 
+## How to setup local development with the cloudSQL database:
+
+NOTE: the following steps are specific to linux. The following pages: [step1](https://cloud.google.com/sdk/docs/install-sdk) [steps2-7](https://cloud.google.com/python/django/kubernetes-engine#connect_sql_locally) include mac and windows variations of the same steps.
+
+To be able to communicate to the cloudSQL database while developing locally, the following steps have to be carried out (based on: https://cloud.google.com/python/django/kubernetes-engine#connect_sql_locally) :
+1. Download and configure gcloud locally: https://cloud.google.com/sdk/docs/install-sdk
+2. Authenticate and acquire the credentials for the API: ```gcloud auth application-default login```
+3. Download the cloudSQL proxy: ```wget https://dl.google.com/cloudsql/cloud_sql_proxy.linux.amd64 -O cloud_sql_proxy```
+4. Make the cloudSQL proxy executable: ```chmod +x cloud_sql_proxy```
+5. Run the proxy in a terminal via: ```./cloud_sql_proxy -instances="dit825:europe-north1:dit825-cloudsql"=tcp:5432```
+6. Open a second terminal, and set the following variables: ```export DATABASE_NAME=dit825
+export DATABASE_USER=dit825-cloudsql
+export DATABASE_PASSWORD=<ON_SLACK>```
+7. Run the migrations and start the server as per usual (**Run this in the same terminal where the environment variables from the previous step were set!**): ```python manage.py makemigrations && python manage.py migrate --database=cloudSQL && python manage.py runserver 0.0.0.0:8000```
+
+
+## cloudSQL navigation:
+1. Once navigated to the cloudSQL dit825 project page, select the "activate cloud shell" (terminal icon) on the top right: ![image](/uploads/0c72a7a1c6a7d365950fb953316c37a7/image.png)
+2. input: ```gcloud sql connect dit825-cloudsql --database=dit825  --user=dit825-cloudsql``` in the terminal to gain access. A password prompt will appear - the password is shared on slack.
+3. Select "authorize" if the following popup appears:  ![image](/uploads/38c394ad9ab6258830134933fb356c4d/image.png)
+4. Finally, commands such as: 
+```\dt # displays all relations (tables) inside of the database)``` and ```SELECT * FROM <table name>``` 
+can be used to navigate/query data.
+
 # Contribution rules
 
 - PR templates

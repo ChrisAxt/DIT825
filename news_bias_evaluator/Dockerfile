@@ -26,9 +26,18 @@ COPY ./requirements.txt /app/requirements.txt
 # Install packages listed in the requirements file
 RUN pip install -r requirements.txt
 
+# COPY ./application_default_credentials.json /app/application_default_credentials.json
 
-# Run unittests
-RUN python /app/testing/unit_tests.py
+# RUN curl -sSL https://sdk.cloud.google.com | bash
+
+# ENV PATH $PATH:/root/google-cloud-sdk/bin
+
+## Log in to google-cloud and set project
+# RUN gcloud auth login --cred-file=/app/application_default_credentials.json && \
+#    gcloud config set project 'dit825'
+
+# Run tests for the app
+RUN python manage.py test app
 
 # Run pytools file
 RUN python -u /app/pytools.py
