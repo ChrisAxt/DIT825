@@ -1,0 +1,1 @@
+# Shall convert data from cloudSQL into a csv format for the ai platform bucket.
