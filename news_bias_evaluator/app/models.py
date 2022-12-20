@@ -32,17 +32,16 @@ class Article(models.Model):
     It contains some attributes that will be used by the model but that are related to the article and not the sentence. 
     Use foreign key to retreive those attributes.
     '''
-    news_link = models.CharField(max_length=200, primary_key=True)
+    news_link = models.TextField(primary_key=True)
     article = models.TextField()
-    outlet = models.CharField(max_length=20)
-    topic = models.CharField(max_length=20)
-    political_type = models.CharField(max_length=10)
+    outlet = models.CharField(max_length=50)
+    topic = models.CharField(max_length=50)
+    political_type = models.CharField(max_length=50)
     pub_year = models.IntegerField(null=True)
     add_date = models.DateField(default=current_date)
     
         # Returned when a particular article is queried
-    def __str__(self):
-        return "Article's URL: ", self.news_link
+
 
 
 class LabeledSentence(models.Model):
@@ -53,11 +52,9 @@ class LabeledSentence(models.Model):
     We can also retrieve the entire article to give context to the sentence, allowing more advanced training in the futur. 
     '''
     sentence = models.TextField(primary_key=True)
-    label_bias = models.CharField(max_length=10)
+    label_bias = models.CharField(max_length=50)
     label_opinion = models.CharField(max_length=50)
-    bias_words = ArrayField(models.CharField(max_length=30, blank=True))
-    article = models.ForeignKey(Article, on_delete=models.CASCADE, max_length=200)  #if an article is deleted, the sentence will be deleted as well
+    bias_words = models.TextField(blank=True)
+    article = models.ForeignKey(Article, on_delete=models.CASCADE)  #if an article is deleted, the sentence will be deleted as well
     
     # Returned when a particular sentence is queried
-    def __str__(self):
-        return self.sentence
