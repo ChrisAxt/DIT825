@@ -9,10 +9,11 @@ def main(request):
     return render(request, 'app/main.html')
 
 def onSubmit(request):
-    text_input = request.GET['input-text'] # retrieve the text input from form 
+    text_input = request.GET['input-text'] # retrieve the text input from form
+    model_name = request.GET['slected_model'] 
     sentenceList = extractSentences(text_input)
     if(len(sentenceList) > 0):
-        predictionList = sendRequest(sentenceList)
+        predictionList = sendRequest(sentenceList, model_name)
 
     if (len(sentenceList) > 0 and len(sentenceList) == len(predictionList)):
         items = {sentenceList[i]: predictionList[i][0] for i in range(len(sentenceList))}

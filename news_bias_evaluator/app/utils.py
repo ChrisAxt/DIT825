@@ -24,7 +24,7 @@ def extractSentences(text_input):
                 
     return sentenceList
         
-def sendRequest(sentenceList):
+def sendRequest(sentenceList, model_name):
 
     endpoint = 'https://europe-west4-ml.googleapis.com'
     client_options = ClientOptions(api_endpoint = endpoint)
@@ -32,7 +32,7 @@ def sendRequest(sentenceList):
 
     request_body = {'instances' : sentenceList}
     prediction_request = ml.projects().predict(
-        name='projects/dit825/models/dit825_model_v1', body = request_body)
+        name='projects/dit825/models/'+model_name, body = request_body)
     
     response = prediction_request.execute()
     return response['predictions'] 
