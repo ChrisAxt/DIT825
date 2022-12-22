@@ -14,28 +14,6 @@
 </head>
 <body>
     {% include 'app/header.html' %} 
-    <dialog id="infoDialog" class="info-dialog">
-        <header >
-            <span onclick="hideDialog()" class="close-button topright">&times;</span>
-          </header>
-            <h3>Model info</h3>
-		    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Aliquid facere doloremque earum quidem dicta 
-                voluptatem beatae reprehenderit aperiam harum, quam sunt sequi ratione doloribus sint consequuntur a 
-                aliquam delectus alias?</p>
-            <h3>Dataset info</h3>
-		    <p>The dataset used to train our model was found on Kaggle and can be accessed 
-                <a href="https://www.kaggle.com/datasets/timospinde/mbic-a-media-bias-annotation-dataset" style="color: rgb(84, 84, 248);">here</a>.<br/>
-                The dataset consists of 1700 elements, 1550 of which are useable for our application. Typically to achieve high accuracy, 
-                the model would need to be trained with a relatively large dataset, however, to overcome the small dataset,
-                we have used learning methods to increase the size of our dataset, explained below.</p>
-            <h3>Model training</h3>
-            <p>Initial training is done using the above mentioned dataset. <br/>Due to the size of the dataset we decided to use 
-                semi-supervised learning to increase the size of the labelled data available to us.
-                Once the initial model has been trained, we feed it unlabelled data we've collected, 
-                using the results from the model that data is then labelled. Once we have enough of this newly labelled data, we re-train the model. 
-                If the re-train results in a higher model accuracy, we use this as the final model.</p>
-      </dialog>
-
    <section class="form-container">
     <p>A simple way to look for bias in news articles</p>
     <form class="form-input" action="{% url 'app:results' %}" method="get">
@@ -50,12 +28,4 @@
     </form>
    </section>
 </body>
-<script>
-    function showDialog() {
-        infoDialog.showModal();
-    }
-    function hideDialog() {
-        document.getElementById('infoDialog').close();
-    }
-</script>
 </html>
