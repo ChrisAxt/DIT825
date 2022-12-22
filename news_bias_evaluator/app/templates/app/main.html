@@ -13,16 +13,10 @@
     <link href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@300;400;700&family=Varela+Round&display=swap" rel="stylesheet">
 </head>
 <body>
-    <header class="header-container">
-        <h1><img class="logo" src="{% static 'app/images/logo.svg' %}" alt="logo"> Evaluator</h1>
-        <div class="container-btn">
-            <button title="Information" class="info-btn"><div style="display: none">Icon made from <a href="http://www.onlinewebfonts.com/icon">Icon Fonts</a> is licensed by CC BY 3.0</div></button>
-            <a title="GitHub repository" href="https://github.com/gusaxtcha/DIT825"><button class="github-btn"></button></a>
-        </div>
-    </header>
+    {% include 'app/header.html' %} 
    <section class="form-container">
     <p>A simple way to look for bias in news articles</p>
-    <form class="form-input" action="{% url 'results' %}" method="get">
+    <form class="form-input" action="{% url 'app:results' %}" method="get">
         {% csrf_token %}
         <textarea class="input-text" name="input-text" id="input-text" maxlength="7000" required placeholder="Enter you text here:"></textarea>
         <!-- TODO: activate when history is implemented -->        
@@ -30,7 +24,7 @@
             <input type="checkbox" label="consent for history" name="consent-history" id="consent-history" value="history">
             <label for="consent-history">I consent for my inputs to be stored and displayed as an example</label>
         </div> -->
-        <input class="btn" type="submit" value="Submit">
+        <input class="txt-btn" type="submit" value="Submit">
     </form>
    </section>
 </body>

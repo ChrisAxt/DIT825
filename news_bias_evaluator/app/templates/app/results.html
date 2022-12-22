@@ -13,13 +13,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@300;400;700&family=Varela+Round&display=swap" rel="stylesheet">
 </head>
 <body>
-    <header class="header-container">
-        <h1><img class="logo" src="{% static 'app/images/logo.svg' %}" alt="logo"> Evaluator</h1>
-        <div class="container-btn">
-            <button title="Information" class="info-btn"><div style="display: none">Icon made from <a href="http://www.onlinewebfonts.com/icon">Icon Fonts</a> is licensed by CC BY 3.0</div></button>
-            <a title="GitHub repository" href="https://github.com/gusaxtcha/DIT825"><button class="github-btn"></button></a>
-        </div>
-    </header>
+    {% include 'app/header.html' %} 
     <section class="response-container"> 
         <div class="response-field">
             {% for sentence, prediction in resultList.items %}

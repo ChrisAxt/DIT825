@@ -1,0 +1,13 @@
+<header class="header-container">
+    {% load static %}
+    <h1><img class="logo" src="{% static 'app/images/logo.svg' %}" alt="logo"> Evaluator</h1>
+    <div class="container-btn">
+        {% if user.is_authenticated %}
+        <a title="Log out" href="{% url 'app:logout' %}"><button class="logout-btn nav-btn"></button></a>
+        {% else %}
+        <a title="Log in" href="{% url 'app:login' %}"><button class="login-btn nav-btn"></button></a>
+        {% endif %}
+        <button title="Information" class="info-btn nav-btn"><div style="display: none">Icon made from <a href="http://www.onlinewebfonts.com/icon">Icon Fonts</a> is licensed by CC BY 3.0</div></button>
+        <a title="GitHub repository" href="https://github.com/gusaxtcha/DIT825"><button class="github-btn nav-btn"></button></a>
+    </div>
+</header>

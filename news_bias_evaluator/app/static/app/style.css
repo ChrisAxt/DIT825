@@ -29,6 +29,12 @@ html {
     height: 100vh;
 }
 
+/* utility class for flexbox column */
+.flex-col {
+    display: flex;
+    flex-direction: column;
+}
+
 /* Header styling -> title and logo container */
 .header-container {
     display: flex;
@@ -57,8 +63,7 @@ h1 {
 }
 
 /* header buttons */
-.github-btn,
-.info-btn {
+.nav-btn {
     aspect-ratio: 1/1;
     background-position: center;
     background-repeat: no-repeat;
@@ -69,6 +74,17 @@ h1 {
     margin-bottom: 1rem;
     width: 5vw;
     max-width: 30px;    
+}
+
+/* Login button */
+.login-btn {
+    margin-left: 3vw;
+    background-image: url("images/login.svg");
+}
+
+.logout-btn {
+    margin-left: 3vw;
+    background-image: url("images/logout.svg");
 }
 
 /* github button */
@@ -102,11 +118,11 @@ h1 {
 .form-input {
     display: flex;
     flex-direction: column;
-    gap: inherit;
+    gap: 4vh;
 }
 
 /* Style for the buttons with text */
-.btn {
+.txt-btn {
     background-color: var(--backgound-accent);
     border: none;
     border-radius: var(--border-radius);
@@ -119,15 +135,13 @@ h1 {
 }
 
 /* Transition for all buttons */
-.github-btn,
-.info-btn,
-.btn {
+.txt-btn,
+.nav-btn {
     transition: transform 300ms;
 }
 
-.btn:hover,
-.info-btn:hover,
-.github-btn:hover{
+.txt-btn:hover,
+.nav-btn:hover {
     transform: scale(1.2);
 }
 
