@@ -145,6 +145,44 @@ h1 {
     transform: scale(1.2);
 }
 
+.info-dialog {
+    border: 0ch;
+    border-radius: var(--border-radius);
+    padding: 20px;
+    margin: 0 auto;
+    background-color: var(--backround-main);
+    width: 40%;
+    color: var(--txt-color);
+    margin-top: 30vh;
+    font: var(--ff-text);
+    overflow-y: auto;
+    max-height: 50%;
+}
+
+.info-dialog::backdrop {
+background: black;
+opacity: 0.5;
+}
+.close-button {
+border: none;
+display: inline-block;
+padding: 8px 16px;
+vertical-align: middle;
+overflow: hidden;
+text-decoration: none;
+color: var(--txt-color);
+background-color: var(--backround-main);
+text-align: center;
+cursor: pointer;
+white-space: nowrap
+}
+
+.topright {
+position: absolute;
+right: 0;
+top: 0
+}
+
 /* Responsiveness */
 @media screen and (min-width: 480px){
     .form-input {
