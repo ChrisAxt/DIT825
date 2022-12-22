@@ -10,11 +10,14 @@ import matplotlib.pyplot as plt
 import pandas as pd
 # For data visualization
 import seaborn as sns
-
 # For machine learning algorithms and evaluation metrics
 import sklearn
 from sklearn.model_selection import train_test_split
 from sklearn import metrics
+from google.cloud import storage
+import joblib
+import subprocess
+
 
 
 # Load dataset
@@ -94,8 +97,28 @@ print("Accuracy:",metrics.accuracy_score(y_test, y_pred))
 # Print the confusion matrix and heatmap
 cm = metrics.confusion_matrix(y_test, y_pred)
 sns.heatmap(cm, annot=True, fmt="d")
-plt.title("Confusion matrix")
 plt.ylabel('True label')
 plt.xlabel('Predicted label')
 plt.show()
 
+# Save data locally.
+joblib.dump(model, 'model.joblib')
+
+# Connect to google cloud storage bucket and upload the model.
+storage_client = storage.Client()
+bucket = storage_client.bucket('example_bucket_v2-aiproject-dit825')
+blob = bucket.blob('model.joblib')
+blob.upload_from_filename('model.joblib')
+
+#aiplatform.init(project='dit825', location="us-central1" )
+#models = aiplatform.Model('toy_model').list()
+#print('models are:')
+#for model in models:
+#    print(model)
+command =  "gcloud ai-platform versions create toy_model_$(date +%Y%m%d_%H%M%S) --model=toy_model --region=europe-west4 --runtime-version=1.15 --python-version=3.7 --framework=scikit-learn --origin=gs://example_bucket_v2-aiproject-dit825"
+
+test = subprocess.run(command, capture_output=True, shell=True)
+print(test)
+
+#subprocess.run(["gcloud", "config", "set", "project", "dit825"])
+#subprocess.run(["gcloud", "ai-platform", "versions", "create", "toy_model_$(date +%Y%m%d_%H%M%S)", "--model", "toy_model", "--region", "us-central1", "--runtime-version", "1.15", "--python-version", "3.7", "--framework", "scikit-learn", "--origin", "gs://example_bucket_v2-aiproject-dit825"])

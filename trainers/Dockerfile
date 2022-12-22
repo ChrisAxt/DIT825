@@ -3,24 +3,15 @@
 FROM python:3
 
 
-#RUN curl -sSL https://sdk.cloud.google.com | bash
-#ENV PATH $PATH:/root/google-cloud-sdk/bin
 
 # Copy requirements.txt 
-COPY requirements.txt /root/
+COPY credentials.json requirements.txt /root/
 
 # Create directories for the app
 WORKDIR /root
 
 # Install requirement.txt libraries
 RUN pip install -r requirements.txt
-
-# copy credentials 
-#COPY credentials.json /root/
-
-#RUN gcloud auth login --cred-file=/root/credentials.json && \
-#    gcloud config set project 'dit825'
-
 
 # Installs google cloud sdk, this is mostly for using gsutil to export model.
 RUN wget -nv \
@@ -37,14 +28,26 @@ RUN wget -nv \
     rm -rf /root/tools/google-cloud-sdk/.install/.backup
 
 # Path configuration
-#ENV PATH $PATH:/root/tools/google-cloud-sdk/bin
-#RUN gcloud auth activate-service-account --key-file=/root/credentials.json
-# Make sure gsutil will use the default service account
-RUN echo '[GoogleCompute]\nservice_account = 637648471463-compute@developer.gserviceaccount.com' > /etc/boto.cfg
-
+ENV PATH $PATH:/root/tools/google-cloud-sdk/bin
+#RUN echo '[GoogleCompute]\nservice_account = 637648471463-compute@developer.gserviceaccount.com' > /etc/boto.cfg
+#RUN echo '[GoogleCompute]\nservice_account = default' > /etc/boto.cfg
+#COPY credentials.json ./root/
+#RUN gcloud auth activate-service-account --key-file=./root/credentials.json
+#CMD gcloud auth login
 # Copies the trainer code 
 RUN mkdir /root/trainer
 COPY toy_model_trainer.py /root/trainer/toy_model_trainer.py
 
+# NOTE: if move this to django project, authentication may not be needed when deployed!
+RUN gcloud auth login --cred-file=/root/credentials.json && \
+    gcloud config set project 'dit825'
+
 # Sets up the entry point to invoke the trainer.
 ENTRYPOINT ["python", "trainer/toy_model_trainer.py"]
+
+# Deploy the trained model. 
+
+# Created this manually:
+#gcloud ai-platform models create toy_model --regions us-central1
+
+#RUN gcloud ai-platform versions create --model toy_model --region europe-west4 --runtime-version 1.15 --python-version 3.7 --framework --origin "gs://example_bucket_v2-aiproject-dit825/"
