@@ -26,8 +26,6 @@ COPY ./requirements.txt /app/requirements.txt
 # Install packages listed in the requirements file
 RUN pip install -r requirements.txt
 
-<<<<<<< HEAD
-<<<<<<< HEAD
 # COPY ./application_default_credentials.json /app/application_default_credentials.json
 
 # RUN curl -sSL https://sdk.cloud.google.com | bash
@@ -40,12 +38,6 @@ RUN pip install -r requirements.txt
 
 # Run tests for the app
 RUN python manage.py test app
-=======
-=======
->>>>>>> ad239ba (Add dockerfile uploading model to google cloud)
-# Run unittests
-RUN python /app/testing/unit_tests.py
->>>>>>> ad239ba (Add dockerfile uploading model to google cloud)
 
 # Run pytools file
 RUN python -u /app/pytools.py
