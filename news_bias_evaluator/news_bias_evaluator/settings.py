@@ -71,6 +71,8 @@ TEMPLATES = [
     },
 ]
 
+LOGIN_URL = 'app:login'
+
 WSGI_APPLICATION = "news_bias_evaluator.wsgi.application"
 
 
