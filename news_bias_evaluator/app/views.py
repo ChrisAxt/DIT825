@@ -1,8 +1,9 @@
+import json
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from .utils import extractSentences, sendRequest
+from .utils import extractSentences, sendRequest, getModels
 
 
 # Views for user side
@@ -11,8 +12,13 @@ def main(request):
     return render(request, 'app/main.html')
 
 def onSubmit(request):
+
+    file = open("./model_settings.json", "r")
+    data = json.load(file)
+    file.close()
+
     text_input = request.GET['input-text'] # retrieve the text input from form
-    model_name = request.GET['slected_model'] 
+    model_name = data['name'] 
     sentenceList = extractSentences(text_input)
     if(len(sentenceList) > 0):
         predictionList = sendRequest(sentenceList, model_name)
@@ -27,10 +33,32 @@ def onSubmit(request):
 
     return render(request, 'app/results.html', context)
 
+def onModelChange(selected_model):
+    isUpdated = False
 
+    import os
+
+    cwd = os.getcwd()  # Get the current working directory (cwd)
+    files = os.listdir(cwd)  # Get all the files in that directory
+    print("Files in %r: %s" % (cwd, files))
+
+    with open(cwd+'\modelSettings.json', errors="ignore") as file:
+        data = json.load(file)
+        file.close()
+        print(data)
+
+    data["name"] = selected_model
+
+    file = open(cwd+'\modelSettings.json', "w")
+    json.dump(data, file)
+    if (data['name'] == selected_model):
+        isUpdated = True
+    file.close()
+
+    return isUpdated
 
 # views for admin side
-@login_required # decorator redirecting to the login page defined in settings.py if no user is logged in
+#@login_required # decorator redirecting to the login page defined in settings.py if no user is logged in
 def dispatch(request):
         return redirect('app:dashboard')
 
@@ -59,11 +87,9 @@ def access_dashboard(request):
         # Retrieve all info to be displayed in the dashboard
         
         # list of models. Need to be added in this variable
-        model_list= [
-                {'name': 'model1'},
-                {'name': 'model2'}
-        ]
+        model_list= getModels()
 
+        print(model_list)
         # generates the graph using matplotlib here more info -> https://medium.com/@mdhv.kothari99/matplotlib-into-django-template-5def2e159997
         
         img_uri = 'some_parsed_uri'
@@ -78,7 +104,7 @@ def access_dashboard(request):
         messages.info(request, 'Incorrect password or username.')
         return redirect('app:login') 
 
-@login_required
+#@login_required
 def process_admin_request(request):
     type_of_request = request.POST.get('action-selection')
     selected_model = request.POST.get('model-options')
@@ -89,6 +115,13 @@ def process_admin_request(request):
        return render(request, 'app/evaluation.html')
     elif(type_of_request == 'retrain'):
         return render(request, 'app/retrain.html')
+    elif(type_of_request == 'use-selected'):
+        if(onModelChange(selected_model)):
+            messages.success(request, 'Model successfully changed!')
+        else:
+            messages.error(request, 'Failed to change the model!')
+
+        return redirect('app:dashboard') 
     else:
         return redirect('app:main')
     
