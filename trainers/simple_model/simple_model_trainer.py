@@ -31,11 +31,11 @@ from keras.layers import TextVectorization
 
 
 # Load dataset
-df = pd.read_csv('../../dataset/media_bias.csv')
+df = pd.read_csv('gs://example_bucket_v2-aiproject-dit825/training_data/media_bias_dataset_cleaned.csv')
 
 # Clean dataset
 df = df[df.Label_bias != 'No agreement']
-df = df[df.article != 'NaN']
+#df = df[df.article != 'NaN']
 df = df[df.sentence != 'NaN']
 
 # Replace label with 0, 1
@@ -98,7 +98,7 @@ model = keras.Sequential([
     layers.Dense(64, activation='relu'),
     layers.Dense(1, activation='sigmoid')
 ])
-model.compile(loss='sparese_catageorical_crossentropy', optimizer='adam', metrics=['accuracy'])
+model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
 model.summary()
 
 # Train model
@@ -113,14 +113,14 @@ loss, accuracy = model.evaluate(X_test, y_test)
 print("Loss: ", loss)
 print("Accuracy: ", accuracy)
 
-prediction = model.predict(["YouTube is making clear there will be no “birtherism” on its platform during this year’s U.S. presidential election – a belated response to a type of conspiracy theory more prevalent in the 2012 race.", "The increasingly bitter dispute between American women’s national soccer team and the U.S. Soccer Federation spilled onto the field Wednesday night when players wore their warm-up jerseys inside outin a protest before their 3-1 victory over Japan."])
-print(prediction, "1 is bias, 0 is non-bias")
+#prediction = model.predict(["YouTube is making clear there will be no “birtherism” on its platform during this year’s U.S. presidential election – a belated response to a type of conspiracy theory more prevalent in the 2012 race.", "The increasingly bitter dispute between American women’s national soccer team and the U.S. Soccer Federation spilled onto the field Wednesday night when players wore their warm-up jerseys inside outin a protest before their 3-1 victory over Japan."])
+#print(prediction, "1 is bias, 0 is non-bias")
 
 
 
 
-parent_dir = os.path.split(os.getcwd())[0] + "\\" + os.path.split(os.getcwd())[1]
-save_path = parent_dir + "/model/1/"
+#parent_dir = os.path.split(os.getcwd())[0] + "\\" + os.path.split(os.getcwd())[1]
+save_path = "./simple_model/"
 # tf.saved_model.save(model, save_path) - DOESN'T SAVE THE LAYERS
 
 model.save(save_path, save_format='tf') # ERROR states layers aren't saved, but keras_metadata.pb is saved
@@ -139,7 +139,7 @@ model.save(save_path, save_format='tf') # ERROR states layers aren't saved, but 
 
 
 
-
+'''
 from google.cloud import aiplatform
 from google.cloud import storage
 import os
@@ -158,39 +158,21 @@ print("Models:")
 for model in models:
     print(model)
 print("Listed all models.")
+'''
+#from sklearn.linear_model import LogisticRegression
+#from sklearn.feature_extraction.text import CountVectorizer
 
+#vectorizer = CountVectorizer()
+#vectorizer.fit(X_train)
 
+#train = vectorizer.transform(X_train)
+#test  = vectorizer.transform(X_test)
 
-from sklearn.linear_model import LogisticRegression
-from sklearn.feature_extraction.text import CountVectorizer
-
-vectorizer = CountVectorizer()
-vectorizer.fit(X_train)
-
-train = vectorizer.transform(X_train)
-test  = vectorizer.transform(X_test)
-
-classifier = LogisticRegression()
-classifier.fit(train, y_train)
-score = classifier.score(test, y_test)
-
-
-
-
-print("Accuracy:", score)
+#classifier = LogisticRegression()
+#classifier.fit(train, y_train)
+#score = classifier.score(test, y_test)
 
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
+#print("Accuracy:", score)
