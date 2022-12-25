@@ -27,6 +27,7 @@ from keras import layers
 # import TextVectorization from keras
 from keras.layers import TextVectorization
 from google.cloud import storage
+import glob
 
 
 
@@ -126,12 +127,23 @@ save_path = "./simple_model/"
 
 model.save(save_path, save_format='tf') # ERROR states layers aren't saved, but keras_metadata.pb is saved
 
+### HELPER ###
+# reference: https://stackoverflow.com/questions/48514933/how-to-copy-a-directory-to-google-cloud-storage-using-google-cloud-python-api
+def copy_local_directory_to_gcs(local_path, bucket, gcs_path):
+    assert os.path.isdir(local_path)
+    for local_file in glob.glob(local_path + '/**'):
+        if not os.path.isfile(local_file):
+            continue
+        remote_path = os.path.join(gcs_path, local_file[1 + len(local_path) :])
+        blob = bucket.blob(remote_path)
+        blob.upload_from_filename(local_file)
+### HELPER ###
+
 storage_client = storage.Client()
 bucket = storage_client.bucket('example_bucket_v2-aiproject-dit825')
-blob = bucket.block('simple_model')
-blob.upload_from_filename('simple_model')
 
-
+# Copy each file to cloud storage directory
+copy_local_directory_to_gcs('./simple_model', bucket, 'simple_model/')
 
 
 # def _serving_input_receiver_fn():

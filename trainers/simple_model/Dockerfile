@@ -1,8 +1,9 @@
 # Dockerfile adapted from: https://cloud.google.com/ai-platform/training/docs/train-ml-model-custom-containers https://towardsdatascience.com/training-your-ml-model-using-google-ai-platform-and-custom-environment-containers-1531888cac3d
 
-FROM python:3
+FROM python:3.10.8
 
-
+# Ensure pip is up to date.
+RUN pip install --upgrade pip
 
 # Copy requirements.txt 
 COPY credentials.json requirements.txt /root/
