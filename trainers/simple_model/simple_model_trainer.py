@@ -26,6 +26,7 @@ from tensorflow import keras
 from keras import layers
 # import TextVectorization from keras
 from keras.layers import TextVectorization
+from google.cloud import storage
 
 
 
@@ -124,6 +125,11 @@ save_path = "./simple_model/"
 # tf.saved_model.save(model, save_path) - DOESN'T SAVE THE LAYERS
 
 model.save(save_path, save_format='tf') # ERROR states layers aren't saved, but keras_metadata.pb is saved
+
+storage_client = storage.Client()
+bucket = storage_client.bucket('example_bucket_v2-aiproject-dit825')
+blob = bucket.block('simple_model')
+blob.upload_from_filename('simple_model')
 
 
 
