@@ -1,5 +1,6 @@
 from google.api_core.client_options import ClientOptions
 from googleapiclient import discovery
+import datetime
 
 def extractSentences(text_input):
 
@@ -36,3 +37,8 @@ def sendRequest(sentenceList):
     
     response = prediction_request.execute()
     return response['predictions'] 
+
+def getCurrentDateTime(format):
+    current_datetime = datetime.datetime.now()
+    current_datetime_formatted = current_datetime.strftime(format)
+    return current_datetime_formatted

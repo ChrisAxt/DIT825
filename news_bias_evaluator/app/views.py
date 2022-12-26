@@ -3,7 +3,9 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from .utils import extractSentences, sendRequest
-
+from app.retraining_utils import training_handler
+import asyncio
+from asgiref.sync import async_to_sync, sync_to_async
 
 # Views for user side
 
@@ -75,10 +77,12 @@ def access_dashboard(request):
         return render(request, "app/dashboard.html", context)
     else:
         messages.info(request, 'Incorrect password or username.')
-        return redirect('app:login') 
+        return redirect('app:login')
 
+@sync_to_async 
 @login_required
-def process_admin_request(request):
+@async_to_sync
+async def process_admin_request(request):
     type_of_request = request.POST.get('action-selection')
     selected_model = request.POST.get('model-options')
     print(type_of_request)
@@ -87,7 +91,16 @@ def process_admin_request(request):
     if(type_of_request == 'evaluate'):
        return render(request, 'app/evaluation.html')
     elif(type_of_request == 'retrain'):
-        return render(request, 'app/retrain.html')
+        # make sure latest simple_model is retrained
+        print('entering retrain')
+        #try:
+        training_response = await training_handler.runTrainingJob()
+        print('exited retrain job')            # Pass via a context.
+        return render(request, 'app/retrain.html', training_response)
+        #except Exception as err:  
+        #    print('inside error')
+        #    print(err)
+        #    return redirect('app:main')
     else:
         return redirect('app:main')
     
