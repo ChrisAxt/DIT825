@@ -17,13 +17,14 @@
   <body>
     {% include 'app/header.html' %}
     <h1>Retraining</h1>
+    <div class="loader"></div>
 
     {% block javascript %}
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 
     <script>
-      setInterval(function () {
+      /*setInterval(function () {
         $.ajax({
           type: "GET",
           url: "/trainingStatus/",
@@ -33,7 +34,7 @@
             console.log(response);
           },
         });
-      }, 10000);
+      }, 10000);*/
       /* function makeRequest(url) {
     var req = new XMLHttpRequest();
     req.open("GET", url, false);
@@ -51,3 +52,25 @@
     {% endblock javascript %}
   </body>
 </html>
+
+<style>
+  /* Loading bar reference: https://www.w3schools.com/howto/howto_css_loader.asp */
+  .loader {
+    border: 16px solid #f3f3f3;
+    border-top: 16px solid #3498db;
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    animation: spin 2s linear infinite;
+    margin: 3rem auto 0;
+  }
+
+  @keyframes spin {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+</style>
