@@ -4,8 +4,11 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from .utils import extractSentences, sendRequest
 from app.retraining_utils import training_handler
+from app.retraining_utils import training_job_monitor
 import asyncio
 from asgiref.sync import async_to_sync, sync_to_async
+from django.http import JsonResponse
+from django.http import HttpResponse
 
 # Views for user side
 
@@ -94,13 +97,25 @@ async def process_admin_request(request):
         # make sure latest simple_model is retrained
         print('entering retrain')
         #try:
-        training_response = await training_handler.runTrainingJob()
+        # This execution will initiate the training job, it DOES NOT
+        # wait for a successful/failed training job!
+        training_response, job_name = await training_handler.runTrainingJob()
         print('exited retrain job')            # Pass via a context.
-        return render(request, 'app/retrain.html', training_response)
+        print(training_response)
+        return render(request, 'app/retrain.html', {'job_name': job_name})
         #except Exception as err:  
         #    print('inside error')
         #    print(err)
         #    return redirect('app:main')
     else:
         return redirect('app:main')
+@sync_to_async
+@login_required
+@async_to_sync
+async def get_training_status(request):
+    job_name = request.GET.get('job_name', None) 
+    status_response = training_job_monitor.getStatus(job_name)
+    print(status_response)
+    # insert data from ai platform here.
+    return JsonResponse(status_response)
     

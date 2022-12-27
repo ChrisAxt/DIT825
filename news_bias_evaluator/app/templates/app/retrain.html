@@ -1,18 +1,53 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Bias Evaluator</title>
     {% load static %}
-    <link rel="stylesheet" href="{% static 'app/style.css' %}">
-    <link rel="preconnect" href="https://fonts.googleapis.com"> 
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin> 
-    <link href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@300;400;700&family=Varela+Round&display=swap" rel="stylesheet">
-</head>
-<body>
-    {% include 'app/header.html' %} 
+    <link rel="stylesheet" href="{% static 'app/style.css' %}" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@300;400;700&family=Varela+Round&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    {% include 'app/header.html' %}
     <h1>Retraining</h1>
-</body>
+
+    {% block javascript %}
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+    <script>
+      setInterval(function () {
+        $.ajax({
+          type: "GET",
+          url: "/trainingStatus/",
+          // data: { csrfmiddlewaretoken: "{{csrf_token}}" },
+          data: { job_name: "{{job_name}}" },
+          success: function callback(response) {
+            console.log(response);
+          },
+        });
+      }, 10000);
+      /* function makeRequest(url) {
+    var req = new XMLHttpRequest();
+    req.open("GET", url, false);
+    req.send(null);
+    return req.responseText;
+  }
+  setInterval(function () {
+    var responseText = makeRequest(
+      "https://ml.googleapis.com/v1/{name=projects/dit825/jobs/{{job_name}}"
+    );
+    print(responseText());
+    // if done or failed, clearinterval
+  }, 5000);*/
+    </script>
+    {% endblock javascript %}
+  </body>
 </html>
