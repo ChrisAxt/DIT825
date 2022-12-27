@@ -4,7 +4,11 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from .utils import extractSentences, sendRequest, getModels
+import os
 
+cwd = os.getcwd()  # Get the current working directory (cwd)
+
+dashboard_context = {}
 
 # Views for user side
 
@@ -13,18 +17,22 @@ def main(request):
 
 def onSubmit(request):
 
-    file = open("./model_settings.json", "r")
+    items = {}
+    file = open(cwd+"\modelSettings.json", "r")
     data = json.load(file)
     file.close()
 
     text_input = request.GET['input-text'] # retrieve the text input from form
     model_name = data['name'] 
+    print("Model name: " + model_name)
     sentenceList = extractSentences(text_input)
     if(len(sentenceList) > 0):
         predictionList = sendRequest(sentenceList, model_name)
-
-    if (len(sentenceList) > 0 and len(sentenceList) == len(predictionList)):
-        items = {sentenceList[i]: predictionList[i][0] for i in range(len(sentenceList))}
+    try:
+        if (len(sentenceList) > 0 and len(sentenceList) == len(predictionList)):
+            items = {sentenceList[i]: predictionList[i][0] for i in range(len(sentenceList))}
+    except:
+        messages.error(request, "Failed to get a response from the selected model!")
 
     # creates a context (dictionary mapping variables to HTML variables)
     context = {
@@ -35,12 +43,6 @@ def onSubmit(request):
 
 def onModelChange(selected_model):
     isUpdated = False
-
-    import os
-
-    cwd = os.getcwd()  # Get the current working directory (cwd)
-    files = os.listdir(cwd)  # Get all the files in that directory
-    print("Files in %r: %s" % (cwd, files))
 
     with open(cwd+'\modelSettings.json', errors="ignore") as file:
         data = json.load(file)
@@ -88,6 +90,8 @@ def access_dashboard(request):
         
         # list of models. Need to be added in this variable
         model_list= getModels()
+        if(len(model_list) == 0):
+            messages.error(request, "Failed to connect to google cloud!")
 
         print(model_list)
         # generates the graph using matplotlib here more info -> https://medium.com/@mdhv.kothari99/matplotlib-into-django-template-5def2e159997
@@ -98,6 +102,7 @@ def access_dashboard(request):
             'models': model_list,
             'img': img_uri,            
         }
+        dashboard_context = context
 
         return render(request, "app/dashboard.html", context)
     else:
@@ -121,7 +126,7 @@ def process_admin_request(request):
         else:
             messages.error(request, 'Failed to change the model!')
 
-        return redirect('app:dashboard') 
+        return render(request, "app/dashboard.html", dashboard_context) 
     else:
         return redirect('app:main')
     
