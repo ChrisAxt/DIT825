@@ -18,42 +18,45 @@
     {% include 'app/header.html' %}
     <h1>Retraining</h1>
     <div class="loader"></div>
+    <div class="info-text">
+      <span id="status_text">This may take several minutes...</span>
+    </div>
 
     {% block javascript %}
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 
     <script>
-      /*setInterval(function () {
+      const statusMessageDisplayText = {
+        QUEUED: "Training job is queued",
+        PREPARING: "Preparing training job",
+        RUNNING: "Running the training job...",
+        SUCCEEDED: "Retraining success!",
+        CANCELLING: "Cancelling training job...",
+        CANCELLED: "Retraining cancelled: ",
+      };
+
+      setInterval(function () {
         $.ajax({
           type: "GET",
           url: "/trainingStatus/",
-          // data: { csrfmiddlewaretoken: "{{csrf_token}}" },
           data: { job_name: "{{job_name}}" },
           success: function callback(response) {
             console.log(response);
+            status = response.state;
+            if (status) {
+              document.getElementById("status_text").innerHTML =
+                statusMessageDisplayText[status];
+            }
           },
         });
-      }, 10000);*/
-      /* function makeRequest(url) {
-    var req = new XMLHttpRequest();
-    req.open("GET", url, false);
-    req.send(null);
-    return req.responseText;
-  }
-  setInterval(function () {
-    var responseText = makeRequest(
-      "https://ml.googleapis.com/v1/{name=projects/dit825/jobs/{{job_name}}"
-    );
-    print(responseText());
-    // if done or failed, clearinterval
-  }, 5000);*/
+      }, 10000);
     </script>
     {% endblock javascript %}
   </body>
 </html>
 
-<style>
+<style scoped>
   /* Loading bar reference: https://www.w3schools.com/howto/howto_css_loader.asp */
   .loader {
     border: 16px solid #f3f3f3;
@@ -72,5 +75,10 @@
     100% {
       transform: rotate(360deg);
     }
+  }
+
+  .info-text {
+    padding-top: 1rem;
+    font-size: 15px;
   }
 </style>
