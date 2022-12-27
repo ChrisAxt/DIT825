@@ -62,6 +62,11 @@
             if (status) {
               document.getElementById("status_text").innerHTML =
                 statusMessageDisplayText[status];
+              if (status == "CANCELLED") {
+                document.getElementById("status_text").innerHTML =
+                  document.getElementById("status_text").innerHTML +
+                  response.errorMessage;
+              }
             }
             // Load icon depending on success or cancel
             switch (status) {
