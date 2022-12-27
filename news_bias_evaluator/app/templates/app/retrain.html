@@ -28,7 +28,7 @@
 
     <div id="cancelIcon" class="wrapper">
       <div class="circle-cancel">
-        <div class="checkMark-success"></div>
+        <div class="checkMark-cancel"></div>
       </div>
     </div>
     <!-- TEXT FOR STATUS-->
@@ -116,16 +116,6 @@
     width: 120px;
   }
 
-  [class*="checkmark-"] {
-    position: absolute;
-    left: 27%;
-    top: 43%;
-    height: 60px;
-    width: 25px;
-    border-bottom: 5px solid #fff;
-    border-right: 5px solid #fff;
-  }
-
   .circle-success {
     background: #00b01d;
   }
@@ -135,11 +125,21 @@
   }
 
   .checkMark-success {
+    position: absolute;
+    left: 27%;
+    top: 43%;
+    height: 60px;
+    width: 25px;
+    border-bottom: 5px solid #fff;
+    border-right: 5px solid #fff;
     transform: rotate(50deg) translate(-50%, -50%);
   }
 
-  .checkMark-cancel {
-    content: "\274c";
+  .checkMark-cancel::after {
+    content: "\26A0";
+    margin-left: 0.5rem;
+    font-size: 100px;
+    text-align: center;
   }
 
   @keyframes spin {
