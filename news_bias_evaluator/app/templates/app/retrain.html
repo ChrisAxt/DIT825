@@ -64,23 +64,25 @@
                 statusMessageDisplayText[status];
             }
             // Load icon depending on success or cancel
-            /*switch (status) {
+            switch (status) {
               case "SUCCEEDED":
                 document.getElementById("loadingIcon").style.display = "none";
-                document.getElementById("successIcon").style.display = "block";
+                document.getElementById("successIcon").style.display =
+                  "inline-block";
                 document.getElementById("cancelIcon").style.display = "none";
                 break;
               case "CANCELLED":
                 document.getElementById("loadingIcon").style.display = "none";
-                document.getElementById("successIcon").style.display = "";
-                document.getElementById("cancelIcon").style.display = "block";
+                document.getElementById("successIcon").style.display = "none";
+                document.getElementById("cancelIcon").style.display =
+                  "inline-block";
                 break;
               default:
                 document.getElementById("loadingIcon").style.display = "block";
                 document.getElementById("successIcon").style.display = "none";
                 document.getElementById("cancelIcon").style.display = "none";
                 break;
-            }*/
+            }
           },
         });
       }, 10000);
@@ -107,6 +109,7 @@
     align-items: center;
     justify-content: center;
     margin: 3rem auto 0;
+    display: none;
   }
 
   [class*="circle-"] {
