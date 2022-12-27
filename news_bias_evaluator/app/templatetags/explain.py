@@ -11,8 +11,3 @@ def getIndex(sentence, word):
 def getWord(array, index):
     print('array length is:',len(array))
     return array[index]
-
-
-@register.filter(name='dict_key')
-def dict_key(d, k):
-    return d[k]

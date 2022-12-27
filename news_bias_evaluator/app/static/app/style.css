@@ -146,6 +146,7 @@ h1 {
 }
 
 .info-dialog {
+    text-align: left !important;
     border: 0ch;
     border-radius: var(--border-radius);
     padding: 20px;

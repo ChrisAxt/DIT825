@@ -66,22 +66,51 @@
         {% endif %} {% endfor %}
       </div>
       <div class="response-field">
-        {% for sentence, item in resultList.items %} {% if prediction > 0.65 %}
+        {% for sentence, item in resultList.items %} {% if item.prediction > 0.5 %}
         <p class="biased">{{forloop.counter}}. {{item.prediction}}</p>
+        {% if item.prediction > 0.85 %}
+        <p>
+          The model has returned a high probability that the sentence is biased.
+        </p>
+        {% elif item.prediction > 0.7 %}
+        <p>
+          The model has returned a medium-condifence probability that the
+          sentence is biased.
+        </p>
         {% else %}
+        <p>
+          The model has returned a low confidence probability that the sentence
+          is biased.
+        </p>
+        {% endif %} {% else %}
         <p class="result-sentence">{{forloop.counter}}. {{item.prediction}}</p>
+        {% if item.prediction > 0.30 %}
+        <p>
+          The model has returned a low confidence probability that the sentence is not biased.
+        </p>
+        {% elif item.prediction > 0.15 %}
+        <p>
+          The model has returned a medium-condifence probability that the
+          sentence is <b>not</b> biased.
+        </p>
+        {% else %}
+        <p>
+          The model has returned a high confidence probability that the sentence
+          is <b>not</b> biased.
+        </p>
+        {% endif %}
         {% endif %} {% endfor %} {% get}
       </div>
       <div>
         <h3>Word highlights</h3>
         <p>
-            The following shows the effect of the words in the sentence on the
-            predicted label. Red background indicates where words contributed to the
-            bias score, whereas the light blue indicates the words which
-            contributed towards the model's non-biased prediction. Together,
-            these words summate to a score which the model uses to predict the bias in the
-            sentence.
-          </p>
+          The following shows the effect of the words in the sentence on the
+          predicted label. Red background indicates where words contributed to
+          the bias score, whereas the light blue indicates the words which
+          contributed towards the model's non-biased prediction. Together, these
+          words summate to a score which the model uses to predict the bias in
+          the sentence.
+        </p>
         <div class="response-field">
           {% for sentence, item in resultList.items %}
           <div class="word_values">
