@@ -63,3 +63,36 @@
     --fs-small: 1rem;
     }
 }
+
+.sentences {
+    margin: 20px;
+    display: block;
+}
+
+.word_values {
+    margin: 20px 0;
+    display: flex;
+    gap: 10px;
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+
+.word_biased {
+    background-color: rgb(107, 2, 34);
+}
+
+.word_slightly_biased {
+    background-color: #1f3a44;
+}
+
+.word_neutral {
+    background-color: #223e49;
+}
+
+.word_slightly_not_biased {
+    background-color: #274956;;
+}
+
+.word_not_biased{
+    background-color: #3b697b;
+}

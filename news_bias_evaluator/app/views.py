@@ -1,10 +1,13 @@
 import json
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
+from django.views.decorators.cache import cache_page
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from .utils import extractSentences, sendRequest, getModels
 import os
+from transformers import BertTokenizer, AutoModelForSequenceClassification
+from transformers_interpret import SequenceClassificationExplainer
 
 from app.templatetags.evaluation import getBatchPrediction, saveEvaluationData
 
@@ -18,6 +21,8 @@ dashboard_context = {}
 def main(request):
     return render(request, 'app/main.html')
 
+# Cache the response for 15 minutes
+@cache_page(60 * 15)
 def onSubmit(request):
 
     items = {}
@@ -47,10 +52,10 @@ def onSubmit(request):
         
     try:
         if (len(sentenceList) > 0 and len(sentenceList) == len(predictionList)):
-            items = {sentenceList[i]: predictionList[i][0] for i in range(len(sentenceList))}
+            items = {sentenceList[i]: { 'prediction': predictionList[i][0], 'input_id': explanations[str(i+1)] }for i in range(len(sentenceList))}
     except:
         messages.error(request, "Failed to get a response from the selected model!")
-
+ 
     # creates a context (dictionary mapping variables to HTML variables)
     context = {
         'resultList': items
@@ -75,6 +80,24 @@ def onModelChange(selected_model):
     file.close()
 
     return isUpdated
+
+def onGetExplanation(sentences):
+    model_name = "bert-base-uncased"
+    model = AutoModelForSequenceClassification.from_pretrained(model_name)
+    tokenizer = BertTokenizer.from_pretrained(model_name)
+    cls_explainer = SequenceClassificationExplainer(
+        model,
+        tokenizer)
+
+    tokenizedExplanation = {}
+    count = 1
+    for sentence in sentences:
+        print(sentence)
+        word_attributions = cls_explainer(sentence)
+        tokenizedExplanation[str(count)] = dict(word_attributions)
+        print(tokenizedExplanation[str(count)])
+        count += 1
+    return tokenizedExplanation
 
 # views for admin side
 @login_required # decorator redirecting to the login page defined in settings.py if no user is logged in

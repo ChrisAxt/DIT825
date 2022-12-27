@@ -2,10 +2,14 @@ import json
 import os  # An included library with Python install.
 from google.api_core.client_options import ClientOptions
 from googleapiclient import discovery
+<<<<<<< HEAD
 import requests
 
 cwd = os.getcwd()
 endpoint = 'https://europe-west4-ml.googleapis.com'
+=======
+import re
+>>>>>>> 3c2ad1e (Add explainable AI code to notebooks and frontend)
 
 def extractSentences(text_input):
 
@@ -17,7 +21,11 @@ def extractSentences(text_input):
         for i in range(0, len(text_input)):
             # Check for sentence ending chars
             if (text_input[i] == "." or text_input[i] == "?" or text_input[i] == "!"):
-                # add handling for duplicate of sentence ending chars
+                #  # Remove all special characters excluding full stops
+                # re.sub(r'[^\w\s]', '', text_input[i])
+                # # Remove all extra spaces
+                # re.sub('  ', ' ', text_input[i])
+                # # add handling for duplicate of sentence ending chars
                 sentence = text_input[firstIndex:i+1]
                 if (len(sentence) > 1):
                     sentenceList.append(sentence.strip())
