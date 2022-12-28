@@ -58,3 +58,18 @@ class LabeledSentence(models.Model):
     article = models.ForeignKey(Article, on_delete=models.CASCADE)  #if an article is deleted, the sentence will be deleted as well
     
     # Returned when a particular sentence is queried
+
+class Request(models.Model):
+    '''
+    Model for request from the user. 
+    The whole text submitted is saved as well as the date. Allowing monitoring of the system's usage. 
+    '''
+    # No primary key added here to generate an automated serial as primary key. More info: https://www.geeksforgeeks.org/primary_key-django-built-in-field-validation/
+    request_content = models.TextField()
+    request_date = models.DateField(default=current_date)
+    processed = models.BooleanField(default = False)
+
+class Prediction(models.Model):
+    request = models.ForeignKey(Request, on_delete=models.CASCADE) 
+    prediction = models.TextField()
+

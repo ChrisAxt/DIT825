@@ -7,6 +7,7 @@ from .utils import extractSentences, sendRequest, getModels
 import os
 
 cwd = os.getcwd()  # Get the current working directory (cwd)
+from .models import Request, Prediction
 
 dashboard_context = {}
 
@@ -26,8 +27,22 @@ def onSubmit(request):
     model_name = data['name'] 
     print("Model name: " + model_name)
     sentenceList = extractSentences(text_input)
+
+    # Saves the request into the DB
+    request = Request(request_content = text_input)
+    request.save()
+    
     if(len(sentenceList) > 0):
         predictionList = sendRequest(sentenceList, model_name)
+
+        # Saves the prediction in the DB, using the request
+        prediction = Prediction (request = request, prediction = predictionList)
+        prediction.save()
+
+        # Update the status of the request to processed since we received a prediction (allows to have easy stats on reliability)
+        request.processed = True
+        request.save
+        
     try:
         if (len(sentenceList) > 0 and len(sentenceList) == len(predictionList)):
             items = {sentenceList[i]: predictionList[i][0] for i in range(len(sentenceList))}
