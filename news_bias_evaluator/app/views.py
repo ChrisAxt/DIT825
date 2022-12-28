@@ -60,7 +60,7 @@ def onModelChange(selected_model):
     return isUpdated
 
 # views for admin side
-#@login_required # decorator redirecting to the login page defined in settings.py if no user is logged in
+@login_required # decorator redirecting to the login page defined in settings.py if no user is logged in
 def dispatch(request):
         return redirect('app:dashboard')
 
@@ -109,7 +109,7 @@ def access_dashboard(request):
         messages.info(request, 'Incorrect password or username.')
         return redirect('app:login') 
 
-#@login_required
+@login_required
 def process_admin_request(request):
     type_of_request = request.POST.get('action-selection')
     selected_model = request.POST.get('model-options')
