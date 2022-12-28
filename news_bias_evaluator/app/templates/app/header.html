@@ -11,6 +11,15 @@
         <a title="GitHub repository" href="https://github.com/gusaxtcha/DIT825"><button class="github-btn nav-btn"></button></a>
     </div>
 </header>
+<div>
+    {% if messages %}
+        <ul class="messages">
+        {% for message in messages %}
+        <li>{{ message }}</li>
+        {% endfor %}
+        </ul>
+    {% endif %}
+</div>
 <dialog id="infoDialog" class="info-dialog">
     <header >
         <span onclick="hideDialog()" class="close-button topright">&times;</span>

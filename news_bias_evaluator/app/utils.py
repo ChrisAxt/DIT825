@@ -1,5 +1,11 @@
+import json
+import os  # An included library with Python install.
 from google.api_core.client_options import ClientOptions
 from googleapiclient import discovery
+import requests
+
+cwd = os.getcwd()
+endpoint = 'https://europe-west4-ml.googleapis.com'
 
 def extractSentences(text_input):
 
@@ -24,15 +30,51 @@ def extractSentences(text_input):
                 
     return sentenceList
         
-def sendRequest(sentenceList):
+def sendRequest(sentenceList, model_name):
+    try:
+        client_options = ClientOptions(api_endpoint = endpoint)
+        ml = discovery.build('ml', 'v1', client_options=client_options)
 
-    endpoint = 'https://europe-west4-ml.googleapis.com'
-    client_options = ClientOptions(api_endpoint = endpoint)
-    ml = discovery.build('ml', 'v1', client_options=client_options)
-
-    request_body = {'instances' : sentenceList}
-    prediction_request = ml.projects().predict(
-        name='projects/dit825/models/dit825_model_v1', body = request_body)
+        request_body = {'instances' : sentenceList}
+        prediction_request = ml.projects().predict(
+            name=model_name, body = request_body)
     
-    response = prediction_request.execute()
-    return response['predictions'] 
+        response = prediction_request.execute()
+        return response['predictions'] 
+    except:
+        print("Failed to get a response from the selected model!")
+
+def getModels():
+    
+    modelList = []
+    response = requests.get(endpoint+'//v1/projects/dit825/models/', headers={'Authorization': 'Bearer '+getToken()}).json()
+    
+    print(response)
+    try:
+        modelList = getModelVersion(response['models'])
+    except:
+        print("Failed to connect to Google cloud!")
+
+    return modelList
+
+
+def getModelVersion(models):
+
+    modelVersionList = []
+    for model in models:
+        modelName = model['name']
+        response = requests.get('https://europe-west4-ml.googleapis.com//v1/'+modelName+'/versions', headers={'Authorization': 'Bearer '+getToken()}).json()
+        for version in response['versions']:
+            modelVersionList.append(version['name'])
+
+    return modelVersionList
+
+def getToken():
+    try:
+        file = open(cwd+"\modelSettings.json", "r")
+        data = json.load(file)
+        TOKEN = data['token']
+        file.close()
+    except:
+        print("Failed to access token from json file: modelSettings.json")
+    return TOKEN
