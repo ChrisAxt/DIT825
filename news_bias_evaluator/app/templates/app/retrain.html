@@ -48,6 +48,7 @@
         SUCCEEDED: "Retraining success!",
         CANCELLING: "Cancelling training job...",
         CANCELLED: "Retraining cancelled: ",
+        FAILED: "Retraining failed: ",
       };
 
       setInterval(function () {
@@ -62,7 +63,7 @@
             if (status) {
               document.getElementById("status_text").innerHTML =
                 statusMessageDisplayText[status];
-              if (status == "CANCELLED") {
+              if (status == "CANCELLED" || status == "FAILED") {
                 document.getElementById("status_text").innerHTML =
                   document.getElementById("status_text").innerHTML +
                   response.errorMessage;
@@ -76,6 +77,8 @@
                   "inline-block";
                 document.getElementById("cancelIcon").style.display = "none";
                 break;
+              case "FAILED":
+              // No break - same function as FAILED || CANCELLED.
               case "CANCELLED":
                 document.getElementById("loadingIcon").style.display = "none";
                 document.getElementById("successIcon").style.display = "none";
