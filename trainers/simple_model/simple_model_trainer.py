@@ -118,11 +118,27 @@ print("Accuracy: ", accuracy)
 #prediction = model.predict(["YouTube is making clear there will be no “birtherism” on its platform during this year’s U.S. presidential election – a belated response to a type of conspiracy theory more prevalent in the 2012 race.", "The increasingly bitter dispute between American women’s national soccer team and the U.S. Soccer Federation spilled onto the field Wednesday night when players wore their warm-up jerseys inside outin a protest before their 3-1 victory over Japan."])
 #print(prediction, "1 is bias, 0 is non-bias")
 
+save_path = "./simple_model/"
 
+'''
+Save metrics to a folder!
+This will be overwritten with every training job.
+'''
 
+# Make directory for training metrics
+os.mkdir(save_path+'training_metrics/')
+
+# Creating a dataframe for the training metrics.
+# Makes saving to cloudSQL db easier.
+data = {'training_accuracy': accuracy, 'loss': loss}
+metricsDf = pd.DataFrame(data=data)
+metricsDf.to_csv('./simple_model/training_metrics/')
+
+'''
+end of saving metrics section
+'''
 
 #parent_dir = os.path.split(os.getcwd())[0] + "\\" + os.path.split(os.getcwd())[1]
-save_path = "./simple_model/"
 # tf.saved_model.save(model, save_path) - DOESN'T SAVE THE LAYERS
 
 model.save(save_path, save_format='tf') # ERROR states layers aren't saved, but keras_metadata.pb is saved
