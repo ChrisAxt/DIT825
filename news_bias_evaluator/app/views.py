@@ -3,6 +3,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from .utils import extractSentences, sendRequest
+from .models import Request, Prediction
 
 
 # Views for user side
@@ -13,8 +14,21 @@ def main(request):
 def onSubmit(request):
     text_input = request.GET['input-text'] # retrieve the text input from form 
     sentenceList = extractSentences(text_input)
+
+    # Saves the request into the DB
+    request = Request(request_content = text_input)
+    request.save()
+    
     if(len(sentenceList) > 0):
         predictionList = sendRequest(sentenceList)
+
+        # Saves the prediction in the DB, using the request
+        prediction = Prediction (request = request, prediction = predictionList)
+        prediction.save()
+
+        # Update the status of the request to processed since we received a prediction (allows to have easy stats on reliability)
+        request.processed = True
+        request.save
 
     if (len(sentenceList) > 0 and len(sentenceList) == len(predictionList)):
         items = {sentenceList[i]: predictionList[i][0] for i in range(len(sentenceList))}
