@@ -23,10 +23,10 @@
                     {% csrf_token %}
                     <div class="model-selection-container">
                         <label for="model-options">Select model to use</label>
-                        <select name="model-options" id="model-options">
+                        <select name="model-options" id="model-options" >
                         {% if models %}
                             {% for model in models %}
-                            <option value="{{model.name}}">{{model.name}}</option>
+                            <option value="{{model}}">{{model}}</option>
                             {% endfor %}
                         {% else %}
                             <option value="no-models">No models registered</option>
@@ -37,6 +37,7 @@
                         <select name="action-selection" id="action-selection">
                             <option value="evaluate">Evaluate</option>
                             <option value="retrain">Retrain</option>
+                            <option value="use-selected">Set as active model</option>
                         </select>
                     </div>
                     <input class="txt-btn" type="submit" value="Start">

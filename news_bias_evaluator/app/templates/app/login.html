@@ -15,13 +15,6 @@
    {% include 'app/header.html' %} 
    <section class="form-container">
     <p>Log in</p>
-    {% if messages %}
-        <ul class="messages">
-        {% for message in messages %}
-            <li>{{ message }}</li>
-        {% endfor %}
-        </ul>
-    {% endif %}
     <form class="login-form" action="{% url 'app:dashboard' %}" method="post">
         {% csrf_token %}
         <input type="text" name="username" id="username" placeholder="username" required>
