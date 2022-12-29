@@ -1,18 +1,75 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Bias Evaluator</title>
-    {% load static %}
-    <link rel="stylesheet" href="{% static 'app/style.css' %}">
-    <link rel="preconnect" href="https://fonts.googleapis.com"> 
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin> 
-    <link href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@300;400;700&family=Varela+Round&display=swap" rel="stylesheet">
-</head>
-<body>
-    {% include 'app/header.html' %} 
-    <h1>Evaluation</h1>
-</body>
+    {% load static %} {% load evaluation %}
+    <link rel="stylesheet" href="{% static 'app/style.css' %}" />
+    <link rel="stylesheet" href="{% static 'app/evaluation.css' %}" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@300;400;700&family=Varela+Round&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    {% include 'app/header.html' %}
+    {% load evaluation %}
+    <h2>Evaluation</h2>
+    <div class="evaluation-container">
+      <div class="confmatrix">
+        <h4>Confusion Matrix</h4>
+        <div class="confPos">
+          <h4 class="headingCM">True Bias</h4>
+          <div {% if evaluation.true_positive > evaluation.false_negative %} class="confItemGreater" {% else %}
+            class="confItem" {% endif %} > {{ evaluation.true_positive }}
+          </div>
+          <div {% if evaluation.false_negative > evaluation.true_positive %} class="confItemGreater" {% else %}
+            class="confItem" {% endif %}> {{ evaluation.false_negative }}
+          </div>
+        </div>
+        <div class="confNeg">
+          <h4 class="headingCM">True Non-bias</h4>
+          <div {% if evaluation.false_positive > evaluation.true_negative %} class="confItemGreater" {% else %}
+            class="confItem" {% endif %}> {{ evaluation.false_positive }}
+          </div>
+          <div {% if evaluation.true_negative > evaluation.false_positive %} class="confItemGreater" {% else %}
+            class="confItem" {% endif %}> {{ evaluation.true_negative }}
+          </div>
+        </div>
+        <div class="prediction-headings">
+          <h5 class="headingCM">Current Model</h5>
+          <h4 class="headingCM">Predicted Bias</h4>
+          <h4 class="headingCM">Predicted Non-bias</h4>
+        </div>
+      </div>
+      <div>
+        <h4>Analysis</h4>
+      <div class="analysis-results">
+        <div class="eval-item">
+        <p>Accuracy: </p>
+        {% getAccuracy evaluation as accuracy %}
+        <p>{{accuracy}}</p>
+        </div>
+        <div class="eval-item">
+        <p>Precision: </p>
+        {% getPrecision evaluation as precision %}
+        <p>{{precision}}</p>
+        </div>
+        <div class="eval-item">
+        <p>Recall: </p>
+        {% getRecall evaluation as recall %}
+        <p>{{recall}}</p>
+        </div>
+        <div class="eval-item">
+        <p>Negative Pred Value: </p>
+        {% getNegPrecision evaluation as negPrecision %}
+        <p>{{negPrecision}}</p>
+        </div>
+      </div>
+    </div>
+  </body>
 </html>

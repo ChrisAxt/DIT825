@@ -1,0 +1,68 @@
+.evaluation-container {
+    display: flex;
+    gap: 40px;
+}
+
+.confmatrix {
+    display: flex;
+    width: 600px;
+    margin-left: 10px;
+    flex-direction: column;
+}
+
+.confPos {
+    display: flex;
+    flex-direction: row;
+    /* text-align: center; */
+}
+
+.confItem {
+    height: 200px;
+    width: 200px;
+    border: 1px solid black;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.confItemGreater {
+    height: 200px;
+    width: 200px;
+    border: 1px solid black;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: rgb(150, 250, 255);
+    color: rgb(2, 2, 52);
+}
+
+.confNeg {
+    display: flex;
+    flex-direction: row;
+    /* text-align: center; */
+}
+
+.prediction-headings {
+    display: flex;
+    flex-direction: row;
+}
+
+.headingCM {
+    width: 200px;
+}
+
+.analysis-results {
+    text-align: left;
+    padding: 20px;
+    border: 1px solid grey;
+}
+
+.eval-item {
+    display: flex;
+    flex-direction: row;
+    gap: 30px;
+}
+
+.eval-item p {
+    width: 100px;
+}
