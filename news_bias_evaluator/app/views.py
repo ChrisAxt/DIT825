@@ -6,6 +6,8 @@ from django.contrib.auth.decorators import login_required
 from .utils import extractSentences, sendRequest, getModels
 import os
 
+from app.templatetags.evaluation import getBatchPrediction, saveEvaluationData
+
 cwd = os.getcwd()  # Get the current working directory (cwd)
 from .models import Request, Prediction
 
@@ -132,7 +134,10 @@ def process_admin_request(request):
     print(selected_model)
 
     if(type_of_request == 'evaluate'):
-       return render(request, 'app/evaluation.html')
+       context = {
+            'evaluation' : process_evaluation_request()
+       }
+       return render(request, 'app/evaluation.html', context)
     elif(type_of_request == 'retrain'):
         return render(request, 'app/retrain.html')
     elif(type_of_request == 'use-selected'):
@@ -144,4 +149,9 @@ def process_admin_request(request):
         return render(request, "app/dashboard.html", dashboard_context) 
     else:
         return redirect('app:main')
-    
+
+def process_evaluation_request():
+    data = getBatchPrediction()
+    saveEvaluationData(data)
+    return data
+
