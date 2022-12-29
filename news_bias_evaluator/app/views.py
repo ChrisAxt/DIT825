@@ -6,7 +6,7 @@ from django.contrib.auth.decorators import login_required
 from .utils import extractSentences, sendRequest, getModels
 import os
 
-from app.templatetags.evaluation import getBatchPrediction
+from app.templatetags.evaluation import getBatchPrediction, saveEvaluationData
 
 cwd = os.getcwd()  # Get the current working directory (cwd)
 from .models import Request, Prediction

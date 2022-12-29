@@ -21,7 +21,7 @@
     <h2>Evaluation</h2>
     <div class="evaluation-container">
       <div class="confmatrix">
-        <h4>Confusion Matrix</h4>
+        <h4 class="section-heading">Confusion Matrix</h4>
         <div class="confPos">
           <h4 class="headingCM">True Bias</h4>
           <div {% if evaluation.true_positive > evaluation.false_negative %} class="confItemGreater" {% else %}
@@ -41,13 +41,13 @@
           </div>
         </div>
         <div class="prediction-headings">
-          <h5 class="headingCM">Current Model</h5>
+          <h5 class="headingCM">{{evaluation.model|slice:"23:"}}</h5>
           <h4 class="headingCM">Predicted Bias</h4>
           <h4 class="headingCM">Predicted Non-bias</h4>
         </div>
       </div>
       <div>
-        <h4>Analysis</h4>
+        <h4>Analysis of current model:</h4>
       <div class="analysis-results">
         <div class="eval-item">
         <p>Accuracy: </p>

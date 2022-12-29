@@ -5,15 +5,19 @@
 
 .confmatrix {
     display: flex;
+    text-align: center;
     width: 600px;
     margin-left: 10px;
     flex-direction: column;
 }
 
+.confmatrix h4 {
+    margin-left: auto !important;
+}
+
 .confPos {
     display: flex;
     flex-direction: row;
-    /* text-align: center; */
 }
 
 .confItem {
@@ -49,12 +53,17 @@
 
 .headingCM {
     width: 200px;
+    align-self: center;
+}
+
+.section-heading {
+    width: 400px;
 }
 
 .analysis-results {
     text-align: left;
     padding: 20px;
-    border: 1px solid grey;
+    border: 1px solid rgb(0, 0, 0);
 }
 
 .eval-item {
