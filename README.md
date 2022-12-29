@@ -115,6 +115,20 @@ For people who want to make changes to your project, it's helpful to have some d
 
 You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
 
+## Database, ER and relational models
+
+The database is a PostegreSQL database hosted on Google's cloud sql service. 
+Schemas are constructed following these schemas: 
+
+ER article and labeled sentence
+![ER article and labeled sentence](assets/ER_article_labeled-sentence.png)
+
+ER request and prediction
+![ER request and prediction](assets/ER_request_prediction.png)
+
+Relational models
+![relational models](assets/rm.png)
+
 ## Authors and acknowledgment
 - Younis Akel 
 - Christopher Axt 
