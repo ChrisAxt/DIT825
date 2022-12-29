@@ -120,6 +120,11 @@ print("Accuracy: ", accuracy)
 
 save_path = "./simple_model/"
 
+#parent_dir = os.path.split(os.getcwd())[0] + "\\" + os.path.split(os.getcwd())[1]
+# tf.saved_model.save(model, save_path) - DOESN'T SAVE THE LAYERS
+
+model.save(save_path, save_format='tf') # ERROR states layers aren't saved, but keras_metadata.pb is saved
+
 '''
 Save metrics to a folder!
 This will be overwritten with every training job.
@@ -130,18 +135,13 @@ os.mkdir(save_path+'training_metrics/')
 
 # Creating a dataframe for the training metrics.
 # Makes saving to cloudSQL db easier.
-data = {'training_accuracy': accuracy, 'loss': loss}
+data = {'training_accuracy': [accuracy], 'loss': [loss]}
 metricsDf = pd.DataFrame(data=data)
-metricsDf.to_csv('./simple_model/training_metrics/')
+metricsDf.to_csv('./simple_model/training_metrics/training_metrics.csv')
 
 '''
 end of saving metrics section
 '''
-
-#parent_dir = os.path.split(os.getcwd())[0] + "\\" + os.path.split(os.getcwd())[1]
-# tf.saved_model.save(model, save_path) - DOESN'T SAVE THE LAYERS
-
-model.save(save_path, save_format='tf') # ERROR states layers aren't saved, but keras_metadata.pb is saved
 
 ### HELPER ###
 #REFERENCE: https://stackoverflow.com/questions/56759262/upload-a-folder-to-google-cloud-storage-with-python
