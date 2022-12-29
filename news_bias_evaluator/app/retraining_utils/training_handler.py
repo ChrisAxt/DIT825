@@ -4,7 +4,7 @@ from google.api_core.client_options import ClientOptions
 import os
 
 # Contains calls for retraining the model.
-async def runTrainingJob():
+def runTrainingJob():
         os.environ["GOOGLE_APPLICATION_CREDENTIALS"]="../trainers/toy_model/credentials.json"
 
     #try:

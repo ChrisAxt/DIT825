@@ -4,12 +4,10 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from .utils import extractSentences, sendRequest, getModels
-from app.retraining_utils import training_handler
-from app.retraining_utils import training_job_monitor
+from app.retraining_utils import training_handler, training_job_monitor, database_bucket_sync
 import asyncio
 from asgiref.sync import async_to_sync, sync_to_async
 from django.http import JsonResponse
-from django.http import HttpResponse
 import os
 
 cwd = os.getcwd()  # Get the current working directory (cwd)
@@ -130,10 +128,8 @@ def access_dashboard(request):
         messages.info(request, 'Incorrect password or username.')
         return redirect('app:login')
 
-@sync_to_async 
 @login_required
-@async_to_sync
-async def process_admin_request(request):
+def process_admin_request(request):
     type_of_request = request.POST.get('action-selection')
     selected_model = request.POST.get('model-options')
     print(type_of_request)
@@ -147,9 +143,10 @@ async def process_admin_request(request):
         #try:
         # This execution will initiate the training job, it DOES NOT
         # wait for a successful/failed training job!
-        training_response, job_name = await training_handler.runTrainingJob()
+        training_response, job_name = training_handler.runTrainingJob()
         print('exited retrain job')            # Pass via a context.
         print(training_response)
+        test = database_bucket_sync.get_data_from_db('random')
         return render(request, 'app/retrain.html', {'job_name': job_name})
         #except Exception as err:  
         #    print('inside error')

@@ -78,10 +78,10 @@ def getModelVersion(models):
 
 def getToken():
     try:
-        file = open(cwd+"\modelSettings.json", "r")
+        file = open(cwd+"/modelSettings.json", "r")
         data = json.load(file)
         TOKEN = data['token']
         file.close()
+        return TOKEN
     except:
         print("Failed to access token from json file: modelSettings.json")
-    return TOKEN
