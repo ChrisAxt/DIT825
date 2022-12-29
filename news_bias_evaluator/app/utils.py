@@ -2,14 +2,11 @@ import json
 import os  # An included library with Python install.
 from google.api_core.client_options import ClientOptions
 from googleapiclient import discovery
-<<<<<<< HEAD
 import requests
 
 cwd = os.getcwd()
 endpoint = 'https://europe-west4-ml.googleapis.com'
-=======
 import re
->>>>>>> 3c2ad1e (Add explainable AI code to notebooks and frontend)
 
 def extractSentences(text_input):
 

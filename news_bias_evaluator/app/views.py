@@ -24,8 +24,6 @@ def main(request):
 # Cache the response for 10 minutes
 @cache_page(60 * 10)
 def onSubmit(request):
-<<<<<<< HEAD
-
     items = {}
     file = open(cwd+"/modelSettings.json", "r")
     data = json.load(file)
@@ -34,9 +32,6 @@ def onSubmit(request):
     text_input = request.GET['input-text'] # retrieve the text input from form
     model_name = data['name'] 
     print("Model name: " + model_name)
-=======
-    text_input = request.GET['input-text'] # retrieve the text input from form 
->>>>>>> 449032c (Information modal to display the model architecture)
     sentenceList = extractSentences(text_input)
 
     # Saves the request into the DB
@@ -44,7 +39,6 @@ def onSubmit(request):
     user_request.save()
     
     if(len(sentenceList) > 0):
-<<<<<<< HEAD
         predictionList = sendRequest(sentenceList, model_name)
 
         # Saves the prediction in the DB, using the request
@@ -61,13 +55,6 @@ def onSubmit(request):
     except:
         messages.error(request, "Failed to get a response from the selected model!")
  
-=======
-        predictionList = sendRequest(sentenceList)
-        print(predictionList)
-
-    if (len(sentenceList) > 0 and len(sentenceList) == len(predictionList)):
-        items = {sentenceList[i]: { 'prediction': predictionList[i][0], 'input_id': explanations[str(i+1)] }for i in range(len(sentenceList))}
->>>>>>> 449032c (Information modal to display the model architecture)
     # creates a context (dictionary mapping variables to HTML variables)
     context = {
         'resultList': items
@@ -75,7 +62,6 @@ def onSubmit(request):
 
     return render(request, 'app/results.html', context)
 
-<<<<<<< HEAD
 def onModelChange(selected_model):
     isUpdated = False
 
@@ -94,9 +80,7 @@ def onModelChange(selected_model):
 
     return isUpdated
 
-=======
 # Gets the tokenized sentences and their corresponding weights pertraining to the prediction
->>>>>>> 449032c (Information modal to display the model architecture)
 def onGetExplanation(sentences):
     model_name = "bert-base-uncased"
     model = AutoModelForSequenceClassification.from_pretrained(model_name)
