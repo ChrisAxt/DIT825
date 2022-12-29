@@ -19,7 +19,7 @@ def main(request):
 def onSubmit(request):
 
     items = {}
-    file = open(cwd+"\modelSettings.json", "r")
+    file = open(cwd+"/modelSettings.json", "r")
     data = json.load(file)
     file.close()
 
@@ -29,19 +29,19 @@ def onSubmit(request):
     sentenceList = extractSentences(text_input)
 
     # Saves the request into the DB
-    request = Request(request_content = text_input)
-    request.save()
+    user_request = Request(request_content = text_input)
+    user_request.save()
     
     if(len(sentenceList) > 0):
         predictionList = sendRequest(sentenceList, model_name)
 
         # Saves the prediction in the DB, using the request
-        prediction = Prediction (request = request, prediction = predictionList)
+        prediction = Prediction (request = user_request, prediction = predictionList)
         prediction.save()
 
         # Update the status of the request to processed since we received a prediction (allows to have easy stats on reliability)
-        request.processed = True
-        request.save
+        user_request.processed = True
+        user_request.save
         
     try:
         if (len(sentenceList) > 0 and len(sentenceList) == len(predictionList)):
