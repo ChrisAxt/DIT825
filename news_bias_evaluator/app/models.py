@@ -28,7 +28,7 @@ def possible_years():
 
 class Article(models.Model):
     '''
-    Model for an article. 
+    Schema for an article. 
     It contains some attributes that will be used by the model but that are related to the article and not the sentence. 
     Use foreign key to retreive those attributes.
     '''
@@ -46,10 +46,10 @@ class Article(models.Model):
 
 class LabeledSentence(models.Model):
     '''
-    Model for labeled sentences
+    Schema for labeled sentences
     To retrieve articles that have not their sentences labeled, we can query the DB
-    Is contected vie foreign key to an article. This allows granularity when querying DB based on date, etc.
-    We can also retrieve the entire article to give context to the sentence, allowing more advanced training in the futur. 
+    Is contected via foreign key to an article. This allows granularity when querying DB based on date, etc.
+    We can also retrieve the entire article to give context to the sentence, allowing more advanced training in the future. 
     '''
     sentence = models.TextField(primary_key=True)
     label_bias = models.CharField(max_length=50)
@@ -58,3 +58,16 @@ class LabeledSentence(models.Model):
     article = models.ForeignKey(Article, on_delete=models.CASCADE)  #if an article is deleted, the sentence will be deleted as well
     
     # Returned when a particular sentence is queried
+
+
+class ModelEvaluation(models.Model):
+    '''
+    Schema for model evaluation. 
+    '''
+
+    version_name = models.CharField(max_length=100, primary_key=True)
+    date_evaluated = models.DateField()
+    true_positive = models.IntegerField()
+    true_negative = models.IntegerField()
+    false_positive = models.IntegerField()
+    false_negative = models.IntegerField()

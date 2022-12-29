@@ -3,6 +3,8 @@ import os  # An included library with Python install.
 from google.api_core.client_options import ClientOptions
 from googleapiclient import discovery
 import requests
+from app.models import ModelEvaluation
+from datetime import date
 
 cwd = os.getcwd()
 endpoint = 'https://europe-west4-ml.googleapis.com'
@@ -78,3 +80,26 @@ def getToken():
     except:
         print("Failed to access token from json file: modelSettings.json")
     return TOKEN
+
+def saveEvaluation(model_evaluation):
+    today = date.today()
+    
+    # Just used as an example
+    model_evaluation = {
+        "name": "Some string name blah blah",
+        "true_positive": 50, 
+        "true_negative": 50, 
+        "false_positive": 50, 
+        "false_negative": 50
+    }
+    new_Evaluation = ModelEvaluation(
+        version_name = model_evaluation['name'],
+        date_evaluated = today.strftime("%d/%m/%Y"), # dd/mm/YY
+        true_positive = model_evaluation['true_positive'],
+        true_negative = model_evaluation['true_negative'],
+        false_positive = model_evaluation['false_positive'],
+        false_negative = model_evaluation['false_negative']
+    )
+
+
+    
