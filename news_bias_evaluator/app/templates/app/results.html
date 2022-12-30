@@ -1,67 +1,142 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Bias Evaluator</title>
     {% load static %}
-    <link rel="stylesheet" href="{% static 'app/style.css' %}">
-    <link rel="stylesheet" href="{% static 'app/results.css' %}">
-    <link rel="preconnect" href="https://fonts.googleapis.com"> 
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin> 
-    <link href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@300;400;700&family=Varela+Round&display=swap" rel="stylesheet">
-</head>
-<body>
-    {% include 'app/header.html' %} 
+    <link rel="stylesheet" href="{% static 'app/style.css' %}" />
+    <link rel="stylesheet" href="{% static 'app/results.css' %}" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@300;400;700&family=Varela+Round&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    {% include 'app/header.html' %} {% load explain %}
     <dialog id="infoDialog" class="info-dialog">
-        <header >
-            <span onclick="hideDialog()" class="close-button topright">&times;</span>
-          </header>
-          <h3>Model info</h3>
-          <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Aliquid facere doloremque earum quidem dicta 
-              voluptatem beatae reprehenderit aperiam harum, quam sunt sequi ratione doloribus sint consequuntur a 
-              aliquam delectus alias?</p>
-          <h3>Dataset info</h3>
-          <p>The dataset used to train our model was found on Kaggle and can be accessed 
-              <a href="https://www.kaggle.com/datasets/timospinde/mbic-a-media-bias-annotation-dataset" style="color: rgb(84, 84, 248);">here</a>.<br/>
-              The dataset consists of 1700 elements, 1550 of which are useable for our application. Typically to achieve high accuracy, 
-              the model would need to be trained with a relatively large dataset, however, to overcome the small dataset,
-              we have used learning methods to increase the size of our dataset, explained below.</p>
-          <h3>Model training</h3>
-          <p>Initial training is done using the above mentioned dataset. <br/>Due to the size of the dataset we decided to use 
-              semi-supervised learning to increase the size of the labelled data available to us.
-              Once the initial model has been trained, we feed it unlabelled data we've collected, 
-              using the results from the model that data is then labelled. Once we have enough of this newly labelled data, we re-train the model. 
-              If the re-train results in a higher model accuracy, we use this as the final model.</p>
-      </dialog>
-    <section class="response-container"> 
+      <header>
+        <span onclick="hideDialog()" class="close-button topright"
+          >&times;</span
+        >
+      </header>
+      <h3>Model info</h3>
+      <p>
+        Lorem ipsum dolor sit amet consectetur adipisicing elit. Aliquid facere
+        doloremque earum quidem dicta voluptatem beatae reprehenderit aperiam
+        harum, quam sunt sequi ratione doloribus sint consequuntur a aliquam
+        delectus alias?
+      </p>
+      <h3>Dataset info</h3>
+      <p>
+        The dataset used to train our model was found on Kaggle and can be
+        accessed
+        <a
+          href="https://www.kaggle.com/datasets/timospinde/mbic-a-media-bias-annotation-dataset"
+          style="color: rgb(84, 84, 248)"
+          >here</a
+        >.<br />
+        The dataset consists of 1700 elements, 1550 of which are useable for our
+        application. Typically to achieve high accuracy, the model would need to
+        be trained with a relatively large dataset, however, to overcome the
+        small dataset, we have used learning methods to increase the size of our
+        dataset, explained below.
+      </p>
+      <h3>Model training</h3>
+      <p>
+        Initial training is done using the above mentioned dataset. <br />Due to
+        the size of the dataset we decided to use semi-supervised learning to
+        increase the size of the labelled data available to us. Once the initial
+        model has been trained, we feed it unlabelled data we've collected,
+        using the results from the model that data is then labelled. Once we
+        have enough of this newly labelled data, we re-train the model. If the
+        re-train results in a higher model accuracy, we use this as the final
+        model.
+      </p>
+    </dialog>
+    <section class="response-container">
+      <div class="response-field">
+        {% for sentence, item in resultList.items %} {% if prediction > 0.65 %}
+        <p class="biased">{{forloop.counter}}. {{sentence}}</p>
+        {% else %}
+        <p class="result-sentence">{{forloop.counter}}. {{sentence}}</p>
+        {% endif %} {% endfor %}
+      </div>
+      <div class="response-field">
+        {% for sentence, item in resultList.items %} {% if item.prediction > 0.5 %}
+        <p class="biased">{{forloop.counter}}. {{item.prediction}}</p>
+        {% if item.prediction > 0.85 %}
+        <p>
+          The model has returned a high probability that the sentence is biased.
+        </p>
+        {% elif item.prediction > 0.7 %}
+        <p>
+          The model has returned a medium-condifence probability that the
+          sentence is biased.
+        </p>
+        {% else %}
+        <p>
+          The model has returned a low confidence probability that the sentence
+          is biased.
+        </p>
+        {% endif %} {% else %}
+        <p class="result-sentence">{{forloop.counter}}. {{item.prediction}}</p>
+        {% if item.prediction > 0.30 %}
+        <p>
+          The model has returned a low confidence probability that the sentence is not biased.
+        </p>
+        {% elif item.prediction > 0.15 %}
+        <p>
+          The model has returned a medium-condifence probability that the
+          sentence is <b>not</b> biased.
+        </p>
+        {% else %}
+        <p>
+          The model has returned a high confidence probability that the sentence
+          is <b>not</b> biased.
+        </p>
+        {% endif %}
+        {% endif %} {% endfor %}
+      </div>
+      <div>
+        <h3>Word highlights</h3>
+        <p>
+          The following shows the effect of the words in the sentence on the
+          predicted label. Red background indicates where words contributed to
+          the bias score, whereas the light blue indicates the words which
+          contributed towards the model's non-biased prediction. Together, these
+          words summate to a score which the model uses to predict the bias in
+          the sentence.
+        </p>
         <div class="response-field">
-            {% for sentence, prediction in resultList.items %}
-                {% if prediction > 0.65 %}
-                    <p class="biased">{{forloop.counter}}.  {{sentence}}</p>
-                {% else %}
-                    <p class="result-sentence">{{forloop.counter}}.  {{sentence}}</p>
-                {% endif %}
-            {% endfor %}
+          {% for sentence, item in resultList.items %}
+          <div class="word_values">
+            {% for key, value in item.input_id.items %} {% if value > 0.1 %}
+            <span class="word_biased">{{key}}</span>
+            {% elif value > 0.05 %}
+            <span class="word_slightly_biased">{{key}}</span>
+            {% elif value > -0.02 %}
+            <span class="word_neutral">{{key}}</span>
+            {% elif value > -0.09 %}
+            <span class="word_slightly_not_biased">{{key}}</span>
+            {% else %}
+            <span class="word_not_biased">{{key}}</span>
+            {% endif %} {% endfor %}
+          </div>
+          {% endfor %}
         </div>
-        <div class="response-field">
-            {% for sentence, prediction in resultList.items %}
-                {% if prediction > 0.65 %}
-                    <p class="biased">{{forloop.counter}}.  {{prediction}}</p>
-                {% else %}
-                    <p class="result-sentence">{{forloop.counter}}.  {{prediction}}</p>
-                {% endif %}
-            {% endfor %}
-        </div>
+      </div>
     </section>
-</body>
-<script>
+  </body>
+  <script>
     function showDialog() {
-        infoDialog.showModal();
+      infoDialog.showModal();
     }
     function hideDialog() {
-        document.getElementById('infoDialog').close();
+      document.getElementById("infoDialog").close();
     }
-</script>
+  </script>
 </html>
