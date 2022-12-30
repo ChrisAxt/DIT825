@@ -23,7 +23,7 @@ def store_data_to_bucket(training_data_df):
     
     storage_client = storage.Client()
     bucket = storage_client.bucket('example_bucket_v2-aiproject-dit825')
-    blob = bucket.blob('training_data/')
+    blob = bucket.blob('training_data/media_bias_dataset_cleaned.csv')
 
     blob.upload_from_string(convert_to_csv(training_data_df), 'text/csv')
 
