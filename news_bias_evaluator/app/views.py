@@ -10,6 +10,8 @@ from asgiref.sync import async_to_sync, sync_to_async
 from django.http import JsonResponse
 import os
 
+from app.templatetags.evaluation import getBatchPrediction, saveEvaluationData
+
 cwd = os.getcwd()  # Get the current working directory (cwd)
 from .models import Request, Prediction
 
@@ -23,7 +25,7 @@ def main(request):
 def onSubmit(request):
 
     items = {}
-    file = open(cwd+"\modelSettings.json", "r")
+    file = open(cwd+"/modelSettings.json", "r")
     data = json.load(file)
     file.close()
 
@@ -33,19 +35,19 @@ def onSubmit(request):
     sentenceList = extractSentences(text_input)
 
     # Saves the request into the DB
-    request = Request(request_content = text_input)
-    request.save()
+    user_request = Request(request_content = text_input)
+    user_request.save()
     
     if(len(sentenceList) > 0):
         predictionList = sendRequest(sentenceList, model_name)
 
         # Saves the prediction in the DB, using the request
-        prediction = Prediction (request = request, prediction = predictionList)
+        prediction = Prediction (request = user_request, prediction = predictionList)
         prediction.save()
 
         # Update the status of the request to processed since we received a prediction (allows to have easy stats on reliability)
-        request.processed = True
-        request.save
+        user_request.processed = True
+        user_request.save
         
     try:
         if (len(sentenceList) > 0 and len(sentenceList) == len(predictionList)):
@@ -136,7 +138,10 @@ def process_admin_request(request):
     print(selected_model)
 
     if(type_of_request == 'evaluate'):
-       return render(request, 'app/evaluation.html')
+       context = {
+            'evaluation' : process_evaluation_request()
+       }
+       return render(request, 'app/evaluation.html', context)
     elif(type_of_request == 'retrain'):
         # make sure latest simple_model is retrained
         print('entering retrain')
@@ -161,6 +166,7 @@ def process_admin_request(request):
         return render(request, "app/dashboard.html", dashboard_context) 
     else:
         return redirect('app:main')
+
 @sync_to_async
 @login_required
 @async_to_sync
@@ -171,3 +177,9 @@ async def get_training_status(request):
     # insert data from ai platform here.
     return JsonResponse(status_response)
     
+
+def process_evaluation_request():
+    data = getBatchPrediction()
+    saveEvaluationData(data)
+    return data
+
