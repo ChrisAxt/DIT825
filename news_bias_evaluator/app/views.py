@@ -65,14 +65,14 @@ def onSubmit(request):
 def onModelChange(selected_model):
     isUpdated = False
 
-    with open(cwd+'\modelSettings.json', errors="ignore") as file:
+    with open(cwd+'/modelSettings.json', errors="ignore") as file:
         data = json.load(file)
         file.close()
         print(data)
 
     data["name"] = selected_model
 
-    file = open(cwd+'\modelSettings.json', "w")
+    file = open(cwd+'/modelSettings.json', "w")
     json.dump(data, file)
     if (data['name'] == selected_model):
         isUpdated = True
@@ -146,12 +146,13 @@ def process_admin_request(request):
         # make sure latest simple_model is retrained
         print('entering retrain')
         #try:
+        # Sync database and cloud bucket
+        database_bucket_sync.sync_db_and_bucket()
         # This execution will initiate the training job, it DOES NOT
         # wait for a successful/failed training job!
         training_response, job_name = training_handler.runTrainingJob()
         print('exited retrain job')            # Pass via a context.
         print(training_response)
-        test = database_bucket_sync.get_data_from_db('random')
         return render(request, 'app/retrain.html', {'job_name': job_name})
         #except Exception as err:  
         #    print('inside error')
