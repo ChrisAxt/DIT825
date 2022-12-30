@@ -131,7 +131,9 @@ This will be overwritten with every training job.
 '''
 
 # Make directory for training metrics
-os.mkdir(save_path+'training_metrics/')
+
+if not os.path.exists(save_path+'training_metrics/'):
+    os.mkdir(save_path+'training_metrics/')
 
 # Creating a dataframe for the training metrics.
 # Makes saving to cloudSQL db easier.
