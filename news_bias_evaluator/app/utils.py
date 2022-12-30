@@ -1,8 +1,10 @@
 import json
-import os  # An included library with Python install.
+import os 
 from google.api_core.client_options import ClientOptions
 from googleapiclient import discovery
 import requests
+
+from .models import ModelEvaluation
 
 cwd = os.getcwd()
 endpoint = 'https://europe-west4-ml.googleapis.com'
@@ -71,10 +73,41 @@ def getModelVersion(models):
 
 def getToken():
     try:
-        file = open(cwd+"\modelSettings.json", "r")
+        file = open(cwd+"/modelSettings.json", "r")
         data = json.load(file)
         TOKEN = data['token']
         file.close()
     except:
         print("Failed to access token from json file: modelSettings.json")
     return TOKEN
+
+
+def saveEvaluation(model_evaluation):
+
+    try:
+        new_Evaluation = ModelEvaluation(
+            version_name = model_evaluation['name'],
+            true_positive = model_evaluation['true_positive'],
+            false_positive = model_evaluation['false_positive'],
+            false_negative = model_evaluation['false_negative'],
+            true_negative = model_evaluation['true_negative']
+        )
+
+        new_Evaluation.save()
+        print("Evaluation successfully saved")
+    except:
+        #print(new_Evaluation)
+        print("Failed to save the evaluation!")
+
+def retrieveLatestEvaluation(queriedModel):
+    try:
+        modelMatchs = ModelEvaluation.objects.get(model = queriedModel)
+        latestEntry = {}
+        for entry in modelMatchs:
+            if latestEntry == {}:
+                latestEntry = entry
+            elif entry['date_evaluated'] > latestEntry['date_evaluated']:
+                latestEntry = entry
+        return latestEntry
+    except:
+        print("No elaluations found for the specified model")

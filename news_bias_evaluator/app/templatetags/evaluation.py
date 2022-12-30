@@ -4,15 +4,17 @@ from django.http import JsonResponse
 import os
 import json
 
-from app.utils import sendRequest
+from app.utils import sendRequest, getModelVersion, saveEvaluation
 
 register = template.Library()
+# TODO change to simple model
+simpleModel = {'name': 'projects/dit825/models/dit825_model_v1'}
 
 @register.simple_tag
 def getBatchPrediction():
     dataPoints = LabeledSentence.objects.all()[:50]
     sentenceList = [data.sentence for data in dataPoints]
-    currentModel = getModelName()
+    currentModel = getLatestModelVersion(simpleModel)
     evaluationResults = sendRequest(sentenceList, currentModel)
 
     results = {}
@@ -23,17 +25,27 @@ def getBatchPrediction():
 
 @register.simple_tag
 def saveEvaluationData(data):
-    evaluation = { 'name': getModelName(), 'true_positive': data['true_positive'], 'false_positive': data['false_positive'], 'false_negative': data['false_negative'], 'true_negative': data['true_negative']}
-    print(evaluation)
+    evaluation = { 'name': getLatestModelVersion(simpleModel), 'true_positive': data['true_positive'], 'false_positive': data['false_positive'], 'false_negative': data['false_negative'], 'true_negative': data['true_negative']}
+    #print(evaluation)
+    saveEvaluation(evaluation)
    
 @register.simple_tag
-def getModelName():
-    cwd = os.getcwd()  # Get the current working directory (cwd)
-    with open(cwd+'\modelSettings.json', errors="ignore") as file:
-        data = json.load(file)
-        file.close()
-        model_name = data['name'] 
-    return model_name
+def getLatestModelVersion(model):
+    # Change this to get the latest simple model, not current model
+    models = [model]
+    modelList = getModelVersion(models)
+    latestVersion = ""
+    for version in modelList:
+        if latestVersion == "":
+            latestVersion = version
+        else:
+            LVtimestamp = latestVersion[latestVersion.find("versions/dit825_model_v1") + 22:len(latestVersion)]
+            Vtimestamp = version[version.find("versions/dit825_model_v1") + 22: len(version)]
+            
+            if(Vtimestamp > LVtimestamp):
+                latestVersion = version
+
+    return latestVersion
 
 @register.simple_tag
 def getEvaluationResults(results, currentModel):
