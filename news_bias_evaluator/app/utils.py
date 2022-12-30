@@ -4,7 +4,7 @@ from google.api_core.client_options import ClientOptions
 from googleapiclient import discovery
 import requests
 from app.models import ModelEvaluation
-from datetime import date
+from datetime import datetime
 
 cwd = os.getcwd()
 endpoint = 'https://europe-west4-ml.googleapis.com'
@@ -82,24 +82,30 @@ def getToken():
     return TOKEN
 
 def saveEvaluation(model_evaluation):
-    today = date.today()
+    now = datetime.now()
     
-    # Just used as an example
-    model_evaluation = {
-        "name": "Some string name blah blah",
-        "true_positive": 50, 
-        "true_negative": 50, 
-        "false_positive": 50, 
-        "false_negative": 50
-    }
     new_Evaluation = ModelEvaluation(
-        version_name = model_evaluation['name'],
-        date_evaluated = today.strftime("%d/%m/%Y"), # dd/mm/YY
+        version_name = model_evaluation['model'],
+        date_evaluated = now.strftime("%d/%m/%Y, %H:%M:%S"), # dd/mm/YY H:M:S format
         true_positive = model_evaluation['true_positive'],
         true_negative = model_evaluation['true_negative'],
         false_positive = model_evaluation['false_positive'],
         false_negative = model_evaluation['false_negative']
     )
 
+    new_Evaluation.save()
 
-    
+def retrieveLatestEvaluation(queriedModel):
+    try:
+        modelMatchs = ModelEvaluation.objects.get(model = queriedModel)
+        latestEntry = {}
+        for entry in modelMatchs:
+            if latestEntry == {}:
+                latestEntry = entry
+            elif entry['date_evaluated'] > latestEntry['date_evaluated']:
+                latestEntry = entry
+        return latestEntry
+    except:
+        print("No elaluations found for the specified model")
+
+
