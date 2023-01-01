@@ -10,7 +10,7 @@ def sync_db_and_bucket():
     # Validate and clean the data
     training_data_df = validator.prepare_training_data(db_data_df)
     # Convert to csv and store to the bucket
-    store_data_to_bucket(training_data_df)
+    store_data_to_bucket(training_data_df, 'example_bucket_v2-aiproject-dit825', 'training_data/media_bias_dataset_cleaned.csv')
 
 
 def get_data_from_db():
@@ -19,13 +19,14 @@ def get_data_from_db():
     return db_data_df
     
 
-def store_data_to_bucket(training_data_df):
+def store_data_to_bucket(data_df, bucket_name, bucket_file):
     
     storage_client = storage.Client()
-    bucket = storage_client.bucket('example_bucket_v2-aiproject-dit825')
-    blob = bucket.blob('training_data/media_bias_dataset_cleaned.csv')
+    bucket = storage_client.bucket(bucket_name)
+    blob = bucket.blob(bucket_file)
 
-    blob.upload_from_string(convert_to_csv(training_data_df), 'text/csv')
+    blob.upload_from_string(convert_to_csv(data_df), 'text/csv')
+
 
 def convert_to_csv(db_data_df):
     return db_data_df.to_csv()
