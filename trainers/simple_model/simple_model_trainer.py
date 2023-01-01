@@ -1,6 +1,6 @@
-# NOTE: This is a copy of the model.ipynb in the uploaded_models
+# NOTE: This file is based on the model.ipynb in the uploaded_models
 # directory that Vernita made. This file contains
-# minor adjustements required for the ai platform training job. 
+# adjustements/additions required for the ai platform training job. 
 #!/usr/bin/env python
 # coding: utf-8
 
@@ -34,6 +34,7 @@ import glob
 
 # Load dataset
 df = pd.read_csv('gs://example_bucket_v2-aiproject-dit825/training_data/media_bias_dataset_cleaned.csv')
+eval_df = pd.read_csv('gs://example_bucket_v2-aiproject-dit825/evaluation_data/evaluation_data.csv')
 
 # Clean dataset
 df = df[df.Label_bias != 'No agreement']
@@ -51,6 +52,10 @@ df = df.rename(columns={'sentence': 'text', 'Label_bias': 'label'})
 # Split data into X and y
 X = df['text']
 y = df['label']
+
+eval_df = eval_df.rename(columns={'scentence': 'text', 'Label_bias': 'label'})
+Xeval = df['text']
+Yeval = df['label']
 
 # Remove numbers from all strings in X
 X = X.str.replace('\d+', '', regex=True)
@@ -100,7 +105,7 @@ model = keras.Sequential([
     layers.Dense(64, activation='relu'),
     layers.Dense(1, activation='sigmoid')
 ])
-model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
+model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy', tf.metrics.FalsePositives(), tf.metrics.TruePositives(), tf.metrics.FalseNegatives(), tf.metrics.FalsePositives()])
 model.summary()
 
 # Train model
@@ -114,6 +119,17 @@ history = model.fit(X_train, y_train, epochs=4, batch_size=16, validation_data=(
 loss, accuracy = model.evaluate(X_test, y_test)
 print("Loss: ", loss)
 print("Accuracy: ", accuracy)
+
+
+
+# Get eval data for retraining
+loss, accuracy, fp, tp, fn, fp = model.evaluate(Xeval, Yeval)
+print("Loss: ", loss)
+print("Accuracy: ", accuracy)
+print(fp)
+print(tp)
+print(fn)
+print(fp)
 
 #prediction = model.predict(["YouTube is making clear there will be no “birtherism” on its platform during this year’s U.S. presidential election – a belated response to a type of conspiracy theory more prevalent in the 2012 race.", "The increasingly bitter dispute between American women’s national soccer team and the U.S. Soccer Federation spilled onto the field Wednesday night when players wore their warm-up jerseys inside outin a protest before their 3-1 victory over Japan."])
 #print(prediction, "1 is bias, 0 is non-bias")
@@ -137,7 +153,7 @@ if not os.path.exists(save_path+'training_metrics/'):
 
 # Creating a dataframe for the training metrics.
 # Makes saving to cloudSQL db easier.
-data = {'training_accuracy': [accuracy], 'loss': [loss]}
+data = {'fp': [fp], 'tp': [tp], 'fn': [fn], 'fp': [fp]}
 metricsDf = pd.DataFrame(data=data)
 metricsDf.to_csv('./simple_model/training_metrics/training_metrics.csv')
 
