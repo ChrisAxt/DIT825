@@ -10,7 +10,7 @@ register = template.Library()
 
 @register.simple_tag
 def getBatchPrediction():
-    dataPoints = LabeledSentence.objects.all()[:50]
+    dataPoints = LabeledSentence.objects.all()[-50:]
     sentenceList = [data.sentence for data in dataPoints]
     currentModel = getModelName()
     evaluationResults = sendRequest(sentenceList, currentModel)
@@ -29,7 +29,7 @@ def saveEvaluationData(data):
 @register.simple_tag
 def getModelName():
     cwd = os.getcwd()  # Get the current working directory (cwd)
-    with open(cwd+'\modelSettings.json', errors="ignore") as file:
+    with open(cwd+'/modelSettings.json', errors="ignore") as file:
         data = json.load(file)
         file.close()
         model_name = data['name'] 
