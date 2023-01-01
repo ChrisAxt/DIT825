@@ -4,3 +4,7 @@ psycopg2-binary==2.9.5
 google-api-python-client==2.69.0
 asgiref==3.6.0
 pandas==1.5.1
+fsspec==2022.11.0
+gcsfs==2022.11.0
+google-cloud-storage==2.7.0
+gcloud==0.18.3
