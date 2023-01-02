@@ -51,53 +51,67 @@
         FAILED: "Retraining failed: ",
       };
 
-      let refreshId = setInterval(function () {
-        $.ajax({
-          type: "GET",
-          url: "/trainingStatus/",
-          data: { job_name: "{{job_name}}" },
-          success: function callback(response) {
-            console.log(response);
-            status = response.state;
-            // update status text and icon
-            if (status) {
-              document.getElementById("status_text").innerHTML =
-                statusMessageDisplayText[status];
-              if (status == "CANCELLED" || status == "FAILED") {
+      // Calls an interval checker that checks the status of the training every 10 seconds.
+      checkStatus(onSuccessTraining, onCancelOrFailedTraining);
+
+      // Callback function for when the training job succeeds
+      function onSuccessTraining() {}
+
+      // Callback function for whn the training job is cancelled or fails
+      function onCancelOrFailedTraining() {}
+
+      function checkStatus(successCallBack, failedOrCancelledCallBack) {
+        let refreshId = setInterval(function () {
+          $.ajax({
+            type: "GET",
+            url: "/trainingStatus/",
+            data: { job_name: "{{job_name}}" },
+            success: function callback(response) {
+              console.log(response);
+              status = response.state;
+              // update status text and icon
+              if (status) {
                 document.getElementById("status_text").innerHTML =
-                  document.getElementById("status_text").innerHTML +
-                  response.errorMessage;
+                  statusMessageDisplayText[status];
+                if (status == "CANCELLED" || status == "FAILED") {
+                  document.getElementById("status_text").innerHTML =
+                    document.getElementById("status_text").innerHTML +
+                    response.errorMessage;
+                }
               }
-            }
-            // Load icon depending on success or cancel
-            switch (status) {
-              case "SUCCEEDED":
-                document.getElementById("loadingIcon").style.display = "none";
-                document.getElementById("successIcon").style.display =
-                  "inline-block";
-                document.getElementById("cancelIcon").style.display = "none";
-                // If the job succeeded, Dont continue the interval
-                clearInterval(refreshId);
-                break;
-              case "FAILED":
-              // No break - same function as FAILED || CANCELLED.
-              case "CANCELLED":
-                document.getElementById("loadingIcon").style.display = "none";
-                document.getElementById("successIcon").style.display = "none";
-                document.getElementById("cancelIcon").style.display =
-                  "inline-block";
-                // If the job failed, Dont continue the interval
-                clearInterval(refreshId);
-                break;
-              default:
-                document.getElementById("loadingIcon").style.display = "block";
-                document.getElementById("successIcon").style.display = "none";
-                document.getElementById("cancelIcon").style.display = "none";
-                break;
-            }
-          },
-        });
-      }, 10000);
+              // Load icon depending on success or cancel
+              switch (status) {
+                case "SUCCEEDED":
+                  document.getElementById("loadingIcon").style.display = "none";
+                  document.getElementById("successIcon").style.display =
+                    "inline-block";
+                  document.getElementById("cancelIcon").style.display = "none";
+                  // If the job succeeded, Dont continue the interval
+                  clearInterval(refreshId);
+                  successCallBack();
+                  break;
+                case "FAILED":
+                // No break - same function as FAILED || CANCELLED.
+                case "CANCELLED":
+                  document.getElementById("loadingIcon").style.display = "none";
+                  document.getElementById("successIcon").style.display = "none";
+                  document.getElementById("cancelIcon").style.display =
+                    "inline-block";
+                  // If the job failed, Dont continue the interval
+                  clearInterval(refreshId);
+                  failedOrCancelledCallBack();
+                  break;
+                default:
+                  document.getElementById("loadingIcon").style.display =
+                    "block";
+                  document.getElementById("successIcon").style.display = "none";
+                  document.getElementById("cancelIcon").style.display = "none";
+                  break;
+              }
+            },
+          });
+        }, 30000);
+      }
     </script>
     {% endblock javascript %}
   </body>
