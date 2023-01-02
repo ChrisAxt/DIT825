@@ -55,10 +55,31 @@
       checkStatus(onSuccessTraining, onCancelOrFailedTraining);
 
       // Callback function for when the training job succeeds
-      function onSuccessTraining() {}
+      function onSuccessTraining() {
+        // Get request data (accuracy and all that can come with same get request.)
+        $.ajax({
+          type: "GET",
+          url: "/trainingEvaluationData/",
+          success: function callback(response) {
+            response;
+            canTrainedModelDeploy();
+          },
+        });
+        // Update global variable or local? (local maybe better)
+        // if accuracy is better or same, display option
+        // if accuracy not better then say not better, hence no option
+      }
 
       // Callback function for whn the training job is cancelled or fails
       function onCancelOrFailedTraining() {}
+
+      // function to determine if model can be deployed
+      function canTrainedModelDeploy(
+        training_evaluation_accuracy,
+        latest_model_evaluation_accuracy
+      ) {
+        return training_evaluation_accuracy >= latest_model_evaluation_accuracy;
+      }
 
       function checkStatus(successCallBack, failedOrCancelledCallBack) {
         let refreshId = setInterval(function () {

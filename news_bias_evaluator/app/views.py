@@ -4,7 +4,8 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from .utils import extractSentences, sendRequest, getModels
-from app.retraining_utils import training_handler, training_job_monitor, database_bucket_sync
+from app.retraining_utils import training_handler, training_job_monitor, database_bucket_sync, training_evaluation_retriever
+from django.http import HttpResponse
 import asyncio
 from asgiref.sync import async_to_sync, sync_to_async
 from django.http import JsonResponse
@@ -184,3 +185,10 @@ def process_evaluation_request():
     saveEvaluationData(data)
     return data
 
+def get_training_evaluation_data():
+    training_evaluation_data = get_training_evaluation_data()
+    # TODO: Use saved data from database in AP-47!
+    latest_model_evaluation_data = getBatchPrediction()
+    response_evaluation_data = [training_evaluation_data, latest_model_evaluation_data]
+    print('getting training eval data')
+    return HttpResponse(response_evaluation_data, content_type='application/json')
