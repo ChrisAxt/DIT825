@@ -10,6 +10,7 @@ import asyncio
 from asgiref.sync import async_to_sync, sync_to_async
 from django.http import JsonResponse
 import os
+from .templatetags import evaluation
 
 from app.templatetags.evaluation import getBatchPrediction, saveEvaluationData
 
@@ -186,9 +187,10 @@ def process_evaluation_request():
     return data
 
 def get_training_evaluation_data():
-    training_evaluation_data = get_training_evaluation_data()
-    # TODO: Use saved data from database in AP-47!
+    training_evaluation_data = training_evaluation_retriever.get_training_evaluation_data()
+    # TODO: Use saved data from database in AP-47 instead of getBatchPrediction()!
     latest_model_evaluation_data = getBatchPrediction()
+    latest_model_evaluation_data = training_evaluation_retriever.combine_metrics(latest_model_evaluation_data)
     response_evaluation_data = [training_evaluation_data, latest_model_evaluation_data]
     print('getting training eval data')
     return HttpResponse(response_evaluation_data, content_type='application/json')
