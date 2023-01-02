@@ -51,7 +51,7 @@
         FAILED: "Retraining failed: ",
       };
 
-      setInterval(function () {
+      let refreshId = setInterval(function () {
         $.ajax({
           type: "GET",
           url: "/trainingStatus/",
@@ -76,6 +76,8 @@
                 document.getElementById("successIcon").style.display =
                   "inline-block";
                 document.getElementById("cancelIcon").style.display = "none";
+                // If the job succeeded, Dont continue the interval
+                clearInterval(refreshId);
                 break;
               case "FAILED":
               // No break - same function as FAILED || CANCELLED.
@@ -84,6 +86,8 @@
                 document.getElementById("successIcon").style.display = "none";
                 document.getElementById("cancelIcon").style.display =
                   "inline-block";
+                // If the job failed, Dont continue the interval
+                clearInterval(refreshId);
                 break;
               default:
                 document.getElementById("loadingIcon").style.display = "block";
