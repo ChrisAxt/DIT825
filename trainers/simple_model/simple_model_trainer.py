@@ -18,7 +18,7 @@ import seaborn as sns
 # For machine learning algorithms and evaluation metrics
 import sklearn
 from sklearn.model_selection import train_test_split
-from sklearn import metrics
+from sklearn.metrics import confusion_matrix 
 
 #import tensorflow
 import tensorflow as tf
@@ -35,6 +35,8 @@ import glob
 # Load dataset
 df = pd.read_csv('gs://example_bucket_v2-aiproject-dit825/training_data/media_bias_dataset_cleaned.csv')
 eval_df = pd.read_csv('gs://example_bucket_v2-aiproject-dit825/evaluation_data/evaluation_data.csv')
+print(eval_df)
+print('size of eval_df: ', len(eval_df))
 
 # Clean dataset
 df = df[df.Label_bias != 'No agreement']
@@ -42,8 +44,8 @@ df = df[df.Label_bias != 'No agreement']
 df = df[df.sentence != 'NaN']
 
 # Replace label with 0, 1
-df['Label_bias'] = df['Label_bias'].replace('Biased', 1)
-df['Label_bias'] = df['Label_bias'].replace('Non-biased', 0)
+df['Label_bias'] = df['Label_bias'].replace('Biased', 0)
+df['Label_bias'] = df['Label_bias'].replace('Non-biased', 1)
 
 # Only use sentence column and bias column
 df = df[['sentence', 'Label_bias']]
@@ -53,9 +55,15 @@ df = df.rename(columns={'sentence': 'text', 'Label_bias': 'label'})
 X = df['text']
 y = df['label']
 
-eval_df = eval_df.rename(columns={'scentence': 'text', 'Label_bias': 'label'})
-Xeval = df['text']
-Yeval = df['label']
+eval_df = eval_df.rename(columns={'sentence': 'text', 'Label_bias': 'label'})
+Xeval = eval_df['text']
+Yeval = eval_df['label']
+Yeval = Yeval.replace('Biased', 0)
+Yeval = Yeval.replace('Non-biased', 1)
+Xeval = np.array(Xeval).tolist()
+#Xeval = Xeval.str.replace('\d+', '', regex=True)
+#Xeval = Xeval.str.replace('[^\w\s]','',regex=True)
+#Xeval = np.array(Xeval).flatten()
 
 # Remove numbers from all strings in X
 X = X.str.replace('\d+', '', regex=True)
@@ -82,7 +90,7 @@ X_test = np.array(X_test).flatten()
     
 # X_train = X_train.to_numpy()
 # X_train = np.array(X_train).flatten()
-# print x shape
+# print x sha/pe
 print("X_train shape: ", X_train.shape)
 # print test shape
 print("X_test shape: ", X_test.shape)
@@ -105,7 +113,7 @@ model = keras.Sequential([
     layers.Dense(64, activation='relu'),
     layers.Dense(1, activation='sigmoid')
 ])
-model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy', tf.metrics.FalsePositives(), tf.metrics.TruePositives(), tf.metrics.FalseNegatives(), tf.metrics.FalsePositives()])
+model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
 model.summary()
 
 # Train model
@@ -121,15 +129,21 @@ print("Loss: ", loss)
 print("Accuracy: ", accuracy)
 
 
-
+print(np.array(Xeval).tolist())
+print('size of Xeval: ', len(Xeval))
 # Get eval data for retraining
-loss, accuracy, fp, tp, fn, fp = model.evaluate(Xeval, Yeval)
-print("Loss: ", loss)
-print("Accuracy: ", accuracy)
-print(fp)
-print(tp)
-print(fn)
-print(fp)
+# reference: https://www.jcchouinard.com/confusion-matrix-in-scikit-learn/
+# TODO: confirm how input data is modified in code for prediction on webpage
+Y_eval_predict = model.predict(np.array(Xeval))
+# Reference: https://www.programiz.com/python-programming/list-comprehension
+Y_eval_predict = [0 if probability < 0.5 else 1 for probability in Y_eval_predict]
+print("size is: ", len(Y_eval_predict))
+cm = confusion_matrix(Yeval, Y_eval_predict)
+TN, FP, FN, TP = cm.ravel()
+#Yeval = Yeval.replace('Biased', 0)
+#Yeval = Yeval.replace('Non-biased', 1)
+print(cm)
+print(Y_eval_predict)
 
 #prediction = model.predict(["YouTube is making clear there will be no “birtherism” on its platform during this year’s U.S. presidential election – a belated response to a type of conspiracy theory more prevalent in the 2012 race.", "The increasingly bitter dispute between American women’s national soccer team and the U.S. Soccer Federation spilled onto the field Wednesday night when players wore their warm-up jerseys inside outin a protest before their 3-1 victory over Japan."])
 #print(prediction, "1 is bias, 0 is non-bias")
@@ -153,7 +167,7 @@ if not os.path.exists(save_path+'training_metrics/'):
 
 # Creating a dataframe for the training metrics.
 # Makes saving to cloudSQL db easier.
-data = {'fp': [fp], 'tp': [tp], 'fn': [fn], 'fp': [fp]}
+data = {'true_positive': [TP], 'true_negative': [TN], 'false_positive': [FP], 'false_negative': [FN]}
 metricsDf = pd.DataFrame(data=data)
 metricsDf.to_csv('./simple_model/training_metrics/training_metrics.csv')
 

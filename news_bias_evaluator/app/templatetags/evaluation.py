@@ -10,7 +10,11 @@ register = template.Library()
 
 @register.simple_tag
 def getBatchPrediction():
-    dataPoints = LabeledSentence.objects.all()[-50:]
+    # Cant slice with - value: ie [-50:]
+    # Solution reverses the query set, and then gets the first 50
+    # which is the same as the last 50 entries in the non-reversed
+    # queryset
+    dataPoints = LabeledSentence.objects.all().reverse()[:50]
     sentenceList = [data.sentence for data in dataPoints]
     currentModel = getModelName()
     evaluationResults = sendRequest(sentenceList, currentModel)
