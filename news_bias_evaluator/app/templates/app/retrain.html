@@ -36,6 +36,15 @@
       <span id="status_text">This may take several minutes...</span>
     </div>
 
+    <!-- Buttons for deployment choice -->
+    <div id="deployButtons" class="deploy-buttons">
+      <button class="txt-btn" onclick="onDeployClick('true')">
+        Deploy Model
+      </button>
+      <button class="txt-btn" onclick="onCancelDeployClick('false')">
+        Cancel Deployment
+      </button>
+    </div>
     {% block javascript %}
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
@@ -61,8 +70,19 @@
           type: "GET",
           url: "/trainingEvaluationData/",
           success: function callback(response) {
-            response;
-            canTrainedModelDeploy();
+            // the following two lines can be used for the confusion matrix in AP-47
+            trained_evaluation_data = response[0];
+            latest_model_evaluation_data = response[1];
+            if (
+              canTrainedModelDeploy(
+                trained_evaluation_data,
+                latest_model_evaluation_data
+              )
+            ) {
+              renderDeployButtons();
+            } else {
+              // Render avg score not enough
+            }
           },
         });
         // Update global variable or local? (local maybe better)
@@ -70,15 +90,63 @@
         // if accuracy not better then say not better, hence no option
       }
 
+      function renderDeployButtons() {
+        document.getElementById("deployButtons").style.display = "inline-block";
+      }
+
+      // Handles event when the admin wants to deloy the model
+      function sendDeploymentChoice(choice) {
+        $.ajax({
+          type: "POST",
+          url: "/deploymentChoice/",
+          data: choice,
+          success: function callback(response) {
+            console.log(response);
+            //TODO: make interval as before
+            //TODO: in function in python, make check to change json file!
+            //TODO: output text of "model will be deployed".
+            //TODO: have loading bar.
+            //TODO: successbar.
+            //TODO: Failure bar.
+          },
+        });
+      }
+
+      // Handles the event when the admin does not want to deploy the model
+      function onCancelDeployClick() {
+        deploymentChoiceRequest(choice);
+      }
+
+      function deploymentChoiceRequest(choice) {}
+
       // Callback function for whn the training job is cancelled or fails
       function onCancelOrFailedTraining() {}
 
       // function to determine if model can be deployed
       function canTrainedModelDeploy(
-        training_evaluation_accuracy,
-        latest_model_evaluation_accuracy
+        trainingEvaluationData,
+        latestModelEvaluationData
       ) {
-        return training_evaluation_accuracy >= latest_model_evaluation_accuracy;
+        trainingEvalAvg = calculateAverage([
+          trainingEvaluationData.accuracy,
+          trainingEvaluationData.precision,
+          trainingEvaluationData.neg_precision,
+          trainingEvaluationData.recall,
+        ]);
+        latestModelEvalAvg = calculateAverage([
+          latestModelEvaluationData.accuracy +
+            latestModelEvaluationData.precision +
+            latestModelEvaluationData.neg_precision +
+            latestModelEvaluationData.recall,
+        ]);
+        // TODO: return if avg of results >= prev trained model
+        return trainingEvalAvg >= latestModelEvalAvg;
+      }
+
+      function calculateAverage(values) {
+        // reference: https://stackoverflow.com/questions/10359907/how-to-compute-the-sum-and-average-of-elements-in-an-array
+        const sum = values.reduce((sum, value) => sum + value, 0);
+        return sum / values.length || 0;
       }
 
       function checkStatus(successCallBack, failedOrCancelledCallBack) {
@@ -204,5 +272,13 @@
   .info-text {
     padding-top: 1rem;
     font-size: 15px;
+  }
+
+  .deploy-buttons {
+    padding-top: 1rem;
+    margin: 3rem auto 0;
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
   }
 </style>

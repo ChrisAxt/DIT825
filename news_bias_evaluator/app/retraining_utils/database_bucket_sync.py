@@ -22,7 +22,7 @@ def get_data_from_db():
     # (ie dont train model on eval data)
     db_training_data_df = db_training_data_df[:-50 or None]
     # Get the last 50 values for evaluation
-    db_eval_data_df = pd.DataFrame(list(LabeledSentence.objects.all()[-50:].values()))
+    db_eval_data_df = pd.DataFrame(list(LabeledSentence.objects.all().reverse()[:50].values()))
     print(db_training_data_df)
     print(db_eval_data_df)
     return db_training_data_df, db_eval_data_df
