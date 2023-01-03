@@ -6,7 +6,11 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from .utils import extractSentences, sendRequest, getModels
 import os
+<<<<<<< HEAD
 from transformers import DistilBertTokenizerFast, AutoModelForSequenceClassification
+=======
+from transformers import BertTokenizer, DistilbertTokenizerFast, AutoModelForSequenceClassification
+>>>>>>> a375d8d (Initiate update to use new bias model)
 from transformers_interpret import SequenceClassificationExplainer
 
 from app.templatetags.evaluation import getBatchPrediction, saveEvaluationData
@@ -17,7 +21,6 @@ from .models import Request, Prediction
 dashboard_context = {}
 
 # Views for user side
-
 def main(request):
     return render(request, 'app/main.html')
 
@@ -33,7 +36,12 @@ def onSubmit(request):
     model_name = data['name'] 
     print("Model name: " + model_name)
     sentenceList = extractSentences(text_input)
+<<<<<<< HEAD
     explanations = onGetExplanation(sentenceList)
+=======
+    
+    predictionInput = getPredictionArrays(sentenceList)
+>>>>>>> a375d8d (Initiate update to use new bias model)
 
     # Saves the request into the DB
     user_request = Request(request_content = text_input)
@@ -63,6 +71,12 @@ def onSubmit(request):
 
     return render(request, 'app/results.html', context)
 
+# Gets the tokenized sentences in order to send them to the model for prediction
+def getPredictionArrays(sentenceList):
+    model_name = "distilbert-base-uncased"
+    tokenizer = DistilBertTokenizerFast.from_pretrained(model_name)
+
+
 def onModelChange(selected_model):
     isUpdated = False
 
@@ -81,7 +95,7 @@ def onModelChange(selected_model):
 
     return isUpdated
 
-# Gets the tokenized sentences and their corresponding weights pertraining to the prediction
+# Gets the tokenized sentences and their corresponding weights pertaining to the prediction
 def onGetExplanation(sentences):
     model_name = "distilbert-base-uncased"
     model = AutoModelForSequenceClassification.from_pretrained(model_name)
@@ -89,6 +103,8 @@ def onGetExplanation(sentences):
     cls_explainer = SequenceClassificationExplainer(
         model,
         tokenizer)
+
+
 
     tokenizedExplanation = {}
     count = 1
