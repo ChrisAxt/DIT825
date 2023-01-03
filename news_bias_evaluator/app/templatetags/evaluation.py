@@ -7,8 +7,7 @@ import json
 from app.utils import sendRequest, getModelVersion, saveEvaluation
 
 register = template.Library()
-# TODO change to simple model
-simpleModel = {'name': 'projects/dit825/models/dit825_model_v1'}
+simpleModel = {'name': 'projects/dit825/models/simple_model'}
 
 @register.simple_tag
 def getBatchPrediction():
@@ -39,9 +38,9 @@ def getLatestModelVersion(model):
         if latestVersion == "":
             latestVersion = version
         else:
-            LVtimestamp = latestVersion[latestVersion.find("versions/dit825_model_v1") + 22:len(latestVersion)]
-            Vtimestamp = version[version.find("versions/dit825_model_v1") + 22: len(version)]
-            
+            LVtimestamp = latestVersion[latestVersion.find("/versions/simple_model_") + 23:len(latestVersion)]
+            Vtimestamp = version[version.find("/versions/simple_model_") + 23: len(version)]
+            print(LVtimestamp)
             if(Vtimestamp > LVtimestamp):
                 latestVersion = version
 

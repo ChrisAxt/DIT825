@@ -42,6 +42,7 @@ def sendRequest(sentenceList, model_name):
             name=model_name, body = request_body)
     
         response = prediction_request.execute()
+        
         return response['predictions'] 
     except:
         print("Failed to get a response from the selected model!")
