@@ -96,6 +96,14 @@
 
       // Handles event when the admin wants to deloy the model
       function sendDeploymentChoice(choice) {
+        if (choice === "true") {
+          displayIcon("inline-block", "none", "none");
+          document.getElementById("status_text").innerHTML =
+            "Deploying model...";
+        } else {
+          document.getElementById("status_text").innerHTML =
+            "No deloyment, redirecting...";
+        }
         $.ajax({
           type: "POST",
           url: "/deploymentChoice/",
@@ -103,6 +111,7 @@
           success: function callback(response) {
             console.log(response);
             //TODO: make interval as before
+            // Maybe not necessary, as we get a response!
             //TODO: in function in python, make check to change json file!
             //TODO: output text of "model will be deployed".
             //TODO: have loading bar.
@@ -171,10 +180,7 @@
               // Load icon depending on success or cancel
               switch (status) {
                 case "SUCCEEDED":
-                  document.getElementById("loadingIcon").style.display = "none";
-                  document.getElementById("successIcon").style.display =
-                    "inline-block";
-                  document.getElementById("cancelIcon").style.display = "none";
+                  displayIcon("none", "inline-block", "none");
                   // If the job succeeded, Dont continue the interval
                   clearInterval(refreshId);
                   successCallBack();
@@ -182,24 +188,31 @@
                 case "FAILED":
                 // No break - same function as FAILED || CANCELLED.
                 case "CANCELLED":
-                  document.getElementById("loadingIcon").style.display = "none";
-                  document.getElementById("successIcon").style.display = "none";
-                  document.getElementById("cancelIcon").style.display =
-                    "inline-block";
+                  displayIcon("none", "none", "inline-block");
                   // If the job failed, Dont continue the interval
                   clearInterval(refreshId);
                   failedOrCancelledCallBack();
                   break;
                 default:
-                  document.getElementById("loadingIcon").style.display =
-                    "block";
-                  document.getElementById("successIcon").style.display = "none";
-                  document.getElementById("cancelIcon").style.display = "none";
+                  displayIcon("block", "none", "none");
                   break;
               }
             },
           });
         }, 30000);
+      }
+
+      function displayIcon(
+        loadingIconDisplayType,
+        successIconDisplayType,
+        cancelIconDisplayType
+      ) {
+        document.getElementById("loadingIcon").style.display =
+          "loadingIconDisplayType";
+        document.getElementById("successIcon").style.display =
+          "successIconDisplayType";
+        document.getElementById("cancelIcon").style.display =
+          "cancelIconDisplayType";
       }
     </script>
     {% endblock javascript %}
