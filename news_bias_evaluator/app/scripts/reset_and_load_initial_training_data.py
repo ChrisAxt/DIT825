@@ -1,6 +1,5 @@
 from app.models import Article, LabeledSentence
-from app.utils import is_valid_news_link, is_valid_label_bias, is_non_empty_sentence
-import pandas as pd
+from app.utils import is_valid_news_link, is_valid_label_bias, is_non_empty_sentence, convert_label_bias
 import csv
 
 # Script to extract a cleaned version of the dataset (unnecessary columns and rows removed)
@@ -46,7 +45,7 @@ def run():
                 new_sentence = LabeledSentence(
                     sentence=sentence,
                     bias_words=bias_words,
-                    label_bias=label_bias,
+                    label_bias=convert_label_bias(label_bias),
                     label_opinion=label_opinion,
                     article = new_article,
                 )
