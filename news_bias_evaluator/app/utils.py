@@ -52,10 +52,10 @@ def sendRequest(sentenceList, model_name):
 def getModels():
     
     modelList = []
-    response = requests.get(endpoint+'//v1/projects/dit825/models/', headers={'Authorization': 'Bearer '+getToken()}).json()
-    
-    print(response)
+
     try:
+        response = requests.get(endpoint+'//v1/projects/dit825/models/', headers={'Authorization': 'Bearer '+getToken()}).json()
+        print(response)
         modelList = getModelVersion(response['models'])
     except:
         print("Failed to connect to Google cloud!")
@@ -80,6 +80,6 @@ def getToken():
         data = json.load(file)
         TOKEN = data['token']
         file.close()
+        return TOKEN
     except:
         print("Failed to access token from json file: modelSettings.json")
-    return TOKEN
