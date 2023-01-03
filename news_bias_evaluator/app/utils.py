@@ -3,10 +3,10 @@ import os  # An included library with Python install.
 from google.api_core.client_options import ClientOptions
 from googleapiclient import discovery
 import requests
+import numpy as np
 
 cwd = os.getcwd()
 endpoint = 'https://europe-west4-ml.googleapis.com'
-import re
 
 def extractSentences(text_input):
 
@@ -83,3 +83,11 @@ def getToken():
         return TOKEN
     except:
         print("Failed to access token from json file: modelSettings.json")
+
+def softmax(array):
+    softmax_output = []
+    for i in range(len(array)):
+        softmax = list(np.exp(array[i] - np.max(array[i])) / np.exp(array[i] - np.max(array[i])).sum())
+        softmax_output.append(softmax)
+    return softmax_output
+

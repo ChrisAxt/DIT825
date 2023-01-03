@@ -4,10 +4,9 @@ from django.contrib.auth import authenticate, login, logout
 from django.views.decorators.cache import cache_page
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from .utils import extractSentences, sendRequest, getModels
+from .utils import extractSentences, sendRequest, getModels, softmax
 import os
 import numpy as np
-from scipy.special import softmax
 from transformers import DistilBertTokenizerFast, AutoModelForSequenceClassification
 from transformers_interpret import SequenceClassificationExplainer
 
@@ -34,8 +33,11 @@ def onSubmit(request):
     model_name = data['name'] 
     print("Model name: " + model_name)
     sentenceList = extractSentences(text_input)
+
+    # Get the explanations for the sentences
     explanations = onGetExplanation(sentenceList)
 
+    # Get the prediction input ids for the sentences
     predictionInput = getPredictionArrays(sentenceList)
 
     # Saves the request into the DB
@@ -44,7 +46,7 @@ def onSubmit(request):
     
     if(len(sentenceList) > 0):
         predictionList = sendRequest(predictionInput, model_name)
-        normalised = softmax(predictionList, axis=1)
+        normalised = softmax(predictionList)
 
         # Saves the prediction in the DB, using the request
         prediction = Prediction (request = user_request, prediction = predictionList)
