@@ -110,8 +110,17 @@
           data: choice,
           success: function callback(response) {
             console.log(response);
-            //TODO: make interval as before
-            // Maybe not necessary, as we get a response!
+            if (choice === "true") {
+              if (response.isDeployed) {
+                displayIcon("none", "inline-block", "none");
+                document.getElementById("status_text").innerHTML =
+                  "Model has been deployed";
+              } else {
+                displayIcon("none", "none", "inline-block");
+                document.getElementById("status_text").innerHTML =
+                  "Model could not be deployed, an error has occured.";
+              }
+            }
             //TODO: in function in python, make check to change json file!
             //TODO: output text of "model will be deployed".
             //TODO: have loading bar.
