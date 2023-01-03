@@ -48,7 +48,6 @@ def onSubmit(request):
     explanations = onGetExplanation(sentenceList)
 
     predictionInput = getPredictionArrays(sentenceList)
-    print('predictionInput: ', predictionInput)
 
     # Saves the request into the DB
     user_request = Request(request_content = text_input)
@@ -56,8 +55,7 @@ def onSubmit(request):
     
     if(len(sentenceList) > 0):
         predictionList = sendRequest(predictionInput, model_name)
-        softmaxed = softmax(predictionList, axis=1)
-        print('predictionList: ', softmaxed)
+        normalised = softmax(predictionList, axis=1)
 
         # Saves the prediction in the DB, using the request
         prediction = Prediction (request = user_request, prediction = predictionList)
@@ -68,7 +66,7 @@ def onSubmit(request):
         user_request.save
     try:
         if (len(sentenceList) > 0 and len(sentenceList) == len(predictionList)):
-            items = {sentenceList[i]: { 'prediction': softmaxed[i][np.argmax(softmaxed[i])], 'input_id': explanations[str(i+1)] }for i in range(len(sentenceList))}
+            items = {sentenceList[i]: { 'prediction': normalised[i][np.argmax(normalised[i])], 'input_id': explanations[str(i+1)] }for i in range(len(sentenceList))}
     except:
         messages.error(request, "Failed to get a response from the selected model!")
  
@@ -123,8 +121,6 @@ def onGetExplanation(sentences):
     cls_explainer = SequenceClassificationExplainer(
         model,
         tokenizer)
-
-
 
     tokenizedExplanation = {}
     count = 1
