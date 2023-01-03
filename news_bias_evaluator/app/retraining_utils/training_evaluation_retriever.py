@@ -23,6 +23,6 @@ def combine_metrics(matrix_data_json):
     matrix_data_json['accuracy'] = float(evaluation.getAccuracy(copy_data))
     matrix_data_json['precision'] = float(evaluation.getPrecision(copy_data))
     matrix_data_json['neg_precision'] = float(evaluation.getNegPrecision(copy_data))
-    matrix_data_json['recall']: float(evaluation.getRecall(copy_data))
+    matrix_data_json['recall'] = float(evaluation.getRecall(copy_data))
 
     return matrix_data_json
