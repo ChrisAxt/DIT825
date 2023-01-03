@@ -33,6 +33,7 @@ def onSubmit(request):
     model_name = data['name'] 
     print("Model name: " + model_name)
     sentenceList = extractSentences(text_input)
+    explanations = onGetExplanation(sentenceList)
 
     # Saves the request into the DB
     user_request = Request(request_content = text_input)
