@@ -152,10 +152,11 @@ def process_admin_request(request):
         database_bucket_sync.sync_db_and_bucket()
         # This execution will initiate the training job, it DOES NOT
         # wait for a successful/failed training job!
-        # training_response, job_name = training_handler.runTrainingJob()
+        training_response, job_name = training_handler.runTrainingJob()
+        print(training_response)
         print('exited retrain job')            # Pass via a context.
         #print(training_response)
-        return render(request, 'app/retrain.html', {'job_name': 'simple_model_train_job_20230102_231009'})
+        return render(request, 'app/retrain.html', {'job_name': job_name})
         #except Exception as err:  
         #    print('inside error')
         #    print(err)
