@@ -4,7 +4,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from .utils import extractSentences, sendRequest, getModels
-from app.retraining_utils import training_handler, training_job_monitor, database_bucket_sync, training_evaluation_retriever
+from app.retraining_utils import training_handler, training_job_monitor, database_bucket_sync, training_evaluation_retriever, retrained_model_deployer
 from django.http import HttpResponse
 import asyncio
 from asgiref.sync import async_to_sync, sync_to_async
@@ -200,6 +200,8 @@ def get_training_evaluation_data():
 def handle_deployment_choice(request):
     print('over here!')
     deployment_choice = request.POST.get('choice')
-    print(deployment_choice)
-    return HttpResponse('hi')
-
+    if deployment_choice is 'true':
+        status = retrained_model_deployer.deploy_model()
+        return HttpResponse(status)
+    else:
+        return redirect('app:main')
