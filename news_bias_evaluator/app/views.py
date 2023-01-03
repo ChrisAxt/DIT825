@@ -201,7 +201,8 @@ def handle_deployment_choice(request):
     print('over here!')
     deployment_choice = request.POST.get('choice')
     if deployment_choice == 'true':
-        status = retrained_model_deployer.deploy_model()
+        status, model_name = retrained_model_deployer.deploy_model()
+        onModelChange(model_name) 
         return HttpResponse(status)
     else:
         return redirect('app:main')
