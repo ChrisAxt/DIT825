@@ -61,7 +61,7 @@
       };
 
       // Calls an interval checker that checks the status of the training every 10 seconds.
-      checkStatus(onSuccessTraining, onCancelOrFailedTraining);
+      checkStatus();
 
       // Callback function for when the training job succeeds
       function onSuccessTraining() {
@@ -71,8 +71,10 @@
           url: "/trainingEvaluationData/",
           success: function callback(response) {
             // the following two lines can be used for the confusion matrix in AP-47
-            trained_evaluation_data = response[0];
-            latest_model_evaluation_data = response[1];
+            trained_evaluation_data = response['training_evaluation_data'];
+            latest_model_evaluation_data = response['latest_model_evaluation_data'];
+            console.log(trained_evaluation_data)
+            console.log(latest_model_evaluation_data)
             if (
               canTrainedModelDeploy(
                 trained_evaluation_data,
@@ -85,9 +87,6 @@
             }
           },
         });
-        // Update global variable or local? (local maybe better)
-        // if accuracy is better or same, display option
-        // if accuracy not better then say not better, hence no option
       }
 
       function renderDeployButtons() {
@@ -164,13 +163,13 @@
         return sum / values.length || 0;
       }
 
-      function checkStatus(successCallBack, failedOrCancelledCallBack) {
+      function checkStatus() {
         let refreshId = setInterval(function () {
           $.ajax({
             type: "GET",
             url: "/trainingStatus/",
             data: { job_name: "{{job_name}}" },
-            success: function callback(response) {
+            success: async function callback(response) {
               console.log(response);
               status = response.state;
               // update status text and icon
@@ -189,7 +188,7 @@
                   displayIcon("none", "inline-block", "none");
                   // If the job succeeded, Dont continue the interval
                   clearInterval(refreshId);
-                  successCallBack();
+                  await onSuccessTraining()
                   break;
                 case "FAILED":
                 // No break - same function as FAILED || CANCELLED.
@@ -197,7 +196,7 @@
                   displayIcon("none", "none", "inline-block");
                   // If the job failed, Dont continue the interval
                   clearInterval(refreshId);
-                  failedOrCancelledCallBack();
+                  await onCancelOrFailedTraining()
                   break;
                 default:
                   displayIcon("block", "none", "none");
@@ -205,7 +204,7 @@
               }
             },
           });
-        }, 30000);
+        }, 30000); //TODO: make 30000
       }
 
       function displayIcon(

@@ -97,7 +97,6 @@ print("X_test shape: ", X_test.shape)
 
 
 
-
 print(X_train.shape[0])
 # Create DNN using tensorflow
 vectorize_layer = TextVectorization(max_tokens=512, output_mode='int', output_sequence_length=128)
@@ -133,15 +132,12 @@ print(np.array(Xeval).tolist())
 print('size of Xeval: ', len(Xeval))
 # Get eval data for retraining
 # reference: https://www.jcchouinard.com/confusion-matrix-in-scikit-learn/
-# TODO: confirm how input data is modified in code for prediction on webpage
 Y_eval_predict = model.predict(np.array(Xeval))
 # Reference: https://www.programiz.com/python-programming/list-comprehension
 Y_eval_predict = [0 if probability < 0.5 else 1 for probability in Y_eval_predict]
 print("size is: ", len(Y_eval_predict))
 cm = confusion_matrix(Yeval, Y_eval_predict)
 TN, FP, FN, TP = cm.ravel()
-#Yeval = Yeval.replace('Biased', 0)
-#Yeval = Yeval.replace('Non-biased', 1)
 print(cm)
 print(Y_eval_predict)
 
