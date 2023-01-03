@@ -4,24 +4,19 @@ from django.contrib.auth import authenticate, login, logout
 from django.views.decorators.cache import cache_page
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from .utils import extractSentences, sendRequest, getModels
+from .utils import extractSentences, sendRequest, getModels, softmax
 from app.retraining_utils import training_handler, training_job_monitor, database_bucket_sync, training_evaluation_retriever, retrained_model_deployer
 from django.http import HttpResponse
 import asyncio
 from asgiref.sync import async_to_sync, sync_to_async
 from django.http import JsonResponse
 import os
-<<<<<<< HEAD
 from .templatetags import evaluation
 from django.urls import reverse
 from django.http import HttpResponseRedirect
-=======
-import numpy as np
-from scipy.special import softmax
->>>>>>> 4f382d7 (Make changes to prediction method in order to send correct format)
 from transformers import DistilBertTokenizerFast, AutoModelForSequenceClassification
+import numpy as np
 from transformers_interpret import SequenceClassificationExplainer
-
 from app.templatetags.evaluation import getBatchPrediction, saveEvaluationData
 
 cwd = os.getcwd()  # Get the current working directory (cwd)
@@ -45,8 +40,11 @@ def onSubmit(request):
     model_name = data['name'] 
     print("Model name: " + model_name)
     sentenceList = extractSentences(text_input)
+
+    # Get the explanations for the sentences
     explanations = onGetExplanation(sentenceList)
 
+   # Get the prediction input ids for the sentences
     predictionInput = getPredictionArrays(sentenceList)
 
     # Saves the request into the DB
@@ -55,7 +53,7 @@ def onSubmit(request):
     
     if(len(sentenceList) > 0):
         predictionList = sendRequest(predictionInput, model_name)
-        normalised = softmax(predictionList, axis=1)
+        normalised = softmax(predictionList)
 
         # Saves the prediction in the DB, using the request
         prediction = Prediction (request = user_request, prediction = predictionList)

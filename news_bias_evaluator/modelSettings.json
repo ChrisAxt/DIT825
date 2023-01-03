@@ -1,8 +1,1 @@
-<<<<<<< HEAD
-{
-  "name": "projects/dit825/models/simple_model/versions/simple_model_1672423164",
-  "token": "ya29.a0AX9GBdXj1oMBbBoK-YSggIwJpGndE9aY1rMmCJ8KkzPpKMmEkYqOF2OCN8vd-wSuiljJmCZNWA-BzI0Hloj-5vmDhhLO8fraTWINEOdfrpRmu-iMcF8nqjZLVSWDKV2MzJAke0XKv4R1r844dkAavad5V2S2dwVyW8UroOAaCgYKAVoSAQASFQHUCsbCCRUM4eq7tHQK9zyFDioSKw0174"
-}
-=======
 {"name": "projects/dit825/models/dit825_bert_model", "token": ""}
->>>>>>> 4a382ae (Initiate update to use new bias model)
