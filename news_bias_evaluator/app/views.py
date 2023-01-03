@@ -188,7 +188,7 @@ def process_evaluation_request():
     return data
 
 @login_required
-def get_training_evaluation_data():
+def get_training_evaluation_data(request):
     training_evaluation_data = training_evaluation_retriever.get_training_evaluation_data()
     # TODO: Use saved data from database in AP-47 instead of getBatchPrediction()!
     latest_model_evaluation_data = getBatchPrediction()
