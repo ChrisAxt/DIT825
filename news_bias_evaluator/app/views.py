@@ -6,11 +6,9 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from .utils import extractSentences, sendRequest, getModels
 import os
-<<<<<<< HEAD
+import numpy as np
+from scipy.special import softmax
 from transformers import DistilBertTokenizerFast, AutoModelForSequenceClassification
-=======
-from transformers import BertTokenizer, DistilbertTokenizerFast, AutoModelForSequenceClassification
->>>>>>> a375d8d (Initiate update to use new bias model)
 from transformers_interpret import SequenceClassificationExplainer
 
 from app.templatetags.evaluation import getBatchPrediction, saveEvaluationData
@@ -36,19 +34,19 @@ def onSubmit(request):
     model_name = data['name'] 
     print("Model name: " + model_name)
     sentenceList = extractSentences(text_input)
-<<<<<<< HEAD
     explanations = onGetExplanation(sentenceList)
-=======
-    
+
     predictionInput = getPredictionArrays(sentenceList)
->>>>>>> a375d8d (Initiate update to use new bias model)
+    print('predictionInput: ', predictionInput)
 
     # Saves the request into the DB
     user_request = Request(request_content = text_input)
     user_request.save()
     
     if(len(sentenceList) > 0):
-        predictionList = sendRequest(sentenceList, model_name)
+        predictionList = sendRequest(predictionInput, model_name)
+        softmaxed = softmax(predictionList, axis=1)
+        print('predictionList: ', softmaxed)
 
         # Saves the prediction in the DB, using the request
         prediction = Prediction (request = user_request, prediction = predictionList)
@@ -57,10 +55,9 @@ def onSubmit(request):
         # Update the status of the request to processed since we received a prediction (allows to have easy stats on reliability)
         user_request.processed = True
         user_request.save
-        
     try:
         if (len(sentenceList) > 0 and len(sentenceList) == len(predictionList)):
-            items = {sentenceList[i]: { 'prediction': predictionList[i][0], 'input_id': explanations[str(i+1)] }for i in range(len(sentenceList))}
+            items = {sentenceList[i]: { 'prediction': softmaxed[i][np.argmax(softmaxed[i])], 'input_id': explanations[str(i+1)] }for i in range(len(sentenceList))}
     except:
         messages.error(request, "Failed to get a response from the selected model!")
  
@@ -75,6 +72,18 @@ def onSubmit(request):
 def getPredictionArrays(sentenceList):
     model_name = "distilbert-base-uncased"
     tokenizer = DistilBertTokenizerFast.from_pretrained(model_name)
+    predictionInput = []
+    for sentence in sentenceList:
+        tokenized = tokenizer(sentence,
+        truncation=False,
+        padding='max_length',
+        max_length=256,
+        return_tensors="tf")
+        # Create a dictionary from the tensor with the input_ids and attention_mask
+        tokenized = {'input_ids': tokenized['input_ids'].numpy().tolist()[0], 'attention_mask': tokenized['attention_mask'].numpy().tolist()[0]}
+
+        predictionInput.append(tokenized)
+    return predictionInput
 
 
 def onModelChange(selected_model):
