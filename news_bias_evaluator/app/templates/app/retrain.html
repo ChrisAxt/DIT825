@@ -81,7 +81,7 @@
             ) {
               renderDeployButtons();
             } else {
-              // Render avg score not enough
+              renderCantDeploy(); 
             }
           },
         });
@@ -92,6 +92,13 @@
 
       function renderDeployButtons() {
         document.getElementById("deployButtons").style.display = "inline-block";
+        displayIcon('none', 'inline-block', 'none')
+        document.getElementById("status_text").innerHTML = "Model can be deployed!"
+      }
+
+      function renderCantDeploy() {
+        document.getElementById("status_text").innerHTML = "Model cannot be deployed. Metric average of new model is less than current model."
+        displayIcon('none', 'none', 'inline-block')
       }
 
       // Handles event when the admin wants to deloy the model
@@ -146,7 +153,6 @@
             latestModelEvaluationData.neg_precision +
             latestModelEvaluationData.recall,
         ]);
-        // TODO: return if avg of results >= prev trained model
         return trainingEvalAvg >= latestModelEvalAvg;
       }
 
