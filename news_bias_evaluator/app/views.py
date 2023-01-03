@@ -200,7 +200,7 @@ def get_training_evaluation_data():
 def handle_deployment_choice(request):
     print('over here!')
     deployment_choice = request.POST.get('choice')
-    if deployment_choice is 'true':
+    if deployment_choice == 'true':
         status = retrained_model_deployer.deploy_model()
         return HttpResponse(status)
     else:

@@ -97,14 +97,17 @@
       }
 
       function renderCantDeploy() {
+        document.getElementById("deployButtons").style.display= "none"
         document.getElementById("status_text").innerHTML = "Model cannot be deployed. Metric average of new model is less than current model."
         displayIcon('none', 'none', 'inline-block')
       }
 
       // Handles event when the admin wants to deloy the model
       function sendDeploymentChoice(choice) {
+        document.getElementById("deployButtons").style.display = "none"
         if (choice === "true") {
           displayIcon("inline-block", "none", "none");
+          document.getElementById
           document.getElementById("status_text").innerHTML =
             "Deploying model...";
         } else {
@@ -116,9 +119,8 @@
           url: "/deploymentChoice/",
           data: { choice: choice, csrfmiddlewaretoken: '{{csrf_token}}' },
           success: function callback(response) {
-            console.log(response);
             if (choice === "true") {
-              if (response.isDeployed) {
+              if (response.includes('returncode=0')) {
                 displayIcon("none", "inline-block", "none");
                 document.getElementById("status_text").innerHTML =
                   "Model has been deployed";
@@ -297,5 +299,6 @@
     display: flex;
     gap: 1rem;
     justify-content: center;
+    display: none;
   }
 </style>
