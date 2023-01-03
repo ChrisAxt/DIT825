@@ -6,7 +6,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from .utils import extractSentences, sendRequest, getModels
 import os
-from transformers import BertTokenizer, AutoModelForSequenceClassification
+from transformers import DistilBertTokenizerFast, AutoModelForSequenceClassification
 from transformers_interpret import SequenceClassificationExplainer
 
 from app.templatetags.evaluation import getBatchPrediction, saveEvaluationData
@@ -33,6 +33,7 @@ def onSubmit(request):
     model_name = data['name'] 
     print("Model name: " + model_name)
     sentenceList = extractSentences(text_input)
+    explanations = onGetExplanation(sentenceList)
 
     # Saves the request into the DB
     user_request = Request(request_content = text_input)
@@ -82,9 +83,9 @@ def onModelChange(selected_model):
 
 # Gets the tokenized sentences and their corresponding weights pertraining to the prediction
 def onGetExplanation(sentences):
-    model_name = "bert-base-uncased"
+    model_name = "distilbert-base-uncased"
     model = AutoModelForSequenceClassification.from_pretrained(model_name)
-    tokenizer = BertTokenizer.from_pretrained(model_name)
+    tokenizer = DistilBertTokenizerFast.from_pretrained(model_name)
     cls_explainer = SequenceClassificationExplainer(
         model,
         tokenizer)

@@ -3,8 +3,6 @@ from os import path
 import os.path
 import pandas as pd
 
-# TODO(VG): Use the sqlite database for testing, instead of the csv file
-
 class TestInitialData(unittest.TestCase):
     # navigate to the directory where the data is stored and convert to dataframe
     p = "./notebooks/toy_model/media_bias.csv"
