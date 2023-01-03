@@ -7,7 +7,6 @@ import os
 def runTrainingJob():
         os.environ["GOOGLE_APPLICATION_CREDENTIALS"]="../trainers/toy_model/credentials.json"
 
-    #try:
         project_name = 'dit825'
         project_id = 'projects/{}'.format(project_name)
         cloudml = discovery.build('ml', 'v1')
@@ -27,6 +26,3 @@ def runTrainingJob():
         print('making request...')
         response = request.execute()
         return response, 'simple_model_train_job_'+date_time
-    #except Exception as err:
-    #    print(err)
-    #    raise err

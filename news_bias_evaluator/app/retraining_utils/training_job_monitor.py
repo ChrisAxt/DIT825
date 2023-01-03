@@ -3,7 +3,7 @@ from app.utils import getCurrentDateTime
 from google.api_core.client_options import ClientOptions
 import os
 
-
+# get the status of the specified job.
 def getStatus(job_name):
     project_name = 'dit825'
     project_id = 'projects/{}'.format(project_name)

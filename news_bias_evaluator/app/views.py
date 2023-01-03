@@ -147,22 +147,16 @@ def process_admin_request(request):
        }
        return render(request, 'app/evaluation.html', context)
     elif(type_of_request == 'retrain'):
-        # make sure latest simple_model is retrained
         print('entering retrain')
-        #try:
         # Sync database and cloud bucket
         database_bucket_sync.sync_db_and_bucket()
         # This execution will initiate the training job, it DOES NOT
         # wait for a successful/failed training job!
         training_response, job_name = training_handler.runTrainingJob()
         print(training_response)
-        print('exited retrain job')            # Pass via a context.
-        #print(training_response)
+        print('exited retrain job')            
+        # Pass via a context the job name.
         return render(request, 'app/retrain.html', {'job_name': job_name })
-        #except Exception as err:  
-        #    print('inside error')
-        #    print(err)
-        #    return redirect('app:main')
     elif(type_of_request == 'use-selected'):
         if(onModelChange(selected_model)):
             messages.success(request, 'Model successfully changed!')
@@ -194,7 +188,9 @@ def get_training_evaluation_data(request):
     training_evaluation_data = training_evaluation_retriever.get_training_evaluation_data()
     # TODO: Use saved data from database in AP-47 instead of getBatchPrediction()!
     latest_model_evaluation_data = getBatchPrediction()
+    # combine the eval data with accuracy, precision etc.
     latest_model_evaluation_data = training_evaluation_retriever.combine_metrics(latest_model_evaluation_data)
+    # Create json object to send both evaluations
     response_evaluation_data = {'training_evaluation_data': training_evaluation_data, 'latest_model_evaluation_data': latest_model_evaluation_data}
     print('getting training eval data')
     return JsonResponse(response_evaluation_data, content_type='application/json')
@@ -202,7 +198,9 @@ def get_training_evaluation_data(request):
 @login_required
 def handle_deployment_choice(request):
     print('over here!')
+    # get a deployment request
     deployment_choice = request.POST.get('choice')
+    # if the deployment is true, deploy a new version of the simple model.
     if deployment_choice == 'true':
         status, model_name = retrained_model_deployer.deploy_model()
         onModelChange('projects/dit825/models/simple_model/versions/'+model_name) 

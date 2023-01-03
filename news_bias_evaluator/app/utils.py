@@ -46,6 +46,7 @@ def sendRequest(sentenceList, model_name):
     except:
         print("Failed to get a response from the selected model!")
 
+# Get the current time with a specific format
 def getCurrentDateTime(format):
     current_datetime = datetime.datetime.now()
     current_datetime_formatted = current_datetime.strftime(format)
@@ -54,10 +55,10 @@ def getCurrentDateTime(format):
 def getModels():
     
     modelList = []
-    response = requests.get(endpoint+'//v1/projects/dit825/models/', headers={'Authorization': 'Bearer '+getToken()}).json()
-    
-    print(response)
     try:
+        response = requests.get(endpoint+'//v1/projects/dit825/models/', headers={'Authorization': 'Bearer '+getToken()}).json()
+    
+        print(response)
         modelList = getModelVersion(response['models'])
     except:
         print("Failed to connect to Google cloud!")

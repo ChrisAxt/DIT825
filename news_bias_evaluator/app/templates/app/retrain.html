@@ -50,6 +50,7 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 
     <script>
+      // define the different job statuses
       const statusMessageDisplayText = {
         QUEUED: "Training job is queued",
         PREPARING: "Preparing training job",
@@ -65,7 +66,7 @@
 
       // Callback function for when the training job succeeds
       function onSuccessTraining() {
-        // Get request data (accuracy and all that can come with same get request.)
+        // Get model evaluation data (accuracy and all that can come with same get request.)
         $.ajax({
           type: "GET",
           url: "/trainingEvaluationData/",
@@ -75,6 +76,8 @@
             latest_model_evaluation_data = response['latest_model_evaluation_data'];
             console.log(trained_evaluation_data)
             console.log(latest_model_evaluation_data)
+            // Check if the newely trained model has better metric avg to
+            // determine if it can be deployed
             if (
               canTrainedModelDeploy(
                 trained_evaluation_data,
@@ -88,13 +91,15 @@
           },
         });
       }
-
+      
+      // renders deployment related buttons
       function renderDeployButtons() {
         document.getElementById("deployButtons").style.display = "inline-block";
         displayIcon('none', 'inline-block', 'none')
         document.getElementById("status_text").innerHTML = "Model can be deployed!"
       }
-
+      // Renders a message in regards to not being
+      // able to deploy a model due to metric avg
       function renderCantDeploy() {
         document.getElementById("deployButtons").style.display= "none"
         document.getElementById("status_text").innerHTML = "Model cannot be deployed. Metric average of new model is less than current model."
@@ -103,10 +108,12 @@
 
       // Handles event when the admin wants to deloy the model
       function sendDeploymentChoice(choice) {
+        // Remove the buttons from the view
         document.getElementById("deployButtons").style.display = "none"
+        // If the admin wants the model to be deployed,
+        // change the status message
         if (choice === "true") {
           displayIcon("inline-block", "none", "none");
-          document.getElementById
           document.getElementById("status_text").innerHTML =
             "Deploying model...";
         } else {
@@ -120,6 +127,8 @@
           data: { choice: choice, csrfmiddlewaretoken: '{{csrf_token}}' },
           success: function callback(response) {
             if (choice === "true") {
+              // Check that there was no error when creating a new version 
+              // of the model in the backend (corresponds to a 0 return code)
               if (response.includes('returncode=0')) {
                 displayIcon("none", "inline-block", "none");
                 document.getElementById("status_text").innerHTML =
@@ -130,13 +139,9 @@
                   "Model could not be deployed, an error has occured.";
               }
             }
-            //TODO: in function in python, make check to change json file!
           },
         });
       }
-
-      // Callback function for whn the training job is cancelled or fails
-      function onCancelOrFailedTraining() {}
 
       // function to determine if model can be deployed
       function canTrainedModelDeploy(
@@ -155,16 +160,22 @@
             latestModelEvaluationData.neg_precision +
             latestModelEvaluationData.recall,
         ]);
+        // return a boolean on if the trained model has the same or
+        // better metric average
         return trainingEvalAvg >= latestModelEvalAvg;
       }
 
+      // calculate an average score of the metrics passed via the values parameter
       function calculateAverage(values) {
         // reference: https://stackoverflow.com/questions/10359907/how-to-compute-the-sum-and-average-of-elements-in-an-array
         const sum = values.reduce((sum, value) => sum + value, 0);
         return sum / values.length || 0;
       }
 
+      // get the status of the job
       function checkStatus() {
+        // set an interval so the status can be
+        // continuously monitored
         let refreshId = setInterval(function () {
           $.ajax({
             type: "GET",
@@ -205,9 +216,10 @@
               }
             },
           });
-        }, 30000); //TODO: make 30000
+        }, 30000);
       }
 
+      // function that displays different icons depending on the input parameters
       function displayIcon(
         loadingIconDisplayType,
         successIconDisplayType,

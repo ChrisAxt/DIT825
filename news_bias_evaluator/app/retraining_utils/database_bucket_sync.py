@@ -27,15 +27,14 @@ def get_data_from_db():
     print(db_eval_data_df)
     return db_training_data_df, db_eval_data_df
     
-
+# Upload the dataframe parameter to a google cloud bucket 
 def store_data_to_bucket(data_df, bucket_name, bucket_file):
-    
     storage_client = storage.Client()
     bucket = storage_client.bucket(bucket_name)
     blob = bucket.blob(bucket_file)
 
     blob.upload_from_string(convert_to_csv(data_df), 'text/csv')
 
-
+# convert a dataframe to a csv
 def convert_to_csv(db_data_df):
     return db_data_df.to_csv(index=False)
