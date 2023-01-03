@@ -38,4 +38,4 @@ def store_data_to_bucket(data_df, bucket_name, bucket_file):
 
 
 def convert_to_csv(db_data_df):
-    return db_data_df.to_csv()
+    return db_data_df.to_csv(index=False)
