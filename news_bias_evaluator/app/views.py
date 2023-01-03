@@ -11,6 +11,8 @@ from asgiref.sync import async_to_sync, sync_to_async
 from django.http import JsonResponse
 import os
 from .templatetags import evaluation
+from django.urls import reverse
+from django.http import HttpResponseRedirect
 
 from app.templatetags.evaluation import getBatchPrediction, saveEvaluationData
 
@@ -141,7 +143,7 @@ def process_admin_request(request):
 
     if(type_of_request == 'evaluate'):
        context = {
-            'evaluation' : process_evaluation_request()
+            'evaluation' : process_evaluation_request(request)
        }
        return render(request, 'app/evaluation.html', context)
     elif(type_of_request == 'retrain'):
@@ -182,7 +184,7 @@ async def get_training_status(request):
     return JsonResponse(status_response)
     
 @login_required
-def process_evaluation_request():
+def process_evaluation_request(request):
     data = getBatchPrediction()
     saveEvaluationData(data)
     return data
@@ -203,7 +205,7 @@ def handle_deployment_choice(request):
     deployment_choice = request.POST.get('choice')
     if deployment_choice == 'true':
         status, model_name = retrained_model_deployer.deploy_model()
-        onModelChange(model_name) 
+        onModelChange('projects/dit825/models/simple_model/versions/'+model_name) 
         return HttpResponse(status)
     else:
-        return redirect('app:main')
+        return HttpResponse()
