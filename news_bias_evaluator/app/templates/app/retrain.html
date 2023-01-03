@@ -38,13 +38,13 @@
 
     <!-- Buttons for deployment choice -->
     <div id="deployButtons" class="deploy-buttons">
-      <button class="txt-btn" onclick="onDeployClick('true')">
+      <button class="txt-btn" onclick="sendDeploymentChoice('true')">
         Deploy Model
       </button>
-      <button class="txt-btn" onclick="onCancelDeployClick('false')">
+      <button class="txt-btn" onclick="sendDeploymentChoice('false')">
         Cancel Deployment
       </button>
-    </div>
+    </form>
     {% block javascript %}
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
@@ -107,7 +107,7 @@
         $.ajax({
           type: "POST",
           url: "/deploymentChoice/",
-          data: choice,
+          data: { choice: choice, csrfmiddlewaretoken: '{{csrf_token}}' },
           success: function callback(response) {
             console.log(response);
             if (choice === "true") {
@@ -122,20 +122,9 @@
               }
             }
             //TODO: in function in python, make check to change json file!
-            //TODO: output text of "model will be deployed".
-            //TODO: have loading bar.
-            //TODO: successbar.
-            //TODO: Failure bar.
           },
         });
       }
-
-      // Handles the event when the admin does not want to deploy the model
-      function onCancelDeployClick() {
-        deploymentChoiceRequest(choice);
-      }
-
-      function deploymentChoiceRequest(choice) {}
 
       // Callback function for whn the training job is cancelled or fails
       function onCancelOrFailedTraining() {}
@@ -217,11 +206,11 @@
         cancelIconDisplayType
       ) {
         document.getElementById("loadingIcon").style.display =
-          "loadingIconDisplayType";
+          loadingIconDisplayType;
         document.getElementById("successIcon").style.display =
-          "successIconDisplayType";
+          successIconDisplayType;
         document.getElementById("cancelIcon").style.display =
-          "cancelIconDisplayType";
+          cancelIconDisplayType;
       }
     </script>
     {% endblock javascript %}

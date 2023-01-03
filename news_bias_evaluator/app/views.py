@@ -152,10 +152,10 @@ def process_admin_request(request):
         database_bucket_sync.sync_db_and_bucket()
         # This execution will initiate the training job, it DOES NOT
         # wait for a successful/failed training job!
-        training_response, job_name = training_handler.runTrainingJob()
+        # training_response, job_name = training_handler.runTrainingJob()
         print('exited retrain job')            # Pass via a context.
-        print(training_response)
-        return render(request, 'app/retrain.html', {'job_name': job_name})
+        #print(training_response)
+        return render(request, 'app/retrain.html', {'job_name': 'simple_model_train_job_20230102_231009'})
         #except Exception as err:  
         #    print('inside error')
         #    print(err)
@@ -180,12 +180,13 @@ async def get_training_status(request):
     # insert data from ai platform here.
     return JsonResponse(status_response)
     
-
+@login_required
 def process_evaluation_request():
     data = getBatchPrediction()
     saveEvaluationData(data)
     return data
 
+@login_required
 def get_training_evaluation_data():
     training_evaluation_data = training_evaluation_retriever.get_training_evaluation_data()
     # TODO: Use saved data from database in AP-47 instead of getBatchPrediction()!
@@ -194,3 +195,11 @@ def get_training_evaluation_data():
     response_evaluation_data = [training_evaluation_data, latest_model_evaluation_data]
     print('getting training eval data')
     return HttpResponse(response_evaluation_data, content_type='application/json')
+
+@login_required
+def handle_deployment_choice(request):
+    print('over here!')
+    deployment_choice = request.POST.get('choice')
+    print(deployment_choice)
+    return HttpResponse('hi')
+
