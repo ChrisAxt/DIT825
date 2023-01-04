@@ -219,7 +219,6 @@ def get_training_evaluation_data(request):
 
 @login_required
 def handle_deployment_choice(request):
-    print('over here!')
     # get a deployment request
     deployment_choice = request.POST.get('choice')
     # if the deployment is true, deploy a new version of the simple model.
