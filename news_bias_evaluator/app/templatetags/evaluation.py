@@ -15,6 +15,7 @@ def getBatchPrediction():
     # which is the same as the last 50 entries in the non-reversed
     # queryset
     dataPoints = LabeledSentence.objects.all().reverse()[:50]
+    print(dataPoints)
     sentenceList = [data.sentence for data in dataPoints]
     currentModel = getModelName()
     evaluationResults = sendRequest(sentenceList, currentModel)
@@ -46,11 +47,11 @@ def getEvaluationResults(results, currentModel):
     FP = 0
     FN = 0
     for result in results.items():
-        if (result[1]['true_value'] == 'Biased'): 
+        if (result[1]['true_value'] == '1'): 
             if (result[1]['predicted_value'] < 0.5):
                 TP += 1
             else: FN += 1
-        elif (result[1]['true_value'] == 'Non-biased'):
+        elif (result[1]['true_value'] == '0'):
             if (result[1]['predicted_value'] >= 0.5):
                 TN += 1
             else: FP += 1
