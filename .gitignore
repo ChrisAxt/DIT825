@@ -5,3 +5,6 @@
 /news_bias_evaluator/application_default_credentials.json
 /notebooks/toy_model/credentials.json
 /notebooks/bias_model/Model-References/
+*exe
+*.pb
+variables.*

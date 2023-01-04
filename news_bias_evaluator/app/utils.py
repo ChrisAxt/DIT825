@@ -7,6 +7,7 @@ import requests
 
 cwd = os.getcwd()
 endpoint = 'https://europe-west4-ml.googleapis.com'
+import re
 
 def extractSentences(text_input):
 
@@ -18,7 +19,11 @@ def extractSentences(text_input):
         for i in range(0, len(text_input)):
             # Check for sentence ending chars
             if (text_input[i] == "." or text_input[i] == "?" or text_input[i] == "!"):
-                # add handling for duplicate of sentence ending chars
+                #  # Remove all special characters excluding full stops
+                # re.sub(r'[^\w\s]', '', text_input[i])
+                # # Remove all extra spaces
+                # re.sub('  ', ' ', text_input[i])
+                # # add handling for duplicate of sentence ending chars
                 sentence = text_input[firstIndex:i+1]
                 if (len(sentence) > 1):
                     sentenceList.append(sentence.strip())
@@ -55,9 +60,9 @@ def getCurrentDateTime(format):
 def getModels():
     
     modelList = []
+
     try:
         response = requests.get(endpoint+'//v1/projects/dit825/models/', headers={'Authorization': 'Bearer '+getToken()}).json()
-    
         print(response)
         modelList = getModelVersion(response['models'])
     except:
