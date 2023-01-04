@@ -4,6 +4,7 @@ from google.api_core.client_options import ClientOptions
 from googleapiclient import discovery
 import datetime
 import requests
+import re
 
 cwd = os.getcwd()
 endpoint = 'https://europe-west4-ml.googleapis.com'
@@ -91,3 +92,46 @@ def getToken():
         return TOKEN
     except:
         print("Failed to access token from json file: modelSettings.json")
+
+
+
+def is_valid_news_link(news_link):
+    '''
+    Checks that the news_link format is respected
+    return True if it is, false if not
+    '''
+    _re_url = "http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+"
+    if (re.match(_re_url, news_link)):
+        return True
+    return False 
+
+def is_non_empty_sentence(sentence):
+    '''
+    checks the validity of the sentence
+    return True if it is, false if not
+    '''
+    _re_sentence_blank = "^\s+$"
+    if not sentence or re.match(_re_sentence_blank, sentence):
+        return False
+    return True
+
+def is_valid_label_bias(label_bias):
+    '''
+    Checks if the label bias is accepted
+    return True if it is, false if not
+    '''
+    if label_bias.lower() == 'biased' or label_bias.lower() == 'non-biased' or label_bias.lower() == '0' or label_bias.lower() == '1':
+        return True
+    return False
+
+def convert_label_bias(label_bias):
+    '''
+    convert the label_bias into string number value
+    Should be used after using is_valid_label_bias only
+    '''
+    if(label_bias.lower() == 'biased'):
+        return '1'
+    if(label_bias.lower() == 'non-biased'):
+        return '0'
+    else:
+        return label_bias
