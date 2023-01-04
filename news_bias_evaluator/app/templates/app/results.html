@@ -67,7 +67,7 @@
       </div>
       <div class="response-field">
         {% for sentence, item in resultList.items %} {% if item.prediction > 0.5 %}
-        <p class="biased">{{forloop.counter}}. {{item.prediction}}</p>
+        <p class="biased">{{forloop.counter}}. {{item.prediction|floatformat:6 }}</p>
         {% if item.prediction > 0.85 %}
         <p>
           The model has returned a high probability that the sentence is biased.

@@ -5,10 +5,10 @@ from googleapiclient import discovery
 import datetime
 import requests
 import re
+import numpy as np
 
 cwd = os.getcwd()
 endpoint = 'https://europe-west4-ml.googleapis.com'
-import re
 
 def extractSentences(text_input):
 
@@ -48,7 +48,7 @@ def sendRequest(sentenceList, model_name):
     
 
         response = prediction_request.execute()
-        return response['predictions'] 
+        return response['predictions']
     except:
         print("Failed to get a response from the selected model!")
 
@@ -93,8 +93,6 @@ def getToken():
     except:
         print("Failed to access token from json file: modelSettings.json")
 
-
-
 def is_valid_news_link(news_link):
     '''
     Checks that the news_link format is respected
@@ -135,3 +133,10 @@ def convert_label_bias(label_bias):
         return '0'
     else:
         return label_bias
+def softmax(array):
+    softmax_output = []
+    for i in range(len(array)):
+        softmax = list(np.exp(array[i] - np.max(array[i])) / np.exp(array[i] - np.max(array[i])).sum())
+        softmax_output.append(softmax)
+    return softmax_output
+
