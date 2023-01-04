@@ -44,8 +44,8 @@ df = df[df.Label_bias != 'No agreement']
 df = df[df.sentence != 'NaN']
 
 # Replace label with 0, 1
-df['Label_bias'] = df['Label_bias'].replace('Biased', 0)
-df['Label_bias'] = df['Label_bias'].replace('Non-biased', 1)
+df['Label_bias'] = df['Label_bias'].replace('Biased', 1)
+df['Label_bias'] = df['Label_bias'].replace('Non-biased', 0)
 
 # Only use sentence column and bias column
 df = df[['sentence', 'Label_bias']]
@@ -58,8 +58,8 @@ y = df['label']
 eval_df = eval_df.rename(columns={'sentence': 'text', 'Label_bias': 'label'})
 Xeval = eval_df['text']
 Yeval = eval_df['label']
-Yeval = Yeval.replace('Biased', 0)
-Yeval = Yeval.replace('Non-biased', 1)
+Yeval = Yeval.replace('Biased', 1)
+Yeval = Yeval.replace('Non-biased', 0)
 Xeval = np.array(Xeval).tolist()
 #Xeval = Xeval.str.replace('\d+', '', regex=True)
 #Xeval = Xeval.str.replace('[^\w\s]','',regex=True)

@@ -15,7 +15,7 @@ def prepare_data(db_data_df: pd.DataFrame):
     training_data_df = training_data_df.dropna()
 
     # Make numeric categorical values
-    training_data_df['Label_bias'] = training_data_df['Label_bias'].replace('Biased', 0)
-    training_data_df['Label_bias'] = training_data_df['Label_bias'].replace('Non-biased', 1)
+    training_data_df['Label_bias'] = training_data_df['Label_bias'].replace('Biased', 1)
+    training_data_df['Label_bias'] = training_data_df['Label_bias'].replace('Non-biased', 0)
 
     return training_data_df
