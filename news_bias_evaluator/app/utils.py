@@ -2,6 +2,7 @@ import json
 import os  # An included library with Python install.
 from google.api_core.client_options import ClientOptions
 from googleapiclient import discovery
+import datetime
 import requests
 
 cwd = os.getcwd()
@@ -44,10 +45,17 @@ def sendRequest(sentenceList, model_name):
         prediction_request = ml.projects().predict(
             name=model_name, body = request_body)
     
+
         response = prediction_request.execute()
         return response['predictions'] 
     except:
         print("Failed to get a response from the selected model!")
+
+# Get the current time with a specific format
+def getCurrentDateTime(format):
+    current_datetime = datetime.datetime.now()
+    current_datetime_formatted = current_datetime.strftime(format)
+    return current_datetime_formatted
 
 def getModels():
     
@@ -76,7 +84,7 @@ def getModelVersion(models):
 
 def getToken():
     try:
-        file = open(cwd+"\modelSettings.json", "r")
+        file = open(cwd+"/modelSettings.json", "r")
         data = json.load(file)
         TOKEN = data['token']
         file.close()

@@ -5,7 +5,15 @@ from django.views.decorators.cache import cache_page
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from .utils import extractSentences, sendRequest, getModels
+from app.retraining_utils import training_handler, training_job_monitor, database_bucket_sync, training_evaluation_retriever, retrained_model_deployer
+from django.http import HttpResponse
+import asyncio
+from asgiref.sync import async_to_sync, sync_to_async
+from django.http import JsonResponse
 import os
+from .templatetags import evaluation
+from django.urls import reverse
+from django.http import HttpResponseRedirect
 from transformers import DistilBertTokenizerFast, AutoModelForSequenceClassification
 from transformers_interpret import SequenceClassificationExplainer
 
@@ -66,14 +74,14 @@ def onSubmit(request):
 def onModelChange(selected_model):
     isUpdated = False
 
-    with open(cwd+'\modelSettings.json', errors="ignore") as file:
+    with open(cwd+'/modelSettings.json', errors="ignore") as file:
         data = json.load(file)
         file.close()
         print(data)
 
     data["name"] = selected_model
 
-    file = open(cwd+'\modelSettings.json', "w")
+    file = open(cwd+'/modelSettings.json', "w")
     json.dump(data, file)
     if (data['name'] == selected_model):
         isUpdated = True
@@ -146,7 +154,7 @@ def access_dashboard(request):
         return render(request, "app/dashboard.html", context)
     else:
         messages.info(request, 'Incorrect password or username.')
-        return redirect('app:login') 
+        return redirect('app:login')
 
 @login_required
 def process_admin_request(request):
@@ -157,11 +165,20 @@ def process_admin_request(request):
 
     if(type_of_request == 'evaluate'):
        context = {
-            'evaluation' : process_evaluation_request()
+            'evaluation' : process_evaluation_request(request)
        }
        return render(request, 'app/evaluation.html', context)
     elif(type_of_request == 'retrain'):
-        return render(request, 'app/retrain.html')
+        print('entering retrain')
+        # Sync database and cloud bucket
+        database_bucket_sync.sync_db_and_bucket()
+        # This execution will initiate the training job, it DOES NOT
+        # wait for a successful/failed training job!
+        training_response, job_name = training_handler.runTrainingJob()
+        print(training_response)
+        print('exited retrain job')            
+        # Pass via a context the job name.
+        return render(request, 'app/retrain.html', {'job_name': job_name })
     elif(type_of_request == 'use-selected'):
         if(onModelChange(selected_model)):
             messages.success(request, 'Model successfully changed!')
@@ -172,8 +189,42 @@ def process_admin_request(request):
     else:
         return redirect('app:main')
 
-def process_evaluation_request():
+@sync_to_async
+@login_required
+@async_to_sync
+async def get_training_status(request):
+    job_name = request.GET.get('job_name', None) 
+    status_response = training_job_monitor.getStatus(job_name)
+    print(status_response)
+    # insert data from ai platform here.
+    return JsonResponse(status_response)
+    
+@login_required
+def process_evaluation_request(request):
     data = getBatchPrediction()
     saveEvaluationData(data)
     return data
 
+@login_required
+def get_training_evaluation_data(request):
+    training_evaluation_data = training_evaluation_retriever.get_training_evaluation_data()
+    # TODO: Use saved data from database in AP-47 instead of getBatchPrediction()!
+    latest_model_evaluation_data = getBatchPrediction()
+    # combine the eval data with accuracy, precision etc.
+    latest_model_evaluation_data = training_evaluation_retriever.combine_metrics(latest_model_evaluation_data)
+    # Create json object to send both evaluations
+    response_evaluation_data = {'training_evaluation_data': training_evaluation_data, 'latest_model_evaluation_data': latest_model_evaluation_data}
+    print('getting training eval data')
+    return JsonResponse(response_evaluation_data, content_type='application/json')
+
+@login_required
+def handle_deployment_choice(request):
+    # get a deployment request
+    deployment_choice = request.POST.get('choice')
+    # if the deployment is true, deploy a new version of the simple model.
+    if deployment_choice == 'true':
+        status, model_name = retrained_model_deployer.deploy_model()
+        onModelChange('projects/dit825/models/simple_model/versions/'+model_name) 
+        return HttpResponse(status)
+    else:
+        return HttpResponse()
