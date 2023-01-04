@@ -11,5 +11,6 @@ urlpatterns = [
     path('logout/', views.log_out, name='logout'),
     path('admin/dashboard/', views.access_dashboard, name="dashboard"),
     path('admin/dashboard/process_admin_request/', views.process_admin_request, name="process_admin_request"),
-    path('admin/database/', admin.site.urls, name='database')
+    path('admin/database/', admin.site.urls, name='database'),
+    path('admin/upload/csv/', views.upload_csv, name='upload_csv'),
 ]

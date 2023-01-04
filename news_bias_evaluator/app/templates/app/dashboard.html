@@ -16,7 +16,7 @@
 
     {% include 'app/header.html' %} 
     <h1>DASHBOARD</h1>
-    <a href='/admin/database/'%}"><button class="txt-btn">Go to database</button></a>
+    <a href='/admin/database/'%}><button class="txt-btn">Go to database</button></a>
     <div class="dashboard-container">
         <section class="admin-request-container">
                 <form class="form-input" action="{%url 'app:process_admin_request'%}" method="post">
@@ -43,9 +43,16 @@
                     <input class="txt-btn" type="submit" value="Start">
                 </form>
         </section>
-        <div class="plot-container">
-            <img src="{% static 'app/images/plot-placeholder.png' %}" alt="plot">
-        </div>
+        <form class="form-input" action="{% url 'app:upload_csv' %}" method="POST" enctype="multipart/form-data" class="form-horizontal"> 
+            {% csrf_token %}
+            <div class="upload_container">
+                <label for="name" >Upload data from csv file: </label>
+                <div >
+                    <input type="file" name="csv_file" id="csv_file" required="True" class="form-control">
+                </div>
+                    <button class=""> <span style="margin-right:5px;"></span>Upload </button>
+            </div>
+            </form>
     </div>
    
     
@@ -53,6 +60,7 @@
 </html>
 
 <style>
+    
 .dashboard-container {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
@@ -74,4 +82,16 @@
     padding-inline: 1rem;
     margin-inline: auto;
 }
+
+.upload-container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    align-items: left;
+}
+
+.upload-container > label {
+    padding-inline: 1rem;
+}
+
 </style>

@@ -1,11 +1,13 @@
 import json
+import logging
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.views.decorators.cache import cache_page
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from .utils import extractSentences, sendRequest, getModels, softmax
+from .utils import decode_utf8, extractSentences, sendRequest, getModels, softmax
 import os
+import csv
 import numpy as np
 from transformers import DistilBertTokenizerFast, AutoModelForSequenceClassification
 from transformers_interpret import SequenceClassificationExplainer
@@ -13,7 +15,7 @@ from transformers_interpret import SequenceClassificationExplainer
 from app.templatetags.evaluation import getBatchPrediction, saveEvaluationData
 
 cwd = os.getcwd()  # Get the current working directory (cwd)
-from .models import Request, Prediction
+from .models import Article, LabeledSentence, Request, Prediction
 
 dashboard_context = {}
 
@@ -195,8 +197,38 @@ def process_admin_request(request):
     else:
         return redirect('app:main')
 
+
+def upload_csv(request):
+    csv_file = request.FILES["csv_file"]
+    if not csv_file.name.endswith('.csv'):
+        messages.error(request,'File is not CSV type')
+        return
+    #if file is too large, return
+    if csv_file.multiple_chunks():
+        messages.error(request,"Uploaded file is too big (%.2f MB)." % (csv_file.size/(1000*1000),))
+        return
+
+    reader = csv.DictReader(decode_utf8(csv_file))
+   
+	#loop over the lines and save them in db
+    for row in reader:
+        new_article = Article(news_link=row['news_link'], outlet=row['outlet'])
+        print(new_article)
+        # new_article.save()
+        new_sentence = LabeledSentence(
+            sentence=row['sentence'],
+            label_bias=row['label'],
+            article = new_article,
+        )
+        print(new_sentence)
+        # new_sentence.save()
+
+	# except Exception as e:
+	# 	logging.getLogger("error_logger").error("Unable to upload file. "+repr(e))
+	# 	messages.error(request,"Unable to upload file. "+repr(e))
+    return render(request, "app/dashboard.html")
+
 def process_evaluation_request():
     data = getBatchPrediction()
     saveEvaluationData(data)
     return data
-
