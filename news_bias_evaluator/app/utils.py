@@ -140,3 +140,6 @@ def softmax(array):
         softmax_output.append(softmax)
     return softmax_output
 
+def decode_utf8(input_iterator):
+    for l in input_iterator:
+        yield l.decode('utf-8')
