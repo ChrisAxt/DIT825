@@ -4,7 +4,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.views.decorators.cache import cache_page
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from .utils import decode_utf8, extractSentences, sendRequest, getModels, softmax
+from .utils import convert_label_bias, decode_utf8, extractSentences, is_non_empty_sentence, is_valid_label_bias, is_valid_news_link, sendRequest, getModels, softmax
 from app.retraining_utils import training_handler, training_job_monitor, database_bucket_sync, training_evaluation_retriever, retrained_model_deployer
 from django.http import HttpResponse
 import asyncio
@@ -257,6 +257,7 @@ def upload_csv(request):
     #get the csv file
     try:
         csv_file = request.FILES["csv_file"]
+        #if file is not csv, return
         if not csv_file.name.endswith('.csv'):
             messages.error(request,'File is not CSV type')
             return
@@ -264,23 +265,38 @@ def upload_csv(request):
         if csv_file.multiple_chunks():
             messages.error(request,"Uploaded file is too big (%.2f MB)." % (csv_file.size/(1000*1000),))
             return
+    # if error with upload occurs, display error message
     except Exception as e:
         logging.getLogger("error_logger").error("Unable to upload csv file. " + repr(e))
         messages.error(request,"Unable to upload csv file. " + repr(e))
 
+    # if no errors, read the csv file as a dictionary
     reader = csv.DictReader(decode_utf8(csv_file))
-   
+
 	#loop over the lines and save them in db
     for row in reader:
-        new_article = Article(news_link=row['news_link'], outlet=row['outlet'])
-        print(new_article)
-        # new_article.save()
-        new_sentence = LabeledSentence(
-            sentence=row['sentence'],
-            label_bias=row['label'],
-            article = new_article,
-        )
-        print(new_sentence)
-        # new_sentence.save()
+        news_link = row['news_link']
+        outlet=row['outlet']
+        sentence=row['sentence']
+        label_bias=row['label']
+        pub_year = row['pub_year']
+        filename = csv_file.name
+
+        # checks to see if data is valid, if so, saves it to the database
+        if(is_valid_news_link(news_link) and is_non_empty_sentence(sentence) and is_valid_label_bias(label_bias)):
+            new_article = Article(
+                news_link=news_link, 
+                outlet=outlet, 
+                pub_year=pub_year,
+            )
+            new_article.save()
+
+            new_sentence = LabeledSentence(
+                    sentence=sentence,
+                    label_bias=convert_label_bias(label_bias), # converts the label_bias to number format
+                    article = new_article,
+                    filename = filename,
+            )
+            new_sentence.save()
 
     return render(request, "app/dashboard.html")
