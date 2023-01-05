@@ -1,77 +1,146 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Bias Evaluator</title>
     {% load static %}
-    <link rel="stylesheet" href="{% static 'app/style.css' %}">
-    <link rel="stylesheet" href="{% static 'app/main.css' %}">
-    <link rel="preconnect" href="https://fonts.googleapis.com"> 
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin> 
-    <link href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@300;400;700&family=Varela+Round&display=swap" rel="stylesheet">
-</head>
-<body>
-
-    {% include 'app/header.html' %} 
+    <link rel="stylesheet" href="{% static 'app/style.css' %}" />
+    <link rel="stylesheet" href="{% static 'app/main.css' %}" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@300;400;700&family=Varela+Round&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    {% include 'app/header.html' %}
     <h1>DASHBOARD</h1>
-    <a href='/admin/database/'%}"><button class="txt-btn">Go to database</button></a>
+    <a href="/admin/database/" %}
+      ><button class="txt-btn">Go to database</button></a
+    >
     <div class="dashboard-container">
-        <section class="admin-request-container">
-                <form class="form-input" action="{%url 'app:process_admin_request'%}" method="post">
-                    {% csrf_token %}
-                    <div class="model-selection-container">
-                        <label for="model-options">Select model to use</label>
-                        <select name="model-options" id="model-options" >
-                        {% if models %}
-                            {% for model in models %}
-                            <option value="{{model}}">{{model}}</option>
-                            {% endfor %}
-                        {% else %}
-                            <option value="no-models">No models registered</option>
-                        {% endif %}
-                        </select>
-                    </div>
-                    <div class="model-selection-container"><label for="action-selection">Choose an action to take</label>
-                        <select name="action-selection" id="action-selection">
-                            <option value="evaluate">Evaluate</option>
-                            <option value="retrain">Retrain</option>
-                            <option value="use-selected">Set as active model</option>
-                        </select>
-                    </div>
-                    <input class="txt-btn" type="submit" value="Start">
-                </form>
-        </section>
-        <div class="plot-container">
-            <img src="{% static 'app/images/plot-placeholder.png' %}" alt="plot">
-        </div>
+      <section class="admin-request-container">
+        <form
+          class="form-input"
+          action="{%url 'app:process_admin_request'%}"
+          method="post"
+        >
+          {% csrf_token %}
+          <div class="model-selection-container">
+            <label for="model-options">Select model to use</label>
+            <select name="model-options" id="model-options">
+              {% if models %} {% for model in models %}
+              <option value="{{model}}">{{model}}</option>
+              {% endfor %} {% else %}
+              <option value="no-models">No models registered</option>
+              {% endif %}
+            </select>
+          </div>
+          <div class="model-selection-container">
+            <label for="action-selection">Choose an action to take</label>
+            <select name="action-selection" id="action-selection">
+              <option value="evaluate">Evaluate</option>
+              <option value="retrain">Retrain</option>
+              <option value="use-selected">Set as active model</option>
+            </select>
+          </div>
+          <input class="txt-btn" type="submit" value="Start" />
+        </form>
+      </section>
+      <section class="admin-upload-container">
+        <form
+          class="form-input"
+          action="{% url 'app:upload_csv' %}"
+          method="POST"
+          enctype="multipart/form-data"
+          class="form-horizontal"
+        >
+          {% csrf_token %}
+          <div class="upload_container">
+            <label class="upload-label" for="name"
+              >Upload data from csv file:
+            </label>
+            <br />
+            <input
+              type="file"
+              name="csv_file"
+              id="csv_file"
+              required="True"
+              class="upload-input"
+            />
+            <button class="upload-button">Upload</button>
+            <h4 class="upload-message">{{ result }}. </br> {{ amount }} datapoints from {{ file }} uploaded.</h4>
+          </div>
+        </form>
+      </section>
     </div>
-   
-    
-</body>
+  </body>
 </html>
 
 <style>
-.dashboard-container {
+  .dashboard-container {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     margin: 4vh;
-}
+  }
 
-.admin-request-container,
-.plot-container {
+  .admin-request-container,
+  .plot-container {
     display: flex;
     flex-direction: column;
     align-items: center;
-}
+  }
 
-.model-selection-container {
-    display: flex;    
-}
+  .admin-upload-container {
+    width: 50vw;
+  }
 
-.model-selection-container > * {
+  .model-selection-container {
+    display: flex;
+  }
+
+  .model-selection-container > * {
     padding-inline: 1rem;
     margin-inline: auto;
-}
+  }
+
+  .upload-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  .upload-label {
+    margin-bottom: 10px;
+  }
+
+  .upload-button {
+    margin-top: 20px;
+    background-color: var(--backgound-accent);
+    border: none;
+    border-radius: var(--border-radius);
+    color: var(--txt-color);
+    padding: 0.2rem;
+    cursor: pointer;
+    font-size: 20px;
+    align-self: center;
+  }
+
+  .upload-input {
+    margin-top: 15px;
+    border: none;
+    border-radius: var(--border-radius);
+    padding: 0.2rem;
+    font-size: 15px;
+  }
+  
+  .upload-message {
+    margin-top: 15px;
+    color: var(--txt-color);
+    font-weight: 500;
+  }
+
 </style>
