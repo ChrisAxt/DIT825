@@ -272,7 +272,9 @@ def upload_csv(request):
 
     # if no errors, read the csv file as a dictionary
     reader = csv.DictReader(decode_utf8(csv_file))
-
+    
+    count = 0
+    result = ""
 	#loop over the lines and save them in db
     for row in reader:
         news_link = row['news_link']
@@ -298,5 +300,12 @@ def upload_csv(request):
                     filename = filename,
             )
             new_sentence.save()
+            count += 1
 
-    return render(request, "app/dashboard.html")
+    context = {
+        'result': "Successful upload",
+        'amount': count,
+        'file': csv_file.name,
+    }
+
+    return render(request, "app/dashboard.html", context)
