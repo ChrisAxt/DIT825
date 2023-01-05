@@ -73,3 +73,13 @@ class Prediction(models.Model):
     request = models.ForeignKey(Request, on_delete=models.CASCADE) 
     prediction = models.TextField()
 
+class ModelEvaluation(models.Model):
+    '''
+    Schema for model evaluation. 
+    '''
+    version_name = models.CharField(max_length=100, primary_key=True)
+    date_evaluated = models.DateTimeField().auto_now
+    true_positive = models.IntegerField()
+    false_positive = models.IntegerField()
+    false_negative = models.IntegerField()
+    true_negative = models.IntegerField()
