@@ -5,7 +5,8 @@ import csv
 
 # Script to add the pseudo labelled data to the database
 def run():
-    with open('app/assets/pseudo_labelled.csv', errors="ignore") as file:
+    filename = 'app/assets/pseudo_labelled.csv'
+    with open(filename, errors="ignore") as file:
         reader = csv.DictReader(file, delimiter=',')
 
         # Iterate over each row in the csv file
@@ -39,6 +40,7 @@ def run():
                     sentence=sentence,
                     label_bias=convert_label_bias(label_bias), # converts the label_bias to number format
                     article = new_article,
+                    filename = filename,
                 )
                 new_sentence.save()
                 valid_count += 1
