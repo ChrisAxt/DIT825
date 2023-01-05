@@ -1,158 +1,160 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Bias Evaluator</title>
-  {% load static %}
-  <link rel="stylesheet" href="{% static 'app/style.css' %}" />
-  <link rel="stylesheet" href="{% static 'app/evaluation.css' %}" />
-  <link rel="stylesheet" href="{% static 'app/retrain.css' %}" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@300;400;700&family=Varela+Round&display=swap"
-    rel="stylesheet" />
-</head>
-<body>
-  {% include 'app/header.html' %}
-  <h2>Retraining</h2>
-  <!-- ICONS FOR STATUS -->
-  <div id="loadingIcon" class="loading-icon"></div>
 
-  <div id="successIcon" class="wrapper">
-    <div class="circle-success">
-      <div class="checkMark-success"></div>
-    </div>
-  </div>
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Bias Evaluator</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'app/style.css' %}" />
+    <link rel="stylesheet" href="{% static 'app/evaluation.css' %}" />
+    <link rel="stylesheet" href="{% static 'app/retrain.css' %}" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@300;400;700&family=Varela+Round&display=swap"
+      rel="stylesheet" />
+  </head>
 
-  <div id="cancelIcon" class="wrapper">
-    <div class="circle-cancel">
-      <div class="checkMark-cancel"></div>
-    </div>
-  </div>
-  <!-- TEXT FOR STATUS-->
-  <div class="info-text">
-    <span id="status_text">This may take several minutes...</span>
-  </div>
+  <body>
+    {% include 'app/header.html' %}
+    <h2>Retraining</h2>
+    <!-- ICONS FOR STATUS -->
+    <div id="loadingIcon" class="loading-icon"></div>
 
-  <div class="current-evaluation-container" id="current-eval">
-    <div class="confmatrix">
-      <h4 class="section-heading">Confusion Matrix</h4>
-      <div class="confPos">
-        <h4 class="headingCM">True Bias</h4>
-        <div class="confItem" id="C-CM-TP"> 
-        </div>
-        <div class="confItem" id="C-CM-FN"> 
-        </div>
-      </div>
-      <div class="confNeg">
-        <h4 class="headingCM">True Non-bias</h4>
-        <div class="confItem" id="C-CM-FP"> 
-        </div>
-        <div class="confItem" id="C-CM-TN"> 
-        </div>
-      </div>
-      <div class="prediction-headings">
-        <h5 class="headingCM" id="C-model-name"></h5>
-        <h4 class="headingCM">Predicted Bias</h4>
-        <h4 class="headingCM">Predicted Non-bias</h4>
-      </div>
-    </div>
-    <div>
-      <h4>Analysis of current model:</h4>
-      <div class="analysis-results">
-        <div class="eval-item">
-          <p>Accuracy: </p>
-
-          <p id="current_accuracy"></p>
-        </div>
-        <div class="eval-item">
-          <p>Precision: </p>
-
-          <p id="current_precision"></p>
-        </div>
-        <div class="eval-item">
-          <p>Recall: </p>
-
-          <p id="current_recall"></p>
-        </div>
-        <div class="eval-item">
-          <p>Negative Pred Value: </p>
-
-          <p id="current_negPrecision"></p>
-        </div>
-        <div class="eval-item">
-          <p>F1 score: </p>
-
-          <p id="current_F1Score"></p>
-        </div>
+    <div id="successIcon" class="wrapper">
+      <div class="circle-success">
+        <div class="checkMark-success"></div>
       </div>
     </div>
 
-    <div class="retrained-evaluation-container" id="retrained-eval">
+    <div id="cancelIcon" class="wrapper">
+      <div class="circle-cancel">
+        <div class="checkMark-cancel"></div>
+      </div>
+    </div>
+    <!-- TEXT FOR STATUS-->
+    <div class="info-text">
+      <span id="status_text">This may take several minutes...</span>
+    </div>
+
+    <div class="current-evaluation-container" id="current-eval">
       <div class="confmatrix">
         <h4 class="section-heading">Confusion Matrix</h4>
         <div class="confPos">
           <h4 class="headingCM">True Bias</h4>
-          <div class="confItem" id="R-CM-TP"> 
+          <div class="confItem" id="C-CM-TP">
           </div>
-          <div class="confItem" id="R-CM-FN"> 
+          <div class="confItem" id="C-CM-FN">
           </div>
         </div>
         <div class="confNeg">
           <h4 class="headingCM">True Non-bias</h4>
-          <div class="confItem" id="R-CM-FP"> 
+          <div class="confItem" id="C-CM-FP">
           </div>
-          <div class="confItem" id="R-CM-TN"> 
+          <div class="confItem" id="C-CM-TN">
           </div>
         </div>
         <div class="prediction-headings">
-          <h5 class="headingCM" id="R-model-name"></h5>
+          <h5 class="headingCM" id="C-model-name"></h5>
           <h4 class="headingCM">Predicted Bias</h4>
           <h4 class="headingCM">Predicted Non-bias</h4>
         </div>
       </div>
       <div>
-        <h4>Analysis of retrained model:</h4>
+        <h4>Analysis of current model:</h4>
         <div class="analysis-results">
           <div class="eval-item">
             <p>Accuracy: </p>
 
-            <p id="retrained_accuracy"></p>
+            <p id="current_accuracy"></p>
           </div>
           <div class="eval-item">
             <p>Precision: </p>
 
-            <p id="retrained_precision"></p>
+            <p id="current_precision"></p>
           </div>
           <div class="eval-item">
             <p>Recall: </p>
 
-            <p id="retrained_recall"></p>
+            <p id="current_recall"></p>
           </div>
           <div class="eval-item">
             <p>Negative Pred Value: </p>
 
-            <p id="retrained_negPrecision"></p>
+            <p id="current_negPrecision"></p>
           </div>
           <div class="eval-item">
             <p>F1 score: </p>
 
-            <p id="retrained_F1Score"></p>
+            <p id="current_F1Score"></p>
           </div>
         </div>
-        <!-- Buttons for deployment choice -->
-      <div id="deployButtons" class="deploy-buttons" style="display: inline-block; ">
-        <button class="txt-btn" style="font-size: medium;" onclick="sendDeploymentChoice('true')">
-          Deploy Model
-        </button>
-        <br><br>
-        <button class="txt-btn" style="font-size: small;" onclick="sendDeploymentChoice('false')">
-          Cancel Deployment
-        </button>
       </div>
-      </div>
+
+      <div class="retrained-evaluation-container" id="retrained-eval">
+        <div class="confmatrix">
+          <h4 class="section-heading">Confusion Matrix</h4>
+          <div class="confPos">
+            <h4 class="headingCM">True Bias</h4>
+            <div class="confItem" id="R-CM-TP">
+            </div>
+            <div class="confItem" id="R-CM-FN">
+            </div>
+          </div>
+          <div class="confNeg">
+            <h4 class="headingCM">True Non-bias</h4>
+            <div class="confItem" id="R-CM-FP">
+            </div>
+            <div class="confItem" id="R-CM-TN">
+            </div>
+          </div>
+          <div class="prediction-headings">
+            <h5 class="headingCM" id="R-model-name"></h5>
+            <h4 class="headingCM">Predicted Bias</h4>
+            <h4 class="headingCM">Predicted Non-bias</h4>
+          </div>
+        </div>
+        <div>
+          <h4>Analysis of retrained model:</h4>
+          <div class="analysis-results">
+            <div class="eval-item">
+              <p>Accuracy: </p>
+
+              <p id="retrained_accuracy"></p>
+            </div>
+            <div class="eval-item">
+              <p>Precision: </p>
+
+              <p id="retrained_precision"></p>
+            </div>
+            <div class="eval-item">
+              <p>Recall: </p>
+
+              <p id="retrained_recall"></p>
+            </div>
+            <div class="eval-item">
+              <p>Negative Pred Value: </p>
+
+              <p id="retrained_negPrecision"></p>
+            </div>
+            <div class="eval-item">
+              <p>F1 score: </p>
+
+              <p id="retrained_F1Score"></p>
+            </div>
+          </div>
+          <!-- Buttons for deployment choice -->
+          <div id="deployButtons" class="deploy-buttons" style="display: inline-block; ">
+            <button class="txt-btn" style="font-size: medium;" onclick="sendDeploymentChoice('true')">
+              Deploy Model
+            </button>
+            <br><br>
+            <button class="txt-btn" style="font-size: small;" onclick="sendDeploymentChoice('false')">
+              Cancel Deployment
+            </button>
+          </div>
+        </div>
         {% block javascript %}
 
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
@@ -190,7 +192,7 @@
                     trained_evaluation_data,
                     latest_model_evaluation_data
                   )
-                  ) {
+                ) {
                   renderDeployButtons();
                 } else {
                   renderCantDeploy();
@@ -253,15 +255,15 @@
             current_FN.innerHTML = latest_model_evaluation_data.false_negative
             current_FP.innerHTML = latest_model_evaluation_data.false_positive
             current_TN.innerHTML = latest_model_evaluation_data.true_negative
-            model_name = latest_model_evaluation_data.model.slice(latest_model_evaluation_data.model.indexOf("versions")+9, latest_model_evaluation_data.model.length)
+            model_name = latest_model_evaluation_data.model.slice(latest_model_evaluation_data.model.indexOf("versions") + 9, latest_model_evaluation_data.model.length)
             document.getElementById("C-model-name").innerHTML = model_name
 
             if (latest_model_evaluation_data.true_positive > latest_model_evaluation_data.false_negative) {
               current_TP.className = "confItemGreater"
             } else { current_FN.className = "confItemGreater" }
             if (latest_model_evaluation_data.false_positive > latest_model_evaluation_data.true_negative) {
-              current_FP.className="confItemGreater"
-            }else {current_TN.className = "confItemGreater"}
+              current_FP.className = "confItemGreater"
+            } else { current_TN.className = "confItemGreater" }
           }
 
           function popluateRetrainedConfMatrix(trained_evaluation_data) {
@@ -280,10 +282,10 @@
               retrained_TP.className = "confItemGreater"
             } else { retrained_FN.className = "confItemGreater" }
             if (trained_evaluation_data.false_positive > trained_evaluation_data.true_negative) {
-              retrained_FP.className="confItemGreater"
-            }else {retrained_TN.className = "confItemGreater"}
+              retrained_FP.className = "confItemGreater"
+            } else { retrained_TN.className = "confItemGreater" }
           }
-          
+
 
           // Handles event when the admin wants to deloy the model
           function sendDeploymentChoice(choice) {
@@ -413,5 +415,6 @@
           }
         </script>
         {% endblock javascript %}
-</body>
+  </body>
+
 </html>
