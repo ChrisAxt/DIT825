@@ -39,7 +39,6 @@ class Article(models.Model):
     political_type = models.CharField(max_length=50)
     pub_year = models.IntegerField(null=True)
     add_date = models.DateField(default=current_date)
-    
         # Returned when a particular article is queried
 
 
@@ -56,7 +55,7 @@ class LabeledSentence(models.Model):
     label_opinion = models.CharField(max_length=50)
     bias_words = models.TextField(blank=True)
     article = models.ForeignKey(Article, on_delete=models.CASCADE)  #if an article is deleted, the sentence will be deleted as well
-    
+    filename = models.TextField(default="not provided")
     # Returned when a particular sentence is queried
 
 class Request(models.Model):
