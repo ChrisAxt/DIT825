@@ -1,4 +1,5 @@
 .evaluation-container {
+    justify-content: center;
     display: flex;
     gap: 40px;
 }
