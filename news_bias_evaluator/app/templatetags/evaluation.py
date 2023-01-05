@@ -63,11 +63,11 @@ def getEvaluationResults(results, currentModel):
     FN = 0
     for result in results.items():
         if (result[1]['true_value'] == '1'): 
-            if (result[1]['predicted_value'] < 0.5):
+            if (result[1]['predicted_value'] > 0.5):
                 TP += 1
             else: FN += 1
         elif (result[1]['true_value'] == '0'):
-            if (result[1]['predicted_value'] >= 0.5):
+            if (result[1]['predicted_value'] <= 0.5):
                 TN += 1
             else: FP += 1
     return {'true_positive':TP, 'true_negative':TN, 'false_positive': FP, 'false_negative': FN, 'model': currentModel}

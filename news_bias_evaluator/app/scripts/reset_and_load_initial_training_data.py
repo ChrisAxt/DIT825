@@ -5,11 +5,14 @@ import csv
 # Script to extract a cleaned version of the dataset (unnecessary columns and rows removed)
 # If necessary we can modify this to extract the data from the original dataset
 def run():
-    with open('app/assets/media_bias_dataset.csv', errors="ignore") as file:
+
+    filename = 'app/assets/media_bias_dataset.csv'
+
+    with open(filename, errors="ignore") as file:
         reader = csv.DictReader(file, delimiter=',')
 
         # Delete all entries from the database
-        print("Deleting all items in database \n")
+        print("Deleting all articles in database. (Labeled sentences will be deleted as well) \n")
         Article.objects.all().delete()
         print("Done")
         # Itterate over each row in the csv file
@@ -38,7 +41,7 @@ def run():
                     political_type = political_type,
                     article = article,
                     # -> dummy date to differenciate initial dataset from other ones. If commented out, -> default value
-                    # add_date = '2022-11-01' 
+                    add_date = '2022-11-01',
                 )
                 new_article.save()
 
@@ -48,6 +51,7 @@ def run():
                     label_bias=convert_label_bias(label_bias),
                     label_opinion=label_opinion,
                     article = new_article,
+                    filename = filename
                 )
                 new_sentence.save()
                 valid_count += 1
