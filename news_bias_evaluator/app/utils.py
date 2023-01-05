@@ -6,6 +6,9 @@ import datetime
 import requests
 import re
 import numpy as np
+from .models import ModelEvaluation
+from transformers import DistilBertTokenizerFast
+
 
 cwd = os.getcwd()
 endpoint = 'https://europe-west4-ml.googleapis.com'
@@ -63,7 +66,7 @@ def getModels():
     modelList = []
 
     try:
-        response = requests.get(endpoint+'//v1/projects/dit825/models/', headers={'Authorization': 'Bearer '+getToken()}).json()
+        response = requests.get(endpoint+'//v1/projects/dit825/models/', headers={'Authorization': 'Bearer '+getFromJson('token')}).json()
         print(response)
         modelList = getModelVersion(response['models'])
     except:
@@ -77,21 +80,44 @@ def getModelVersion(models):
     modelVersionList = []
     for model in models:
         modelName = model['name']
-        response = requests.get('https://europe-west4-ml.googleapis.com//v1/'+modelName+'/versions', headers={'Authorization': 'Bearer '+getToken()}).json()
+        response = requests.get('https://europe-west4-ml.googleapis.com//v1/'+modelName+'/versions', headers={'Authorization': 'Bearer '+getFromJson('token')}).json()
         for version in response['versions']:
             modelVersionList.append(version['name'])
 
     return modelVersionList
 
-def getToken():
+def getFromJson(name):
     try:
         file = open(cwd+"/modelSettings.json", "r")
         data = json.load(file)
-        TOKEN = data['token']
+        if(name == 'prediction_model'):
+            result = data['prediction_model']
+        elif(name == 'evaluation_model'):
+            result = data['evaluation_model']
+        elif(name == 'token'):
+            result = data['token']
         file.close()
-        return TOKEN
+        return result
     except:
-        print("Failed to access token from json file: modelSettings.json")
+        print("Failed to access information from json file: modelSettings.json")
+
+# Gets the tokenized sentences in order to send them to the model for prediction
+def getPredictionArrays(sentenceList):
+    model_name = "distilbert-base-uncased"
+    tokenizer = DistilBertTokenizerFast.from_pretrained(model_name)
+    predictionInput = []
+    for sentence in sentenceList:
+        tokenized = tokenizer(sentence,
+        truncation=False,
+        padding='max_length',
+        max_length=256,
+        return_tensors="tf")
+        # Create a dictionary from the tensor with the input_ids and attention_mask
+        tokenized = {'input_ids': tokenized['input_ids'].numpy().tolist()[0], 'attention_mask': tokenized['attention_mask'].numpy().tolist()[0]}
+
+        predictionInput.append(tokenized)
+    return predictionInput
+
 
 def is_valid_news_link(news_link):
     '''
@@ -143,3 +169,33 @@ def softmax(array):
 def decode_utf8(input_iterator):
     for l in input_iterator:
         yield l.decode('utf-8')
+
+def saveEvaluation(model_evaluation):
+
+    try:
+        new_Evaluation = ModelEvaluation(
+            version_name = model_evaluation['name'],
+            true_positive = model_evaluation['true_positive'],
+            false_positive = model_evaluation['false_positive'],
+            false_negative = model_evaluation['false_negative'],
+            true_negative = model_evaluation['true_negative']
+        )
+
+        new_Evaluation.save()
+        print("Evaluation successfully saved")
+    except:
+        #print(new_Evaluation)
+        print("Failed to save the evaluation!")
+
+def retrieveLatestEvaluation(queriedModel):
+    try:
+        modelMatches = ModelEvaluation.objects.get(model = queriedModel)
+        latestEntry = {}
+        for entry in modelMatches:
+            if latestEntry == {}:
+                latestEntry = entry
+            elif entry['date_evaluated'] > latestEntry['date_evaluated']:
+                latestEntry = entry
+        return latestEntry
+    except:
+        print("No elaluations found for the specified model")

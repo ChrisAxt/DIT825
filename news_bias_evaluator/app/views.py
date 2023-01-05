@@ -4,7 +4,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.views.decorators.cache import cache_page
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from .utils import convert_label_bias, decode_utf8, extractSentences, is_non_empty_sentence, is_valid_label_bias, is_valid_news_link, sendRequest, getModels, softmax
+from .utils import convert_label_bias, decode_utf8, extractSentences, is_non_empty_sentence, is_valid_label_bias, is_valid_news_link, getFromJson, getModelVersion, getPredictionArrays, sendRequest, getModels, softmax
 from app.retraining_utils import training_handler, training_job_monitor, database_bucket_sync, training_evaluation_retriever, retrained_model_deployer
 from django.http import HttpResponse
 import asyncio
@@ -22,7 +22,7 @@ from transformers_interpret import SequenceClassificationExplainer
 from app.templatetags.evaluation import getBatchPrediction, saveEvaluationData
 
 cwd = os.getcwd()  # Get the current working directory (cwd)
-from .models import Article, LabeledSentence, Request, Prediction
+from .models import Article, LabeledSentence, ModelEvaluation, Request, Prediction
 
 dashboard_context = {}
 
@@ -39,7 +39,7 @@ def onSubmit(request):
     file.close()
 
     text_input = request.GET['input-text'] # retrieve the text input from form
-    model_name = data['name'] 
+    model_name = data['prediction_model'] 
     print("Model name: " + model_name)
     sentenceList = extractSentences(text_input)
 
@@ -77,40 +77,24 @@ def onSubmit(request):
 
     return render(request, 'app/results.html', context)
 
-# Gets the tokenized sentences in order to send them to the model for prediction
-def getPredictionArrays(sentenceList):
-    model_name = "distilbert-base-uncased"
-    tokenizer = DistilBertTokenizerFast.from_pretrained(model_name)
-    predictionInput = []
-    for sentence in sentenceList:
-        tokenized = tokenizer(sentence,
-        truncation=False,
-        padding='max_length',
-        max_length=256,
-        return_tensors="tf")
-        # Create a dictionary from the tensor with the input_ids and attention_mask
-        tokenized = {'input_ids': tokenized['input_ids'].numpy().tolist()[0], 'attention_mask': tokenized['attention_mask'].numpy().tolist()[0]}
-
-        predictionInput.append(tokenized)
-    return predictionInput
-
-
-def onModelChange(selected_model):
+def onModelChange(selected_model, isPrediction):
     isUpdated = False
+    try:
+        with open(cwd+'/modelSettings.json', errors="ignore") as file:
+            data = json.load(file)
+            file.close()
 
-    with open(cwd+'/modelSettings.json', errors="ignore") as file:
-        data = json.load(file)
+        if(isPrediction):
+            data['prediction_model'] = selected_model
+        else:
+            data['evaluation_model'] = selected_model
+
+        file = open(cwd+'/modelSettings.json', "w")
+        json.dump(data, file)
         file.close()
-        print(data)
-
-    data["name"] = selected_model
-
-    file = open(cwd+'/modelSettings.json', "w")
-    json.dump(data, file)
-    if (data['name'] == selected_model):
         isUpdated = True
-    file.close()
-
+    except:
+        print("Failed to save the model in the JSON file!")
     return isUpdated
 
 # Gets the tokenized sentences and their corresponding weights pertaining to the prediction
@@ -158,7 +142,6 @@ def access_dashboard(request):
         login(request, user)
 
         # Retrieve all info to be displayed in the dashboard
-        
         # list of models. Need to be added in this variable
         model_list= getModels()
         if(len(model_list) == 0):
@@ -173,7 +156,6 @@ def access_dashboard(request):
             'models': model_list,
             'img': img_uri,            
         }
-        dashboard_context = context
 
         return render(request, "app/dashboard.html", context)
     else:
@@ -189,10 +171,11 @@ def process_admin_request(request):
 
     if(type_of_request == 'evaluate'):
        context = {
-            'evaluation' : process_evaluation_request(request)
+            'evaluation' : process_evaluation_request(request, selected_model)
        }
        return render(request, 'app/evaluation.html', context)
     elif(type_of_request == 'retrain'):
+        onModelChange(selected_model, False)
         print('entering retrain')
         # Sync database and cloud bucket
         database_bucket_sync.sync_db_and_bucket()
@@ -204,12 +187,15 @@ def process_admin_request(request):
         # Pass via a context the job name.
         return render(request, 'app/retrain.html', {'job_name': job_name })
     elif(type_of_request == 'use-selected'):
-        if(onModelChange(selected_model)):
+        if(onModelChange(selected_model, True)):
             messages.success(request, 'Model successfully changed!')
         else:
             messages.error(request, 'Failed to change the model!')
+        context ={
+            'models': getModels(),
+        }
 
-        return render(request, "app/dashboard.html", dashboard_context) 
+        return render(request, "app/dashboard.html", context) 
     else:
         return redirect('app:main')
 
@@ -224,8 +210,9 @@ async def get_training_status(request):
     return JsonResponse(status_response)
     
 @login_required
-def process_evaluation_request(request):
-    data = getBatchPrediction()
+def process_evaluation_request(request, selected_model):
+    data = getBatchPrediction(selected_model)
+    onModelChange(selected_model, False)
     saveEvaluationData(data)
     return data
 
@@ -233,7 +220,7 @@ def process_evaluation_request(request):
 def get_training_evaluation_data(request):
     training_evaluation_data = training_evaluation_retriever.get_training_evaluation_data()
     # TODO: Use saved data from database in AP-47 instead of getBatchPrediction()!
-    latest_model_evaluation_data = getBatchPrediction()
+    latest_model_evaluation_data = getBatchPrediction(getFromJson("evaluation_model"))
     # combine the eval data with accuracy, precision etc.
     latest_model_evaluation_data = training_evaluation_retriever.combine_metrics(latest_model_evaluation_data)
     # Create json object to send both evaluations
@@ -248,7 +235,7 @@ def handle_deployment_choice(request):
     # if the deployment is true, deploy a new version of the simple model.
     if deployment_choice == 'true':
         status, model_name = retrained_model_deployer.deploy_model()
-        onModelChange('projects/dit825/models/simple_model/versions/'+model_name) 
+        # onModelChange('projects/dit825/models/simple_model/versions/'+model_name) 
         return HttpResponse(status)
     else:
         return HttpResponse()
