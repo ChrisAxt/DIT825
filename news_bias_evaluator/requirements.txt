@@ -11,3 +11,4 @@ gcloud==0.18.3
 transformers==4.25.1
 transformers_interpret==0.9.6
 tensorflow==2.8.0
+protobuf==3.19.6
