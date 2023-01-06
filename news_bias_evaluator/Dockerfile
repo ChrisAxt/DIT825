@@ -32,6 +32,9 @@ RUN curl -sSL https://sdk.cloud.google.com | bash
 
 ENV PATH $PATH:/root/google-cloud-sdk/bin
 
+# Set the enviroment variable for google
+ENV GOOGLE_APPLICATION_CREDENTIALS=/app/application_default_credentials.json
+
 ## Log in to google-cloud and set project
 RUN gcloud auth login --cred-file=/app/application_default_credentials.json && \
    gcloud config set project 'dit825'
