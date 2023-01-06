@@ -177,3 +177,57 @@ The project is following the same licence as the original dataset
 - [x] Update Readme with Sprint tasks and documentation - *Vernita*
 - [ ] Add testing to dockerfile - *Vernita*
 - [x] Update deployment diagram - *Younis*
+
+**Sprint3**: Implementation phase - All members involved in implementation of the system. Sprint3 includes the following tasks:
+
+- [x] Unit testing on initial data *Vernita* 
+- [x] Feature Engineering Younis, *Vernita* 
+- [x] Decide on a news API Vernita, *Younis* 
+- [x] Setup testing in Dockerfile *Vernita* 
+- [x] Setup the database for operation  *Younis* 
+- [x] Create models for operation database *Alex* 
+- [x] Finish prototype *Alex* 
+- [x] Set up backend to request predictions from model *Chris* 
+- [x] Create request that sends user's sentence/s *Chris* 
+- [x] Process response and display on frontend *Chris* 
+- [x] Explanation of the algorithm’s limitations *Chris* 
+
+**Sprint4**: Implementation phase - All members involved in implementation of the system. Sprint4 includes the following tasks:
+
+- [x] Model Design *Vernita* 
+- [x] Model Implementation and Evaluation *Vernita* 
+- [x] Model deployment *Vernita* 
+- [x] Create Models for the operation database *Alex* 
+- [x] Implement semi supervised learning *Vernita* 
+- [ ] Functionality to retrain the model *Younis* 
+- [ ] Backend to retrain the model *Younis* 
+- [x] Add ability to add entries to database *Alex* 
+- [ ] Create visualizations on frontend using feedback from model *Chris* 
+- [ ] Add evaluations of each model to the database *Chris* 
+- [x] Evaluate model *Vernita* 
+- [x] Add information on how model works *Vernita* 
+- [x] Create option for admin to revert model *Chris* 
+- [x] Create a UI for admin to be able to create *Alex* 
+- [x] Add issues from jira to gitlab *Chris* 
+- [ ] Rework diagrams *Vernita* 
+
+
+**Sprint5**: Implementation phase - All members involved in implementation of the system. Sprint5 includes the following tasks:
+
+- [x] Functionality to retrain the model *Younis* 
+- [x] Backend to retrain the model *Younis* 
+- [x] Update component diagram with latest architecture *Younis* 
+- [x] Final Report *Younis, Alex, Vernita, Chris* 
+- [x] Update database models *Alex* 
+- [x] Unit testing and methods for new labelled sentence and articles *Alex* 
+- [x] Report – inner workings, reflections, video *Alex* 
+- [x] Create database entries for each model and their evaluation *Chris* 
+- [x] Create visualisations on frontend using feedback from model *Chris* 
+- [x] Add new data from News API *Vernita* 
+- [x] Ability to upload CSV from admin page into DB *Vernita* 
+- [x] Delete all unused things on the cloud to reduce costs *Vernita* 
+- [x] Make BERT model as a .py file *Vernita* 
+- [x] Clean up the deployed models *Vernita* 
+- [x] Update predict methods to use new model *Vernita* 
+- [x] Rework diagram for Model Pipeline *Vernita* 
+
