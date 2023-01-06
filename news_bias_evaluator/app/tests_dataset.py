@@ -5,7 +5,7 @@ import pandas as pd
 
 class TestInitialData(unittest.TestCase):
     # navigate to the directory where the data is stored and convert to dataframe
-    p = "../app/assets/media_bias_dataset_cleaned.csv"
+    p = "app/assets/media_bias_dataset_cleaned.csv"
     assert path.exists(p), "media_bias_cleaned.csv file does not exist"
     data = pd.read_csv(p)
 
@@ -46,7 +46,7 @@ class TestInitialData(unittest.TestCase):
     
 
 class TestPseudoLabelledData(unittest.TestCase):
-    p = "../app/assets/pseudo_labelled.csv"
+    p = "app/assets/pseudo_labelled.csv"
     parent_dir = os.path.split(os.getcwd())[0]
     assert path.exists(p), "media_bias.csv file does not exist"
     data = pd.read_csv(p)
