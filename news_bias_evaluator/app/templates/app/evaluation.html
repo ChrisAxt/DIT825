@@ -41,7 +41,7 @@
           </div>
         </div>
         <div class="prediction-headings">
-          <h5 class="headingCM">{{evaluation.model|slice:"23:"}}</h5>
+          <h5 class="headingCM">{{evaluation.model|slice:"45:"}}</h5>
           <h4 class="headingCM">Predicted Bias</h4>
           <h4 class="headingCM">Predicted Non-bias</h4>
         </div>
@@ -69,6 +69,11 @@
         {% getNegPrecision evaluation as negPrecision %}
         <p>{{negPrecision}}</p>
         </div>
+        <div class="eval-item">
+          <p>F1 score: </p>
+          {% getF1 evaluation as F1Score %}
+          <p>{{F1Score}}</p>
+          </div>
       </div>
     </div>
   </body>

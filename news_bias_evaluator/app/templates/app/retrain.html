@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
   <head>
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
@@ -7,16 +8,17 @@
     <title>Bias Evaluator</title>
     {% load static %}
     <link rel="stylesheet" href="{% static 'app/style.css' %}" />
+    <link rel="stylesheet" href="{% static 'app/evaluation.css' %}" />
+    <link rel="stylesheet" href="{% static 'app/retrain.css' %}" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@300;400;700&family=Varela+Round&display=swap"
-      rel="stylesheet"
-    />
+    <link href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@300;400;700&family=Varela+Round&display=swap"
+      rel="stylesheet" />
   </head>
+
   <body>
     {% include 'app/header.html' %}
-    <h1>Retraining</h1>
+    <h2>Retraining</h2>
     <!-- ICONS FOR STATUS -->
     <div id="loadingIcon" class="loading-icon"></div>
 
@@ -36,279 +38,383 @@
       <span id="status_text">This may take several minutes...</span>
     </div>
 
-    <!-- Buttons for deployment choice -->
-    <div id="deployButtons" class="deploy-buttons">
-      <button class="txt-btn" onclick="sendDeploymentChoice('true')">
-        Deploy Model
-      </button>
-      <button class="txt-btn" onclick="sendDeploymentChoice('false')">
-        Cancel Deployment
-      </button>
-    </form>
-    {% block javascript %}
+    <div class="current-evaluation-container" id="current-eval">
+      <div class="confmatrix">
+        <h4 class="section-heading">Confusion Matrix</h4>
+        <div class="confPos">
+          <h4 class="headingCM">True Bias</h4>
+          <div class="confItem" id="C-CM-TP">
+          </div>
+          <div class="confItem" id="C-CM-FN">
+          </div>
+        </div>
+        <div class="confNeg">
+          <h4 class="headingCM">True Non-bias</h4>
+          <div class="confItem" id="C-CM-FP">
+          </div>
+          <div class="confItem" id="C-CM-TN">
+          </div>
+        </div>
+        <div class="prediction-headings">
+          <h5 class="headingCM" id="C-model-name"></h5>
+          <h4 class="headingCM">Predicted Bias</h4>
+          <h4 class="headingCM">Predicted Non-bias</h4>
+        </div>
+      </div>
+      <div>
+        <h4>Analysis of current model:</h4>
+        <div class="analysis-results">
+          <div class="eval-item">
+            <p>Accuracy: </p>
 
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+            <p id="current_accuracy"></p>
+          </div>
+          <div class="eval-item">
+            <p>Precision: </p>
 
-    <script>
-      // define the different job statuses
-      const statusMessageDisplayText = {
-        QUEUED: "Training job is queued",
-        PREPARING: "Preparing training job",
-        RUNNING: "Running the training job...",
-        SUCCEEDED: "Retraining success!",
-        CANCELLING: "Cancelling training job...",
-        CANCELLED: "Retraining cancelled: ",
-        FAILED: "Retraining failed: ",
-      };
+            <p id="current_precision"></p>
+          </div>
+          <div class="eval-item">
+            <p>Recall: </p>
 
-      // Calls an interval checker that checks the status of the training every 10 seconds.
-      checkStatus();
+            <p id="current_recall"></p>
+          </div>
+          <div class="eval-item">
+            <p>Negative Pred Value: </p>
 
-      // Callback function for when the training job succeeds
-      function onSuccessTraining() {
-        // Get model evaluation data (accuracy and all that can come with same get request.)
-        $.ajax({
-          type: "GET",
-          url: "/trainingEvaluationData/",
-          success: function callback(response) {
-            // the following two lines can be used for the confusion matrix in AP-47
-            trained_evaluation_data = response['training_evaluation_data'];
-            latest_model_evaluation_data = response['latest_model_evaluation_data'];
-            // Check if the newely trained model has better metric avg to
-            // determine if it can be deployed
-            if (
-              canTrainedModelDeploy(
-                trained_evaluation_data,
-                latest_model_evaluation_data
-              )
-            ) {
-              renderDeployButtons();
-            } else {
-              renderCantDeploy(); 
-            }
-          },
-        });
-      }
-      
-      // renders deployment related buttons
-      function renderDeployButtons() {
-        document.getElementById("deployButtons").style.display = "inline-block";
-        displayIcon('none', 'inline-block', 'none')
-        document.getElementById("status_text").innerHTML = "Model can be deployed!"
-      }
-      // Renders a message in regards to not being
-      // able to deploy a model due to metric avg
-      function renderCantDeploy() {
-        document.getElementById("deployButtons").style.display= "none"
-        document.getElementById("status_text").innerHTML = "Model cannot be deployed. Metric average of new model is less than current model."
-        displayIcon('none', 'none', 'inline-block')
-      }
+            <p id="current_negPrecision"></p>
+          </div>
+          <div class="eval-item">
+            <p>F1 score: </p>
 
-      // Handles event when the admin wants to deloy the model
-      function sendDeploymentChoice(choice) {
-        // Remove the buttons from the view
-        document.getElementById("deployButtons").style.display = "none"
-        // If the admin wants the model to be deployed,
-        // change the status message
-        if (choice === "true") {
-          displayIcon("inline-block", "none", "none");
-          document.getElementById("status_text").innerHTML =
-            "Deploying model...";
-        } else {
-          document.getElementById("status_text").innerHTML =
-            "No deloyment, redirecting...";
-          window.location.href="/"
-        }
-        $.ajax({
-          type: "POST",
-          url: "/deploymentChoice/",
-          data: { choice: choice, csrfmiddlewaretoken: '{{csrf_token}}' },
-          success: function callback(response) {
-            if (choice === "true") {
-              // Check that there was no error when creating a new version 
-              // of the model in the backend (corresponds to a 0 return code)
-              if (response.includes('returncode=0')) {
-                displayIcon("none", "inline-block", "none");
-                document.getElementById("status_text").innerHTML =
-                  "Model has been deployed";
-              } else {
-                displayIcon("none", "none", "inline-block");
-                document.getElementById("status_text").innerHTML =
-                  "Model could not be deployed, an error has occured.";
-              }
-            }
-          },
-        });
-      }
+            <p id="current_F1Score"></p>
+          </div>
+        </div>
+      </div>
 
-      // function to determine if model can be deployed
-      function canTrainedModelDeploy(
-        trainingEvaluationData,
-        latestModelEvaluationData
-      ) {
-        trainingEvalAvg = calculateAverage([
-          trainingEvaluationData.accuracy,
-          trainingEvaluationData.precision,
-          trainingEvaluationData.neg_precision,
-          trainingEvaluationData.recall,
-        ]);
-        latestModelEvalAvg = calculateAverage([
-          latestModelEvaluationData.accuracy +
-            latestModelEvaluationData.precision +
-            latestModelEvaluationData.neg_precision +
-            latestModelEvaluationData.recall,
-        ]);
-        // return a boolean on if the trained model has the same or
-        // better metric average
-        return trainingEvalAvg >= latestModelEvalAvg;
-      }
+      <div class="retrained-evaluation-container" id="retrained-eval">
+        <div class="confmatrix">
+          <h4 class="section-heading">Confusion Matrix</h4>
+          <div class="confPos">
+            <h4 class="headingCM">True Bias</h4>
+            <div class="confItem" id="R-CM-TP">
+            </div>
+            <div class="confItem" id="R-CM-FN">
+            </div>
+          </div>
+          <div class="confNeg">
+            <h4 class="headingCM">True Non-bias</h4>
+            <div class="confItem" id="R-CM-FP">
+            </div>
+            <div class="confItem" id="R-CM-TN">
+            </div>
+          </div>
+          <div class="prediction-headings">
+            <h5 class="headingCM" id="R-model-name"></h5>
+            <h4 class="headingCM">Predicted Bias</h4>
+            <h4 class="headingCM">Predicted Non-bias</h4>
+          </div>
+        </div>
+        <div>
+          <h4>Analysis of retrained model:</h4>
+          <div class="analysis-results">
+            <div class="eval-item">
+              <p>Accuracy: </p>
 
-      // calculate an average score of the metrics passed via the values parameter
-      function calculateAverage(values) {
-        // reference: https://stackoverflow.com/questions/10359907/how-to-compute-the-sum-and-average-of-elements-in-an-array
-        const sum = values.reduce((sum, value) => sum + value, 0);
-        return sum / values.length || 0;
-      }
+              <p id="retrained_accuracy"></p>
+            </div>
+            <div class="eval-item">
+              <p>Precision: </p>
 
-      // get the status of the job
-      function checkStatus() {
-        // set an interval so the status can be
-        // continuously monitored
-        let refreshId = setInterval(function () {
-          $.ajax({
-            type: "GET",
-            url: "/trainingStatus/",
-            data: { job_name: "{{job_name}}" },
-            success: async function callback(response) {
-              console.log(response);
-              status = response.state;
-              // update status text and icon
-              if (status) {
-                document.getElementById("status_text").innerHTML =
-                  statusMessageDisplayText[status];
-                if (status == "CANCELLED" || status == "FAILED") {
-                  document.getElementById("status_text").innerHTML =
-                    document.getElementById("status_text").innerHTML +
-                    response.errorMessage;
+              <p id="retrained_precision"></p>
+            </div>
+            <div class="eval-item">
+              <p>Recall: </p>
+
+              <p id="retrained_recall"></p>
+            </div>
+            <div class="eval-item">
+              <p>Negative Pred Value: </p>
+
+              <p id="retrained_negPrecision"></p>
+            </div>
+            <div class="eval-item">
+              <p>F1 score: </p>
+
+              <p id="retrained_F1Score"></p>
+            </div>
+          </div>
+          <!-- Buttons for deployment choice -->
+          <div id="deployButtons" class="deploy-buttons" style="display: inline-block; ">
+            <button class="txt-btn" style="font-size: medium;" onclick="sendDeploymentChoice('true')">
+              Deploy Model
+            </button>
+            <br><br>
+            <button class="txt-btn" style="font-size: small;" onclick="sendDeploymentChoice('false')">
+              Cancel Deployment
+            </button>
+          </div>
+        </div>
+        {% block javascript %}
+
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+        <script>
+          // define the different job statuses
+          const statusMessageDisplayText = {
+            QUEUED: "Training job is queued",
+            PREPARING: "Preparing training job",
+            RUNNING: "Running the training job...",
+            SUCCEEDED: "Retraining success!",
+            CANCELLING: "Cancelling training job...",
+            CANCELLED: "Retraining cancelled: ",
+            FAILED: "Retraining failed: ",
+          };
+
+          // Calls an interval checker that checks the status of the training every 10 seconds.
+          checkStatus();
+
+          // Callback function for when the training job succeeds
+          function onSuccessTraining() {
+            // Get model evaluation data (accuracy and all that can come with same get request.)
+            $.ajax({
+              type: "GET",
+              url: "/trainingEvaluationData/",
+              success: function callback(response) {
+                // the following two lines can be used for the confusion matrix in AP-47
+                trained_evaluation_data = response['training_evaluation_data'];
+                latest_model_evaluation_data = response['latest_model_evaluation_data'];
+                // Check if the newely trained model has better metric avg to
+                // determine if it can be deployed
+                renderEvaluations(latest_model_evaluation_data, trained_evaluation_data);
+                if (
+                  canTrainedModelDeploy(
+                    trained_evaluation_data,
+                    latest_model_evaluation_data
+                  )
+                ) {
+                  renderDeployButtons();
+                } else {
+                  renderCantDeploy();
                 }
-              }
-              // Load icon depending on success or cancel
-              switch (status) {
-                case "SUCCEEDED":
-                  displayIcon("none", "inline-block", "none");
-                  // If the job succeeded, Dont continue the interval
-                  clearInterval(refreshId);
-                  await onSuccessTraining()
-                  break;
-                case "FAILED":
-                // No break - same function as FAILED || CANCELLED.
-                case "CANCELLED":
-                  displayIcon("none", "none", "inline-block");
-                  // If the job failed, Dont continue the interval
-                  clearInterval(refreshId);
-                  await onCancelOrFailedTraining()
-                  break;
-                default:
-                  displayIcon("block", "none", "none");
-                  break;
-              }
-            },
-          });
-        }, 30000);
-      }
+              },
+            });
+          }
 
-      // function that displays different icons depending on the input parameters
-      function displayIcon(
-        loadingIconDisplayType,
-        successIconDisplayType,
-        cancelIconDisplayType
-      ) {
-        document.getElementById("loadingIcon").style.display =
-          loadingIconDisplayType;
-        document.getElementById("successIcon").style.display =
-          successIconDisplayType;
-        document.getElementById("cancelIcon").style.display =
-          cancelIconDisplayType;
-      }
-    </script>
-    {% endblock javascript %}
+          // renders deployment related buttons
+          function renderDeployButtons() {
+            document.getElementById("deployButtons").style.display = "inline-block";
+            displayIcon('none', 'inline-block', 'none')
+            document.getElementById("status_text").innerHTML = "Model can be deployed!"
+          }
+          // Renders a message in regards to not being
+          // able to deploy a model due to metric avg
+          function renderCantDeploy() {
+            document.getElementById("deployButtons").style.display = "none"
+            document.getElementById("status_text").innerHTML = "Model cannot be deployed. Metric average of new model is less than current model."
+            displayIcon('none', 'none', 'inline-block')
+          }
+
+          function renderEvaluations(latest_model_evaluation_data, trained_evaluation_data) {
+            document.getElementById("current-eval").style.display = "flex"
+            document.getElementById("retrained-eval").style.display = "flex"
+            console.log(latest_model_evaluation_data, trained_evaluation_data);
+            displayMetrics(latest_model_evaluation_data, trained_evaluation_data);
+          }
+
+          function displayMetrics(latest_model_evaluation_data, trained_evaluation_data) {
+            // Metrics for the current latest model
+            document.getElementById("current_accuracy").innerHTML = latest_model_evaluation_data.accuracy
+            document.getElementById("current_precision").innerHTML = latest_model_evaluation_data.precision
+            document.getElementById("current_recall").innerHTML = latest_model_evaluation_data.recall
+            document.getElementById("current_negPrecision").innerHTML = latest_model_evaluation_data.neg_precision
+            f1 = 2 * (latest_model_evaluation_data.precision * latest_model_evaluation_data.recall) /
+              (latest_model_evaluation_data.precision + latest_model_evaluation_data.recall)
+            document.getElementById("current_F1Score").innerHTML = f1.toFixed(2)
+
+            // Metrics for the newly retrained model
+            document.getElementById("retrained_accuracy").innerHTML = trained_evaluation_data.accuracy
+            document.getElementById("retrained_precision").innerHTML = trained_evaluation_data.precision
+            document.getElementById("retrained_recall").innerHTML = trained_evaluation_data.recall
+            document.getElementById("retrained_negPrecision").innerHTML = trained_evaluation_data.neg_precision
+            f1 = 2 * (trained_evaluation_data.precision * trained_evaluation_data.recall) /
+              (trained_evaluation_data.precision + trained_evaluation_data.recall)
+            document.getElementById("retrained_F1Score").innerHTML = f1.toFixed(2)
+
+            populateCurrentConfMatrix(latest_model_evaluation_data)
+            popluateRetrainedConfMatrix(trained_evaluation_data)
+          }
+
+          function populateCurrentConfMatrix(latest_model_evaluation_data) {
+            current_TP = document.getElementById("C-CM-TP")
+            current_FN = document.getElementById("C-CM-FN")
+            current_FP = document.getElementById("C-CM-FP")
+            current_TN = document.getElementById("C-CM-TN")
+
+            current_TP.innerHTML = latest_model_evaluation_data.true_positive
+            current_FN.innerHTML = latest_model_evaluation_data.false_negative
+            current_FP.innerHTML = latest_model_evaluation_data.false_positive
+            current_TN.innerHTML = latest_model_evaluation_data.true_negative
+            model_name = latest_model_evaluation_data.model.slice(latest_model_evaluation_data.model.indexOf("versions") + 9, latest_model_evaluation_data.model.length)
+            document.getElementById("C-model-name").innerHTML = model_name
+
+            if (latest_model_evaluation_data.true_positive > latest_model_evaluation_data.false_negative) {
+              current_TP.className = "confItemGreater"
+            } else { current_FN.className = "confItemGreater" }
+            if (latest_model_evaluation_data.false_positive > latest_model_evaluation_data.true_negative) {
+              current_FP.className = "confItemGreater"
+            } else { current_TN.className = "confItemGreater" }
+          }
+
+          function popluateRetrainedConfMatrix(trained_evaluation_data) {
+            retrained_TP = document.getElementById("R-CM-TP")
+            retrained_FN = document.getElementById("R-CM-FN")
+            retrained_FP = document.getElementById("R-CM-FP")
+            retrained_TN = document.getElementById("R-CM-TN")
+
+            retrained_TP.innerHTML = trained_evaluation_data.true_positive
+            retrained_FN.innerHTML = trained_evaluation_data.false_negative
+            retrained_FP.innerHTML = trained_evaluation_data.false_positive
+            retrained_TN.innerHTML = trained_evaluation_data.true_negative
+            document.getElementById("R-model-name").innerHTML = trained_evaluation_data.model
+
+            if (trained_evaluation_data.true_positive > trained_evaluation_data.false_negative) {
+              retrained_TP.className = "confItemGreater"
+            } else { retrained_FN.className = "confItemGreater" }
+            if (trained_evaluation_data.false_positive > trained_evaluation_data.true_negative) {
+              retrained_FP.className = "confItemGreater"
+            } else { retrained_TN.className = "confItemGreater" }
+          }
+
+
+          // Handles event when the admin wants to deloy the model
+          function sendDeploymentChoice(choice) {
+            // Remove the buttons from the view
+            document.getElementById("deployButtons").style.display = "none"
+            // If the admin wants the model to be deployed,
+            // change the status message
+            if (choice === "true") {
+              displayIcon("inline-block", "none", "none");
+              document.getElementById("status_text").innerHTML =
+                "Deploying model...";
+            } else {
+              document.getElementById("status_text").innerHTML =
+                "No deloyment, redirecting...";
+              window.location.href = "/"
+            }
+            $.ajax({
+              type: "POST",
+              url: "/deploymentChoice/",
+              data: { choice: choice, csrfmiddlewaretoken: '{{csrf_token}}' },
+              success: function callback(response) {
+                if (choice === "true") {
+                  // Check that there was no error when creating a new version 
+                  // of the model in the backend (corresponds to a 0 return code)
+                  if (response.includes('returncode=0')) {
+                    displayIcon("none", "inline-block", "none");
+                    document.getElementById("status_text").innerHTML =
+                      "Model has been deployed";
+                  } else {
+                    displayIcon("none", "none", "inline-block");
+                    document.getElementById("status_text").innerHTML =
+                      "Model could not be deployed, an error has occured.";
+                  }
+                }
+              },
+            });
+          }
+
+          // function to determine if model can be deployed
+          function canTrainedModelDeploy(
+            trainingEvaluationData,
+            latestModelEvaluationData
+          ) {
+            trainingEvalAvg = calculateAverage([
+              trainingEvaluationData.accuracy,
+              trainingEvaluationData.precision,
+              trainingEvaluationData.neg_precision,
+              trainingEvaluationData.recall,
+            ]);
+            latestModelEvalAvg = calculateAverage([
+              latestModelEvaluationData.accuracy +
+              latestModelEvaluationData.precision +
+              latestModelEvaluationData.neg_precision +
+              latestModelEvaluationData.recall,
+            ]);
+            // return a boolean on if the trained model has the same or
+            // better metric average
+            return trainingEvalAvg >= latestModelEvalAvg;
+          }
+
+          // calculate an average score of the metrics passed via the values parameter
+          function calculateAverage(values) {
+            // reference: https://stackoverflow.com/questions/10359907/how-to-compute-the-sum-and-average-of-elements-in-an-array
+            const sum = values.reduce((sum, value) => sum + value, 0);
+            return sum / values.length || 0;
+          }
+
+          // get the status of the job
+          function checkStatus() {
+            // set an interval so the status can be
+            // continuously monitored
+            let refreshId = setInterval(function () {
+              $.ajax({
+                type: "GET",
+                url: "/trainingStatus/",
+                data: { job_name: "{{job_name}}" },
+                success: async function callback(response) {
+                  console.log(response);
+                  status = response.state;
+                  // update status text and icon
+                  if (status) {
+                    document.getElementById("status_text").innerHTML =
+                      statusMessageDisplayText[status];
+                    if (status == "CANCELLED" || status == "FAILED") {
+                      document.getElementById("status_text").innerHTML =
+                        document.getElementById("status_text").innerHTML +
+                        response.errorMessage;
+                    }
+                  }
+                  // Load icon depending on success or cancel
+                  switch (status) {
+                    case "SUCCEEDED":
+                      displayIcon("none", "inline-block", "none");
+                      // If the job succeeded, Dont continue the interval
+                      clearInterval(refreshId);
+                      await onSuccessTraining()
+                      break;
+                    case "FAILED":
+                    // No break - same function as FAILED || CANCELLED.
+                    case "CANCELLED":
+                      displayIcon("none", "none", "inline-block");
+                      // If the job failed, Dont continue the interval
+                      clearInterval(refreshId);
+                      await onCancelOrFailedTraining()
+                      break;
+                    default:
+                      displayIcon("block", "none", "none");
+                      break;
+                  }
+                },
+              });
+            }, 30000);
+          }
+
+          // function that displays different icons depending on the input parameters
+          function displayIcon(
+            loadingIconDisplayType,
+            successIconDisplayType,
+            cancelIconDisplayType
+          ) {
+            document.getElementById("loadingIcon").style.display =
+              loadingIconDisplayType;
+            document.getElementById("successIcon").style.display =
+              successIconDisplayType;
+            document.getElementById("cancelIcon").style.display =
+              cancelIconDisplayType;
+          }
+        </script>
+        {% endblock javascript %}
   </body>
+
 </html>
-
-<style scoped>
-  /* Loading bar reference: https://www.w3schools.com/howto/howto_css_loader.asp */
-  .loading-icon {
-    border: 16px solid #f3f3f3;
-    border-top: 16px solid #3498db;
-    border-radius: 50%;
-    width: 60px;
-    height: 60px;
-    animation: spin 2s linear infinite;
-    margin: 3rem auto 0;
-  }
-
-  /* success and cancel icon reference: https://stackoverflow.com/questions/55844927/checkmark-tick-inside-a-circle-icon-using-pure-css3 */
-  .wrapper {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 3rem auto 0;
-    display: none;
-  }
-
-  [class*="circle-"] {
-    position: relative;
-    border-radius: 100%;
-    height: 120px;
-    width: 120px;
-  }
-
-  .circle-success {
-    background: #00b01d;
-  }
-
-  .circle-cancel {
-    background: red;
-  }
-
-  .checkMark-success {
-    position: absolute;
-    left: 27%;
-    top: 43%;
-    height: 60px;
-    width: 25px;
-    border-bottom: 5px solid #fff;
-    border-right: 5px solid #fff;
-    transform: rotate(50deg) translate(-50%, -50%);
-  }
-
-  .checkMark-cancel::after {
-    content: "\26A0";
-    margin-left: 0.5rem;
-    font-size: 100px;
-    text-align: center;
-  }
-
-  @keyframes spin {
-    0% {
-      transform: rotate(0deg);
-    }
-    100% {
-      transform: rotate(360deg);
-    }
-  }
-
-  .info-text {
-    padding-top: 1rem;
-    font-size: 15px;
-  }
-
-  .deploy-buttons {
-    padding-top: 1rem;
-    margin: 3rem auto 0;
-    display: flex;
-    gap: 1rem;
-    justify-content: center;
-    display: none;
-  }
-</style>

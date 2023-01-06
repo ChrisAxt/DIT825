@@ -3,41 +3,63 @@ from app.models import LabeledSentence
 from django.http import JsonResponse
 import os
 import json
+import numpy as np
 
-from app.utils import sendRequest
+from app.utils import sendRequest, getModelVersion, saveEvaluation, getPredictionArrays, softmax
 
 register = template.Library()
+simpleModel = {'name': 'projects/dit825/models/simple_model'}
 
 @register.simple_tag
-def getBatchPrediction():
+def getBatchPrediction(selected_model):
     # Cant slice with - value: ie [-50:]
     # Solution reverses the query set, and then gets the first 50
     # which is the same as the last 50 entries in the non-reversed
     # queryset
-    dataPoints = LabeledSentence.objects.all().reverse()[:50]
-    sentenceList = [data.sentence for data in dataPoints]
-    currentModel = getModelName()
-    evaluationResults = sendRequest(sentenceList, currentModel)
+    
+        dataPoints = LabeledSentence.objects.all().reverse()[:50]
+        sentenceList = [data.sentence for data in dataPoints]
+        
+        currentModel = selected_model
+        if("bert" in selected_model):
+            sentenceList = getPredictionArrays(sentenceList)
+            predictionList = sendRequest(sentenceList, currentModel)
+            normalised = softmax(predictionList)
+        else: evaluationResults = sendRequest(sentenceList, currentModel)
 
-    results = {}
-    results = {dataPoints[i].sentence: { 'true_value' : dataPoints[i].label_bias, 'predicted_value' : evaluationResults[i][0]} for i in range(len(sentenceList))}
+        results = {}
+        if("bert" in selected_model):
+            results = {dataPoints[i].sentence: { 'true_value' : dataPoints[i].label_bias, 'predicted_value' : np.argmax(normalised[i])} for i in range(len(sentenceList))}
+        else: results = {dataPoints[i].sentence: { 'true_value' : dataPoints[i].label_bias, 'predicted_value' : evaluationResults[i][0]} for i in range(len(sentenceList))}
 
-    evaluationResults = getEvaluationResults(results, currentModel)
-    return evaluationResults
+        evaluationResults = getEvaluationResults(results, currentModel)
+        return evaluationResults
+
 
 @register.simple_tag
 def saveEvaluationData(data):
-    evaluation = { 'name': getModelName(), 'true_positive': data['true_positive'], 'false_positive': data['false_positive'], 'false_negative': data['false_negative'], 'true_negative': data['true_negative']}
-    print(evaluation)
+        evaluation = { 'name': getLatestModelVersion(simpleModel), 'true_positive': data['true_positive'], 'false_positive': data['false_positive'], 'false_negative': data['false_negative'], 'true_negative': data['true_negative']}
+        #print(evaluation)
+        saveEvaluation(evaluation)
    
 @register.simple_tag
-def getModelName():
-    cwd = os.getcwd()  # Get the current working directory (cwd)
-    with open(cwd+'/modelSettings.json', errors="ignore") as file:
-        data = json.load(file)
-        file.close()
-        model_name = data['name'] 
-    return model_name
+def getLatestModelVersion(model):
+    # Change this to get the latest simple model, not current model
+    models = [model]
+    modelList = getModelVersion(models)
+    latestVersion = ""
+    for version in modelList:
+        if latestVersion == "":
+            latestVersion = version
+        else:
+            LVtimestamp = latestVersion[latestVersion.find("/versions/simple_model_") + 23:len(latestVersion)]
+            Vtimestamp = version[version.find("/versions/simple_model_") + 23: len(version)]
+            print(LVtimestamp)
+            if(Vtimestamp > LVtimestamp):
+                latestVersion = version
+
+    return latestVersion
+
 
 @register.simple_tag
 def getEvaluationResults(results, currentModel):
@@ -46,12 +68,13 @@ def getEvaluationResults(results, currentModel):
     FP = 0
     FN = 0
     for result in results.items():
-        if (result[1]['true_value'] == 'Biased'): 
-            if (result[1]['predicted_value'] < 0.5):
+        print(result[1])
+        if (result[1]['true_value'] == '1'): 
+            if (result[1]['predicted_value'] > 0.5):
                 TP += 1
             else: FN += 1
-        elif (result[1]['true_value'] == 'Non-biased'):
-            if (result[1]['predicted_value'] >= 0.5):
+        elif (result[1]['true_value'] == '0'):
+            if (result[1]['predicted_value'] <= 0.5):
                 TN += 1
             else: FP += 1
     return {'true_positive':TP, 'true_negative':TN, 'false_positive': FP, 'false_negative': FN, 'model': currentModel}
@@ -76,3 +99,10 @@ def getNegPrecision(evaluation):
 def getRecall(evaluation):
     recall = evaluation['true_positive'] / (evaluation['true_positive'] + evaluation['false_negative'])
     return f"{recall * 100:.2f}"
+
+@register.simple_tag
+def getF1(evaluation):
+    precision = float(getPrecision(evaluation))
+    recall = float(getRecall(evaluation))
+    f1 = (2 * (precision * recall) / (precision + recall))
+    return f"{f1 :.2f}"
