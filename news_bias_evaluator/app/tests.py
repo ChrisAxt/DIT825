@@ -1,7 +1,9 @@
 from django.test import TestCase, Client
+import pandas as pd
 import unittest
 
-from .utils import *
+from .retraining_utils import validator
+from .utils import * 
 
 class UserInputTestCase(unittest.TestCase):
     def setUp(self):
@@ -90,6 +92,24 @@ class Article_and_sentence_validation(TestCase):
     def test_convert_label_bias_should_be_1(self):
         label_bias_test = "1"
         self.assertEqual(convert_label_bias(label_bias_test), '1')
+class Retraining_pipeline_unit_tests(unittest.TestCase):
+    '''
+    Test suite for the methods relating to the dynamic retraining of the model.
+    '''
+    def setUp(self) -> None:
+        test_data = [['YouTube is making clear there will be no “birtherism” on its platform during this year’s U.S. presidential election – a belated response to a type of conspiracy theory more prevalent in the 2012 race.', 1, 'Somewhat factual but also opinionated', ['belated', 'birtherism'], 'https://eu.usatoday.com/story/tech/2020/02/03/youtube-google-wont-allow-deepfake-videos-2020-election-census/4648312002/', 'app/assets/media_bias_dataset.csv'], ['Another test scentence is here.', 1, 'Somewhat factual but also opinionated', ['belated', 'birtherism'], 'https://eu.usatoday.com/story/tech/2020/02/03/youtube-google-wont-allow-deepfake-videos-2020-election-census/4648312002/', 'app/assets/media_bias_dataset.csv'], [np.nan, 1, 'Somewhat factual but also opinionated', ['belated', 'birtherism'], 'https://eu.usatoday.com/story/tech/2020/02/03/youtube-google-wont-allow-deepfake-videos-2020-election-census/4648312002/', 'app/assets/media_bias_dataset.csv'], ['YouTube is making clear there will be no “birtherism” on its platform during this year’s U.S. presidential election – a belated response to a type of conspiracy theory more prevalent in the 2012 race.', 'No agreement', 'Somewhat factual but also opinionated', ['belated', 'birtherism'], 'https://eu.usatoday.com/story/tech/2020/02/03/youtube-google-wont-allow-deepfake-videos-2020-election-census/4648312002/', 'app/assets/media_bias_dataset.csv'], ['YouTube is making clear there will be no “birtherism” on its platform during this year’s U.S. presidential election – a belated response to a type of conspiracy theory more prevalent in the 2012 race.', 'Biased', 'Somewhat factual but also opinionated', ['belated', 'birtherism'], 'https://eu.usatoday.com/story/tech/2020/02/03/youtube-google-wont-allow-deepfake-videos-2020-election-census/4648312002/', 'app/assets/media_bias_dataset.csv'], ['YouTube is making clear there will be no “birtherism” on its platform during this year’s U.S. presidential election – a belated response to a type of conspiracy theory more prevalent in the 2012 race.', 'Non-biased', 'Somewhat factual but also opinionated', ['belated', 'birtherism'], 'https://eu.usatoday.com/story/tech/2020/02/03/youtube-google-wont-allow-deepfake-videos-2020-election-census/4648312002/', 'app/assets/media_bias_dataset.csv']]
+        columns = ['sentence', 'label_bias', 'label_opinion', 'bias_words', 'article_id', 'filename']
+        self.testDataFrame = pd.DataFrame(test_data, columns=columns)
+
+    def test_validator_cleans_data_correctly(self):
+        correct_data = [['YouTube is making clear there will be no “birtherism” on its platform during this year’s U.S. presidential election – a belated response to a type of conspiracy theory more prevalent in the 2012 race.', 1], ['Another test scentence is here.', 1], ['YouTube is making clear there will be no “birtherism” on its platform during this year’s U.S. presidential election – a belated response to a type of conspiracy theory more prevalent in the 2012 race.', 1], ['YouTube is making clear there will be no “birtherism” on its platform during this year’s U.S. presidential election – a belated response to a type of conspiracy theory more prevalent in the 2012 race.', 0]]
+        correct_columns = ['sentence', 'Label_bias']
+        correct_result = pd.DataFrame(correct_data, columns=correct_columns)
+        cleaned = validator.prepare_data(self.testDataFrame)
+        self.assertTrue(cleaned.reset_index(drop=True).equals(correct_result.reset_index(drop=True)))
+    
+
+
     
 
 class PredictionMethods(unittest.TestCase):
