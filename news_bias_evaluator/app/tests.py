@@ -26,14 +26,13 @@ class UserInputTestCase(unittest.TestCase):
 
 class AdminFunctionallityTestCase(unittest.TestCase):
     def setUp(self):
-        self.model_evaluation = {'name': 'test', 'true_positive': 50, 'false_positive': 50, 'false_negative': 50, 'true_negative': 50}
         self.simpleModel =  [{'name': 'projects/dit825/models/simple_model'}]
 
     def test_getFromJson(self):
         evaluation_model = getFromJson('evaluation_model')
         self.assertIsNot(evaluation_model, '', "Model name can not be empty!")
 
-    # This two test require a valid token and therfore have been excluded from running in the CI
+    # This two test require a valid token and therfore have been excluded from running in order to keep the CI from failing.
     #def test_getModels(self):
     #    self.assertGreater(len(getModels()), 0, "Failed to get models!")
     
@@ -121,10 +120,6 @@ class Retraining_pipeline_unit_tests(unittest.TestCase):
         cleaned = validator.prepare_data(self.testDataFrame)
         self.assertTrue(cleaned.reset_index(drop=True).equals(correct_result.reset_index(drop=True)))
     
-
-
-    
-
 class PredictionMethods(unittest.TestCase):
     # test the flow of methods that are used to predict the bias of a sentence
     def setUp(self):
