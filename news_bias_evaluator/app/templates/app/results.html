@@ -59,14 +59,14 @@
     </dialog>
     <section class="response-container">
       <div class="response-field">
-        {% for sentence, item in resultList.items %} {% if prediction > 0.65 %}
+        {% for sentence, item in resultList.items %} {% if item.label == 1 %}
         <p class="biased">{{forloop.counter}}. {{sentence}}</p>
         {% else %}
         <p class="result-sentence">{{forloop.counter}}. {{sentence}}</p>
         {% endif %} {% endfor %}
       </div>
       <div class="response-field">
-        {% for sentence, item in resultList.items %} {% if item.prediction > 0.5 %}
+        {% for sentence, item in resultList.items %} {% if item.label == 1 %}
         <p class="biased">{{forloop.counter}}. {{item.prediction|floatformat:6 }}</p>
         {% if item.prediction > 0.85 %}
         <p>
@@ -84,18 +84,18 @@
         </p>
         {% endif %} {% else %}
         <p class="result-sentence">{{forloop.counter}}. {{item.prediction}}</p>
-        {% if item.prediction > 0.30 %}
+        {% if item.prediction > 0.85 %}
         <p>
-          The model has returned a low confidence probability that the sentence is not biased.
+          The model has returned a high confidence probability that the sentence is not biased.
         </p>
-        {% elif item.prediction > 0.15 %}
+        {% elif item.prediction > 0.7 %}
         <p>
           The model has returned a medium-confidence probability that the
           sentence is <b>not</b> biased.
         </p>
         {% else %}
         <p>
-          The model has returned a high confidence probability that the sentence
+          The model has returned a low confidence probability that the sentence
           is <b>not</b> biased.
         </p>
         {% endif %}
