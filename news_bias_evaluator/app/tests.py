@@ -1,7 +1,7 @@
 from django.test import TestCase, Client
 import unittest
 
-from .utils import * 
+from .utils import *
 
 class UserInputTestCase(unittest.TestCase):
     def setUp(self):
@@ -91,5 +91,15 @@ class Article_and_sentence_validation(TestCase):
         label_bias_test = "1"
         self.assertEqual(convert_label_bias(label_bias_test), '1')
     
+
+class PredictionMethods(unittest.TestCase):
+    # test the flow of methods that are used to predict the bias of a sentence
+    def setUp(self):
+        self.testInput = "A sentence to find the potential of bias."
+        self.sentenceList = extractSentences(self.testInput)
+        self.predictionInput = getPredictionArrays(self.sentenceList)
+        self.assertIn("input_ids", self.predictionInput)
+        self.assertIn("attention_mask", self.predictionInput)
+
 if __name__ == '__main__':
     unittest.main()

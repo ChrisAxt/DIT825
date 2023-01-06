@@ -3,8 +3,9 @@ from app.models import LabeledSentence
 from django.http import JsonResponse
 import os
 import json
+import numpy as np
 
-from app.utils import sendRequest, getModelVersion, saveEvaluation, getPredictionArrays
+from app.utils import sendRequest, getModelVersion, saveEvaluation, getPredictionArrays, softmax
 
 register = template.Library()
 simpleModel = {'name': 'projects/dit825/models/simple_model'}
@@ -18,17 +19,22 @@ def getBatchPrediction(selected_model):
     
         dataPoints = LabeledSentence.objects.all().reverse()[:50]
         sentenceList = [data.sentence for data in dataPoints]
+        
+        currentModel = selected_model
         if("bert" in selected_model):
             sentenceList = getPredictionArrays(sentenceList)
-        currentModel = selected_model 
-        evaluationResults = sendRequest(sentenceList, currentModel)
+            predictionList = sendRequest(sentenceList, currentModel)
+            normalised = softmax(predictionList)
+        else: evaluationResults = sendRequest(sentenceList, currentModel)
 
         results = {}
-        results = {dataPoints[i].sentence: { 'true_value' : dataPoints[i].label_bias, 'predicted_value' : evaluationResults[i][0]} for i in range(len(sentenceList))}
+        if("bert" in selected_model):
+            results = {dataPoints[i].sentence: { 'true_value' : dataPoints[i].label_bias, 'predicted_value' : np.argmax(normalised[i])} for i in range(len(sentenceList))}
+        else: results = {dataPoints[i].sentence: { 'true_value' : dataPoints[i].label_bias, 'predicted_value' : evaluationResults[i][0]} for i in range(len(sentenceList))}
 
         evaluationResults = getEvaluationResults(results, currentModel)
         return evaluationResults
-    
+
 
 @register.simple_tag
 def saveEvaluationData(data):
@@ -62,6 +68,7 @@ def getEvaluationResults(results, currentModel):
     FP = 0
     FN = 0
     for result in results.items():
+        print(result[1])
         if (result[1]['true_value'] == '1'): 
             if (result[1]['predicted_value'] > 0.5):
                 TP += 1
