@@ -1,4 +1,3 @@
-import json
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.views.decorators.cache import cache_page
@@ -7,15 +6,12 @@ from django.contrib.auth.decorators import login_required
 from .utils import convert_label_bias, decode_utf8, extractSentences, is_non_empty_sentence, is_valid_label_bias, is_valid_news_link, getFromJson, getModelVersion, getPredictionArrays, sendRequest, getModels, softmax
 from app.retraining_utils import training_handler, training_job_monitor, database_bucket_sync, training_evaluation_retriever, retrained_model_deployer
 from django.http import HttpResponse
-import asyncio
 from asgiref.sync import async_to_sync, sync_to_async
 from django.http import JsonResponse
 import os
 import csv
 import logging
-from .templatetags import evaluation
-from django.urls import reverse
-from django.http import HttpResponseRedirect
+import json
 from transformers import DistilBertTokenizerFast, AutoModelForSequenceClassification
 import numpy as np
 from transformers_interpret import SequenceClassificationExplainer
