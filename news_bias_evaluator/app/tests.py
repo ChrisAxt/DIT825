@@ -1,3 +1,4 @@
+from ctypes import sizeof
 from django.test import TestCase, Client
 import unittest
 
@@ -7,6 +8,7 @@ class UserInputTestCase(unittest.TestCase):
     def setUp(self):
         self.testInput = "This is my test string. What do you think of it? I think it's awesome! This is a string without a sentence ending char"
         self.sentenceList = extractSentences(self.testInput)
+        self.model_name = 'projects/dit825/models/dit825_bert_model/versions/v1'
 
     def test_extractSentences_period(self):
         self.assertEqual(self.sentenceList[0], "This is my test string." ,"Failed to extract sentence ending in period")
@@ -20,10 +22,21 @@ class UserInputTestCase(unittest.TestCase):
     def test_extractSentences_none(self):
         self.assertEqual(self.sentenceList[3], "This is a string without a sentence ending char" ,"Failed to extract sentence ending without a sentence ending char")
 
-    #def test_sendRequest(self):
-    #    predictionList = sendRequest(self.sentenceList)
-    #    self.assertEqual(len(self.sentenceList),  len(predictionList['predictions']), "Failed to send the request to the model")
+class AdminFunctionallityTestCase(unittest.TestCase):
+    def setUp(self):
+        self.model_evaluation = {'name': 'test', 'true_positive': 50, 'false_positive': 50, 'false_negative': 50, 'true_negative': 50}
+        self.simpleModel =  [{'name': 'projects/dit825/models/simple_model'}]
 
+    def test_getFromJson(self):
+        evaluation_model = getFromJson('evaluation_model')
+        self.assertIsNot(evaluation_model, '', "Model name can not be empty!")
+
+    # This two test require a valid token and therfore have been excluded from running in the CI
+    #def test_getModels(self):
+    #    self.assertGreater(len(getModels()), 0, "Failed to get models!")
+    
+    #def test_getModelVersions(self):
+    #    self.assertGreater(len(getModelVersion(self.simpleModel)), 0, "Failed to get model versions!")
 
 class Article_and_sentence_validation(TestCase):
     '''
