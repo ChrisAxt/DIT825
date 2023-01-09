@@ -48,7 +48,6 @@ def sendRequest(sentenceList, model_name):
         request_body = {'instances' : sentenceList}
         prediction_request = ml.projects().predict(
             name=model_name, body = request_body)
-    
 
         response = prediction_request.execute()
         return response['predictions']
@@ -169,6 +168,7 @@ def convert_label_bias(label_bias):
         return '0'
     else:
         return label_bias
+
 def softmax(array):
     softmax_output = []
     for i in range(len(array)):
@@ -194,7 +194,6 @@ def saveEvaluation(model_evaluation):
         new_Evaluation.save()
         print("Evaluation successfully saved")
     except:
-        #print(new_Evaluation)
         print("Failed to save the evaluation!")
 
 def retrieveLatestEvaluation(queriedModel):
@@ -208,4 +207,4 @@ def retrieveLatestEvaluation(queriedModel):
                 latestEntry = entry
         return latestEntry
     except:
-        print("No elaluations found for the specified model")
+        print("No evaluations found for the specified model")

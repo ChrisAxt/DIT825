@@ -62,7 +62,7 @@ def onSubmit(request):
         user_request.save
     try:
         if (len(sentenceList) > 0 and len(sentenceList) == len(predictionList)):
-            items = {sentenceList[i]: { 'prediction': normalised[i][np.argmax(normalised[i])], 'input_id': explanations[str(i+1)] }for i in range(len(sentenceList))}
+            items = {sentenceList[i]: { 'prediction': normalised[i][np.argmax(normalised[i])], 'label': np.argmax(normalised[i]), 'input_id': explanations[str(i+1)] }for i in range(len(sentenceList))}
     except:
         messages.error(request, "Failed to get a response from the selected model!")
  
@@ -270,7 +270,7 @@ def upload_csv(request):
         # checks to see if data is valid, if so, saves it to the database
         if(is_valid_news_link(news_link) and is_non_empty_sentence(sentence) and is_valid_label_bias(label_bias)):
             new_article = Article(
-                news_link=news_link, 
+                news_link=news_link,
                 outlet=outlet, 
                 pub_year=pub_year,
             )
