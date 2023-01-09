@@ -42,7 +42,7 @@ def extractSentences(text_input):
         
 def sendRequest(sentenceList, model_name):
     try:
-        client_options = ClientOptions(api_endpoint = endpoint)
+        client_options = ClientOptions(api_endpoint = endpoint, credentials_file=cwd+"/application_default_credentials.json")
         ml = discovery.build('ml', 'v1', client_options=client_options)
 
         request_body = {'instances' : sentenceList}
@@ -63,10 +63,15 @@ def getCurrentDateTime(format):
 
 def getModels():
     
+    # generate new token
+    key = os.popen('gcloud auth print-access-token').read()
+    # remove newline from end of token
+    key = key[0:len(key)-2]
+    
     modelList = []
 
     try:
-        response = requests.get(endpoint+'//v1/projects/dit825/models/', headers={'Authorization': 'Bearer '+getFromJson('token')}).json()
+        response = requests.get(endpoint+'//v1/projects/dit825/models/', headers={'Authorization': 'Bearer '+key}).json()
         print(response)
         modelList = getModelVersion(response['models'])
     except:
@@ -77,10 +82,15 @@ def getModels():
 
 def getModelVersion(models):
 
+    # generate new token
+    key = os.popen('gcloud auth print-access-token').read()
+    # remove newline from end of token
+    key = key[0:len(key)-2]
+
     modelVersionList = []
     for model in models:
         modelName = model['name']
-        response = requests.get('https://europe-west4-ml.googleapis.com//v1/'+modelName+'/versions', headers={'Authorization': 'Bearer '+getFromJson('token')}).json()
+        response = requests.get('https://europe-west4-ml.googleapis.com//v1/'+modelName+'/versions', headers={'Authorization': 'Bearer '+key}).json()
         for version in response['versions']:
             modelVersionList.append(version['name'])
 
