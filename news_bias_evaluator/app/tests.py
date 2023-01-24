@@ -123,11 +123,13 @@ class Retraining_pipeline_unit_tests(unittest.TestCase):
 class PredictionMethods(unittest.TestCase):
     # test the flow of methods that are used to predict the bias of a sentence
     def setUp(self):
+        print('Testing prediction methods')
         self.testInput = "A sentence to find the potential of bias."
         self.sentenceList = extractSentences(self.testInput)
         self.predictionInput = getPredictionArrays(self.sentenceList)
         self.assertIn("input_ids", self.predictionInput)
         self.assertIn("attention_mask", self.predictionInput)
+
 
 if __name__ == '__main__':
     unittest.main()
