@@ -39,7 +39,6 @@ def getBatchPrediction(selected_model):
 @register.simple_tag
 def saveEvaluationData(data):
         evaluation = { 'name': getLatestModelVersion(simpleModel), 'true_positive': data['true_positive'], 'false_positive': data['false_positive'], 'false_negative': data['false_negative'], 'true_negative': data['true_negative']}
-        #print(evaluation)
         saveEvaluation(evaluation)
    
 @register.simple_tag

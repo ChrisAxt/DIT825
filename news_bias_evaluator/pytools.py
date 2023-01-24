@@ -18,3 +18,4 @@ output_linter = subprocess.Popen(['pylint ./news_bias_evaluator'], shell=True)
 (output_linter, err_linter) = output_linter.communicate()
 if (err_linter is None):
     print('No linting errors found')
+
