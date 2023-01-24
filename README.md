@@ -6,7 +6,93 @@ The main goal of the system is to provide a simple and efficient way to determin
 
 The system uses machine learning to evaluate each sentence of a text and return a score as well as an evaluation for each sentence. More details are provided in the **Machine Learning Concept** section.
 
----
+## User interaction
+ 
+### Users: 
+ 
+**To get an analysis on text, follow these steps:** 
+ 
+- On the application’s home screen, enter the text you wish to analyze into the text field. 
+- Click the submit button located at the bottom of the text field. (This will redirect the page) 
+ 
+Screenshot of the above mentioned steps. 
+
+![1](https://user-images.githubusercontent.com/81012809/214407356-4de672ec-3ce4-4b88-9657-93496cccd89d.png)
+ 
+Once redirected, an analysis of the text input will be displayed, as follows. 
+
+![2](https://user-images.githubusercontent.com/81012809/214407441-30173ef1-e381-48d2-ab79-f409d1d98535.png)
+
+The analysis includes the following: 
+ 
+- On the top left, the input has been broken down into individual sentences which are then analyzed individually.	 
+- On the top right, the bias prediction results are displayed with the probability of the result from each sentence as well as a description explaining the prediction. 
+- On the bottom left, the analysis of the sentence shows how the prediction results were affected by each word in the given sentence. 
+ 
+### Information:
+ 
+To get information on the model, the dataset and how we train the model, click the info button on the top right, which will trigger a popup window as follows: 
+ 
+![3](https://user-images.githubusercontent.com/81012809/214407555-016d12c0-6d49-495b-924a-9d944298b4db.png)
+
+To view the source code, click the github icon on the top right, which will redirect you to our github repository. 
+ 
+### Admin: 
+ 
+To login as an admin, click the admin login button on the top left corner, this will redirect you to a login page*. <br/>
+<sub>* *Please note that you will need existing admin credentials to access the admin dashboard.*</sub> 
+ 
+Once logged in, you will be presented with the admin dashboard as follows: 
+ 
+![4](https://user-images.githubusercontent.com/81012809/214407697-a9faae02-f2ca-4af8-8e02-54a66fdc93ac.png)
+
+**The admin dashboard contains the following:** 
+
+- A drop-down list of the model’s versions currently available, this list is fetched from google cloud in order to keep it up to date. 
+- A drop-down list of actions the admin can choose to perform on the selected model version. 
+- An option to upload a csv file. 
+ 
+**To select a model version to use for predictions:** 
+ 
+- Select a model version from the first drop-down list. 
+- Select the option ‘set as active’ from the second drop-down list. 
+- Click the start button. 
+ 
+If successful, a success message should be displayed at the top of the page. This will now be the model prediction requests are sent to. 
+ 
+**To evaluate a model:** 
+ 
+- Select a model version from the first drop-down list.	 
+- Select the option ‘evaluate’ from the second drop-down list. 
+- Click the start button. 
+ 
+ 
+This will redirect you to the evaluation page as follows: 
+ 
+![5](https://user-images.githubusercontent.com/81012809/214407808-d7c461de-8f3d-40c6-9cf0-f9aa04641ead.png)
+ 
+**To retrain a model:** 
+ 
+- Select a model version from the first drop-down list. 
+- Select the option ‘retrain’ from the second drop-down list. 
+- Click the start button. 
+ 
+This will redirect you to the retraining page, a training job will automatically be started and the following can occur: 
+ 
+**The retraining job was successful:** 
+ 
+In both cases below, an evaluation comparison is displayed, this includes a confusion matrix and accuracy, recall, precision and f1 metrics for both models. 
+
+If the newly trained model evaluation is better than the current model, the admin will be presented with the option to deploy the model or cancel the deployment, as follows: 
+ 
+![6](https://user-images.githubusercontent.com/81012809/214407864-5b1c80ea-de54-42a9-b314-80f56bfc3fac.png)
+ 
+If the newly trained model evaluation is worse than the current model, the admin will not be able to deploy it. 
+ 
+**The retraining job failed:** 
+ 
+An error icon and message will be displayed and no evaluation comparison will appear. 
+
 
 ## Major Dependencies
 
@@ -87,34 +173,6 @@ export DATABASE_PASSWORD=<ON_SLACK>```
 ```\dt # displays all relations (tables) inside of the database)``` and ```SELECT * FROM <table name>``` 
 can be used to navigate/query data.
 
-# Contribution rules
-
-- PR templates
-- Commit templates
-- Bug template
-
-## Visuals
-WIP: Add visuals when available 
-
-## Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
-
-## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
-
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
-
-## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
-
-## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
-
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
-
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
-
 ## Database, ER and relational models
 
 The database is a PostegreSQL database hosted on Google's cloud sql service. 
@@ -138,96 +196,3 @@ Relational models
 ## License
 The project is following the same licence as the original dataset
 [CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/)
-
-## Project status
-
-### Inception and Planning Phase:
-**Sprint0**: All members involved in planning and design of the system. Completed the following tasks: 
-
-- [x] Project setup
-- [x] Project planning
-- [x] Project design
-
-**Sprint1**: All members involved in planning and design of the system. Completed the following tasks:
-
-- [x] Project documentation
-- [x] Assignment 1
-
-**Sprint2**: Implementation phase - All members involved in implementation of the system. Sprint2 includes the following tasks:
-
-- [x] Integrate Jira with gitlab - *Christopher*
-- [x] Create issues on Jira using project requirements - *Alexandre, Younis*
-- [x] Set up django project - *Alexandre*
-- [x] Create prototype of the system - *Christopher*
-- [x] Implement prototype of the system - *Alexandre*
-- [x] Set up docker build - *Christopher*
-- [x] Research cloud provider possibilities and architecture of the system on the cloud - *Younis*
-- [x] Create a basic ML model - *Vernita*
-- [x] Configure ML model upload to cloud provider - *Vernita*
-- [x] Set up CI app build - *Alexandre* 
-- [x] Set up database for the ML model - *Christopher*
-- [x] Configure cloud provider - *Younis*
-- [x] Configure automated deployment - *Younis*
-- [x] Create models for the database - *Christopher*
-- [x] Set up docker image registration - *Alexandre*
-- [x] Implement python tools - *Vernita*
-- [x] Implement simple unit tests - *Vernita*
-- [x] Set up CD pipeline with Kubernetes - *Younis*
-- [x] Update Readme with project detail - *Alexandre*
-- [x] Update Readme with Sprint tasks and documentation - *Vernita*
-- [ ] Add testing to dockerfile - *Vernita*
-- [x] Update deployment diagram - *Younis*
-
-**Sprint3**: Implementation phase - All members involved in implementation of the system. Sprint3 includes the following tasks:
-
-- [x] Unit testing on initial data *Vernita* 
-- [x] Feature Engineering Younis, *Vernita* 
-- [x] Decide on a news API Vernita, *Younis* 
-- [x] Setup testing in Dockerfile *Vernita* 
-- [x] Setup the database for operation  *Younis* 
-- [x] Create models for operation database *Alex* 
-- [x] Finish prototype *Alex* 
-- [x] Set up backend to request predictions from model *Chris* 
-- [x] Create request that sends user's sentence/s *Chris* 
-- [x] Process response and display on frontend *Chris* 
-- [x] Explanation of the algorithm’s limitations *Chris* 
-
-**Sprint4**: Implementation phase - All members involved in implementation of the system. Sprint4 includes the following tasks:
-
-- [x] Model Design *Vernita* 
-- [x] Model Implementation and Evaluation *Vernita* 
-- [x] Model deployment *Vernita* 
-- [x] Create Models for the operation database *Alex* 
-- [x] Implement semi supervised learning *Vernita* 
-- [ ] Functionality to retrain the model *Younis* 
-- [ ] Backend to retrain the model *Younis* 
-- [x] Add ability to add entries to database *Alex* 
-- [ ] Create visualizations on frontend using feedback from model *Chris* 
-- [ ] Add evaluations of each model to the database *Chris* 
-- [x] Evaluate model *Vernita* 
-- [x] Add information on how model works *Vernita* 
-- [x] Create option for admin to revert model *Chris* 
-- [x] Create a UI for admin to be able to create *Alex* 
-- [x] Add issues from jira to gitlab *Chris* 
-- [ ] Rework diagrams *Vernita* 
-
-
-**Sprint5**: Implementation phase - All members involved in implementation of the system. Sprint5 includes the following tasks:
-
-- [x] Functionality to retrain the model *Younis* 
-- [x] Backend to retrain the model *Younis* 
-- [x] Update component diagram with latest architecture *Younis* 
-- [x] Final Report *Younis, Alex, Vernita, Chris* 
-- [x] Update database models *Alex* 
-- [x] Unit testing and methods for new labelled sentence and articles *Alex* 
-- [x] Report – inner workings, reflections, video *Alex* 
-- [x] Create database entries for each model and their evaluation *Chris* 
-- [x] Create visualisations on frontend using feedback from model *Chris* 
-- [x] Add new data from News API *Vernita* 
-- [x] Ability to upload CSV from admin page into DB *Vernita* 
-- [x] Delete all unused things on the cloud to reduce costs *Vernita* 
-- [x] Make BERT model as a .py file *Vernita* 
-- [x] Clean up the deployed models *Vernita* 
-- [x] Update predict methods to use new model *Vernita* 
-- [x] Rework diagram for Model Pipeline *Vernita* 
-
